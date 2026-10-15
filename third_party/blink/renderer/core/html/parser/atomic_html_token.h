@@ -448,6 +448,7 @@ inline const char* ConvertChineseAttributeName(const UChar* data, unsigned lengt
     if (c0 == 0x65e5 && c1 == 0x671f && c2 == 0x65f6 && c3 == 0x95f4) return "datetime"; // 日期时间
     if (c0 == 0x56fe && c1 == 0x50cf && c2 == 0x63cf && c3 == 0x8ff0) return "alt";       // 图像描述
     if (c0 == 0x6570 && c1 == 0x636e && c2 == 0x5c5e && c3 == 0x6027) return "data-*";    // 数据属性
+    if (c0 == 0x540d && c1 == 0x79f0 && c2 == 0x7a7a && c3 == 0x95f4) return "xmlns";     // 名称空间
   }
   return nullptr;
 }

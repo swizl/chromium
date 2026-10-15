@@ -509,6 +509,7 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, "\xe5\x85\x89\xe6\xa0\x87\xe5\x8a\xa8\xe7\x94\xbb", 12)) return ExposedProperty(CSSPropertyID::kCaretAnimation, execution_context, mode);
       if (!memcmp(buffer, "\xe5\x85\x89\xe6\xa0\x87\xe9\xa2\x9c\xe8\x89\xb2", 12)) return ExposedProperty(CSSPropertyID::kCaretColor, execution_context, mode);
       if (!memcmp(buffer, "\xe5\x85\x89\xe7\x85\xa7\xe9\xa2\x9c\xe8\x89\xb2", 12)) return ExposedProperty(CSSPropertyID::kLightingColor, execution_context, mode);
+      if (!memcmp(buffer, "\xe8\x83\x8c\xe6\x99\xaf\xe9\xa2\x9c\xe8\x89\xb2", 12)) return ExposedProperty(CSSPropertyID::kBackgroundColor, execution_context, mode);
       if (!memcmp(buffer, "\xe5\x86\x85\xe5\xae\xb9\xe5\xaf\xb9\xe9\xbd\x90", 12)) return ExposedProperty(CSSPropertyID::kAlignContent, execution_context, mode);
       if (!memcmp(buffer, "\xe5\x86\x85\xe8\x81\x94\xe5\xb0\xba\xe5\xaf\xb8", 12)) return ExposedProperty(CSSPropertyID::kInlineSize, execution_context, mode);
       if (!memcmp(buffer, "\xe5\x86\x85\xe8\x81\x94\xe5\xb5\x8c\xe5\x85\xa5", 12)) return ExposedProperty(CSSPropertyID::kInsetInline, execution_context, mode);

@@ -119,7 +119,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // performance. See local_window_proxy.cc.
     // getter object (DOMString name);
     [CEReactions] attribute DOMString title;
-    [CEReactions, ImplementedAs=title] attribute DOMString 抬头;
+    [CEReactions, ImplementedAs=title] attribute DOMString 标题;
     [CEReactions] attribute DOMString dir;
     [CEReactions, RaisesException=Setter, PerWorldBindings] attribute HTMLElement? body;
     [CEReactions, RaisesException=Setter, PerWorldBindings, ImplementedAs=body] attribute HTMLElement? 主体;

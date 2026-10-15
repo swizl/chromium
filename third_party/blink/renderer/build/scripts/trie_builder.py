@@ -31,14 +31,30 @@ def _single_trie(string_to_value_pairs, index):
 
     output = {}
     for char, d in dicts_by_indexed_letter.items():
+        key = _format_char(char)
         if len(d) == 1:
             string = d[0][0]
             value = d[0][1]
-            output[char] = {string[index + 1 :]: value}
+            # Build chain of single-character nodes for remaining suffix
+            remaining = string[index + 1 :]
+            node = {'': value}
+            for i in range(len(remaining) - 1, -1, -1):
+                node = {_format_char(remaining[i]): node}
+            output[key] = node
         else:
-            output[char] = _single_trie(d, index + 1)
+            output[key] = _single_trie(d, index + 1)
 
     return output
+
+
+def _format_char(char):
+    """Format a character for use in C++ case labels.
+    ASCII characters use quoted form, non-ASCII use hex."""
+    codepoint = ord(char)
+    if codepoint < 0x80:
+        return f"'{char}'"
+    else:
+        return f"0x{codepoint:04X}"
 
 
 def trie_list_by_str_length(str_to_return_value_dict):

@@ -218,6 +218,11 @@ class HTMLToken {
           data_.AddChar('t'); data_.AddChar('r');
           break;
         }
+        if (data_.data()[0] == 0x5706) {
+          data_.clear();
+          data_.AddChar('c'); data_.AddChar('i'); data_.AddChar('r'); data_.AddChar('c'); data_.AddChar('l'); data_.AddChar('e');
+          break;
+        }
         break;
       case 2:
         if (data_.data()[0] == 0x4e0a) {
@@ -725,6 +730,32 @@ class HTMLToken {
             break;
           }
         }
+        if (data_.data()[0] == 0x6570) {
+          if (data_.data()[1] == 0x5b66) {
+            data_.clear();
+            data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('t'); data_.AddChar('h');
+            break;
+          }
+          if (data_.data()[1] == 0x5b57) {
+            data_.clear();
+            data_.AddChar('m'); data_.AddChar('n');
+            break;
+          }
+        }
+        if (data_.data()[0] == 0x884c) {
+          if (data_.data()[1] == 0x7ec4) {
+            data_.clear();
+            data_.AddChar('m'); data_.AddChar('r'); data_.AddChar('o'); data_.AddChar('w');
+            break;
+          }
+        }
+        if (data_.data()[0] == 0x77e9) {
+          if (data_.data()[1] == 0x5f62) {
+            data_.clear();
+            data_.AddChar('r'); data_.AddChar('e'); data_.AddChar('c'); data_.AddChar('t');
+            break;
+          }
+        }
         break;
       case 3:
         if (data_.data()[0] == 0x4e0b) {
@@ -752,6 +783,27 @@ class HTMLToken {
           if (data_.data()[1] == 0x6570 && data_.data()[2] == 0x636e) {
             data_.clear();
             data_.AddChar('m'); data_.AddChar('e'); data_.AddChar('t'); data_.AddChar('a');
+            break;
+          }
+        }
+        if (data_.data()[0] == 0x6807) {
+          if (data_.data()[1] == 0x8bc6 && data_.data()[2] == 0x7b26) {
+            data_.clear();
+            data_.AddChar('m'); data_.AddChar('i');
+            break;
+          }
+        }
+        if (data_.data()[0] == 0x8fd0) {
+          if (data_.data()[1] == 0x7b97 && data_.data()[2] == 0x7b26) {
+            data_.clear();
+            data_.AddChar('m'); data_.AddChar('o');
+            break;
+          }
+        }
+        if (data_.data()[0] == 0x77e2) {
+          if (data_.data()[1] == 0x91cf && data_.data()[2] == 0x56fe) {
+            data_.clear();
+            data_.AddChar('s'); data_.AddChar('v'); data_.AddChar('g');
             break;
           }
         }
