@@ -31,6 +31,7 @@
     LegacyUnenumerableNamedProperties
 ] interface HTMLAllCollection {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter Element? (unsigned long index);
     [ImplementedAs=NamedGetter] getter (HTMLCollection or Element)? namedItem(DOMString name);
 

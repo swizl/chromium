@@ -11,6 +11,7 @@
     constructor(sequence<CSSUnparsedSegment> members);
     iterable<CSSUnparsedSegment>;
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [RaisesException] getter CSSUnparsedSegment (unsigned long index);
     [RaisesException] setter CSSUnparsedSegment (unsigned long index, CSSUnparsedSegment val);
 };

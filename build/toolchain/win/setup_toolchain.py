@@ -21,7 +21,7 @@ import action_helpers
 import gn_helpers
 
 SCRIPT_DIR = os.path.dirname(__file__)
-SDK_VERSION = '10.0.28000.0'
+SDK_VERSION = '10.0.26100.0'
 MSVC_DIR = re.compile('^.*/VC/Tools/MSVC/[^/]+/include$')
 WINDOWS_KITS_DIR = re.compile(r'^(.*/Windows Kits/\d+/Include/[^/]+)/.*')
 
@@ -322,6 +322,28 @@ def main():
                 windows_kits_match = WINDOWS_KITS_DIR.match(i)
                 if windows_kits_match is not None:
                     windows_kits_dir = windows_kits_match.group(1)
+
+            # Minimal-build workaround: the ATL (atlmfc) component is not
+            # installed via the VS installer (requires elevation). Chromium's
+            # //base/win/atl_throw.h includes <atldef.h>; provide a vendored
+            # stub from the src tree if present.
+            atl_stub_dir = os.path.normpath(
+                os.path.join(
+                    os.getcwd(), '..', '..', 'third_party', 'atl_include'
+                )
+            )
+            if os.path.isdir(atl_stub_dir):
+                include.append(relflag(atl_stub_dir))
+            # ATL headers emit `#pragma comment(lib, "atls.lib")`, so the
+            # static ATL import library must be on the linker search path too.
+            atl_lib_dir = os.path.normpath(
+                os.path.join(
+                    os.getcwd(), '..', '..', 'third_party', 'atl_include',
+                    'lib', 'x64'
+                )
+            )
+            if os.path.isdir(atl_lib_dir):
+                lib.append(relflag(atl_lib_dir))
 
             include_I = ['/I' + i for i in include]
             include_imsvc = ['-imsvc' + i for i in include]

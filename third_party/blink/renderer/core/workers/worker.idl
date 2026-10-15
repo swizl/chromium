@@ -38,6 +38,7 @@
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);
     [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options = {});
     attribute EventHandler onmessage;
+    [ImplementedAs=onmessage] attribute EventHandler 消息时;
 };
 
 Worker includes AbstractWorker;

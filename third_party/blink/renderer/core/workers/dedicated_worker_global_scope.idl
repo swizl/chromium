@@ -47,5 +47,7 @@
     void cancelAnimationFrame(long handle);
 
     attribute EventHandler onmessage;
+    [ImplementedAs=onmessage] attribute EventHandler 消息时;
     attribute EventHandler onmessageerror;
+    [ImplementedAs=onmessageerror] attribute EventHandler 消息错误时;
 };

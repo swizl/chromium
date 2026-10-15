@@ -39,6 +39,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute DOMString compatMode;
 
     readonly attribute DOMString characterSet;
+    [ImplementedAs=characterSet] readonly attribute DOMString 字符集;
     [ImplementedAs=characterSet] readonly attribute DOMString charset; // legacy alias of .characterSet
     [ImplementedAs=characterSet] readonly attribute DOMString inputEncoding; // legacy alias of .characterSet
     readonly attribute DOMString contentType;
@@ -46,31 +47,46 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute DocumentType? doctype;
     readonly attribute Element? documentElement;
     [Affects=Nothing] HTMLCollection getElementsByTagName(DOMString localName);
+    [Affects=Nothing, ImplementedAs=getElementsByTagName] HTMLCollection 获取元素々_依据标签名(DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByClassName(DOMString classNames);
+    [Affects=Nothing, ImplementedAs=getElementsByClassName] HTMLCollection 获取元素々_依据类名(DOMString classNames);
 
     [NewObject, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName);
+    [NewObject, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element 创建元素(DOMString localName);
     [NewObject, RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName);
+    [NewObject, RaisesException, ImplementedAs=createElementNS] Element 创建元素々_命名空间(DOMString? namespaceURI, DOMString qualifiedName);
     [NewObject] DocumentFragment createDocumentFragment();
+    [NewObject, ImplementedAs=createDocumentFragment] DocumentFragment 创建文档片段();
     [NewObject] Text createTextNode(DOMString data);
+    [NewObject, ImplementedAs=createTextNode] Text 创建文本节点(DOMString data);
     [NewObject, RaisesException] CDATASection createCDATASection(DOMString data);
     [NewObject] Comment createComment(DOMString data);
+    [NewObject, ImplementedAs=createComment] Comment 创建注释(DOMString data);
     [NewObject, RaisesException] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
 
     [NewObject, CEReactions, RaisesException] Node importNode(Node node, optional (boolean or ImportNodeOptions) options = false);
+    [NewObject, CEReactions, RaisesException, ImplementedAs=importNode] Node 导入节点(Node node, optional (boolean or ImportNodeOptions) options = false);
 
     [RaisesException, CEReactions] Node adoptNode(Node node);
+    [RaisesException, CEReactions, ImplementedAs=adoptNode] Node 收养节点(Node node);
 
     [NewObject, RaisesException, MeasureAs=DocumentCreateAttribute] Attr createAttribute(DOMString localName);
+    [NewObject, RaisesException, MeasureAs=DocumentCreateAttribute, ImplementedAs=createAttribute] Attr 创建属性(DOMString localName);
     [NewObject, RaisesException, MeasureAs=DocumentCreateAttributeNS] Attr createAttributeNS(DOMString? namespaceURI, DOMString qualifiedName);
+    [NewObject, RaisesException, MeasureAs=DocumentCreateAttributeNS, ImplementedAs=createAttributeNS] Attr 创建属性々_命名空间(DOMString? namespaceURI, DOMString qualifiedName);
 
     [NewObject, RaisesException, CallWith=ScriptState] Event createEvent(DOMString eventType);
+    [NewObject, RaisesException, CallWith=ScriptState, ImplementedAs=createEvent] Event 创建事件(DOMString eventType);
 
     [NewObject] Range createRange();
+    [NewObject, ImplementedAs=createRange] Range 创建范围();
 
     // NodeFilter.SHOW_ALL = 0xFFFFFFFF
     [NewObject] NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
+    [NewObject, ImplementedAs=createNodeIterator] NodeIterator 创建节点迭代器(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
     [NewObject] TreeWalker createTreeWalker(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
+    [NewObject, ImplementedAs=createTreeWalker] TreeWalker 创建树遍历器(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
 
     // FIXME: xmlEncoding/xmlVersion/xmlStandalone have been removed from the spec.
     [MeasureAs=DocumentXMLEncoding] readonly attribute DOMString? xmlEncoding;
@@ -103,8 +119,10 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // performance. See local_window_proxy.cc.
     // getter object (DOMString name);
     [CEReactions] attribute DOMString title;
+    [CEReactions, ImplementedAs=title] attribute DOMString 抬头;
     [CEReactions] attribute DOMString dir;
     [CEReactions, RaisesException=Setter, PerWorldBindings] attribute HTMLElement? body;
+    [CEReactions, RaisesException=Setter, PerWorldBindings, ImplementedAs=body] attribute HTMLElement? 主体;
     readonly attribute HTMLHeadElement? head;
     [SameObject, Measure] readonly attribute HTMLCollection images;
     [SameObject, Measure] readonly attribute HTMLCollection embeds;
@@ -113,6 +131,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [SameObject, Measure] readonly attribute HTMLCollection forms;
     [SameObject, Measure] readonly attribute HTMLCollection scripts;
     [Affects=Nothing, PerWorldBindings] NodeList getElementsByName(DOMString elementName);
+    [Affects=Nothing, ImplementedAs=getElementsByName] NodeList 获取元素々_依据名称(DOMString elementName);
     [ImplementedAs=currentScriptForBinding] readonly attribute HTMLOrSVGScriptElement? currentScript;
 
     // dynamic markup insertion
@@ -126,6 +145,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // user interaction
     readonly attribute Window? defaultView;
     [Affects=Nothing] boolean hasFocus();
+    [Affects=Nothing, ImplementedAs=hasFocus] boolean 有焦点();
     [CEReactions, MeasureAs=DocumentDesignMode] attribute DOMString designMode;
     // Only the execCommand("insertHTML",..) sub-command needs to be Trusted
     // Types checked. Other sub-commands will string-ify its input. This, we
@@ -170,6 +190,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-instantiate
     [PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName, (DOMString or ElementCreationOptions) options);
     [RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName, (DOMString or ElementCreationOptions) options);
+    [RaisesException, ImplementedAs=createElementNS] Element 创建元素々_命名空间(DOMString? namespaceURI, DOMString qualifiedName, (DOMString or ElementCreationOptions) options);
 
     // Page Visibility
     // https://w3c.github.io/page-visibility/#extensions-to-the-document-interface

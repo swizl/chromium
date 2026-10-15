@@ -17,4 +17,5 @@ interface PreferenceObject : EventTarget {
   [CallWith=ScriptState] Promise<undefined> requestOverride(DOMString? value);
 
   attribute EventHandler onchange;
+  [ImplementedAs=onchange] attribute EventHandler 改变时;
 };

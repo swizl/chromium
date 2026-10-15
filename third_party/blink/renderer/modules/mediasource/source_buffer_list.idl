@@ -32,6 +32,7 @@
     Exposed=(Window, DedicatedWorker)
 ] interface SourceBufferList : EventTarget {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     attribute EventHandler onaddsourcebuffer;
     attribute EventHandler onremovesourcebuffer;
     [ImplementedAs=item] getter SourceBuffer (unsigned long index);

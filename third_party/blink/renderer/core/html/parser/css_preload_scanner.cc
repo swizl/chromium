@@ -141,7 +141,7 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
         state_ = kComment;
       break;
     case kRuleStart:
-      if (IsAsciiAlpha(c)) {
+      if (IsAsciiAlpha(c) || (c >= 19968 && c <= 40869)) {
         rule_.Clear();
         rule_value_.Clear();
         rule_.Append(c);

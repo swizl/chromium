@@ -25,6 +25,7 @@
 ] interface StyleSheetList {
     [Measure] getter StyleSheet? item(unsigned long index);
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
 
     // Non-standard APIs
     [NotEnumerable] getter CSSStyleSheet (DOMString name);

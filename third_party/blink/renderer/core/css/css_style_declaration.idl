@@ -25,10 +25,12 @@
 ] interface CSSStyleDeclaration {
     [CEReactions, RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString cssText;
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [Affects=Nothing] getter DOMString item(unsigned long index);
     DOMString getPropertyValue(DOMString property);
     DOMString getPropertyPriority(DOMString property);
     [CEReactions, RaisesException, CallWith=ExecutionContext] void setProperty(DOMString property, [LegacyNullToEmptyString] DOMString value, optional [LegacyNullToEmptyString] DOMString priority = "");
+    [CEReactions, RaisesException, CallWith=ExecutionContext, ImplementedAs=setProperty] void 设置属性々_指定(DOMString property, [LegacyNullToEmptyString] DOMString value, optional [LegacyNullToEmptyString] DOMString priority = "");
     // void setPropertyValue(DOMString property, [LegacyNullToEmptyString] DOMString value);
     // void setPropertyPriority(DOMString property, [LegacyNullToEmptyString] DOMString priority);
     [CEReactions, RaisesException] DOMString removeProperty(DOMString property);

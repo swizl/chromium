@@ -25,6 +25,7 @@
     Exposed=Window
 ] interface NamedNodeMap {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [Affects=Nothing, MeasureAs=NamedNodeMapItem] getter Attr? item(unsigned long index);
     [Affects=Nothing, MeasureAs=NamedNodeMapGetNamedItem] getter Attr? getNamedItem(DOMString name);
     [MeasureAs=NamedNodeMapGetNamedItemNS] Attr? getNamedItemNS(DOMString? namespaceURI, DOMString localName);

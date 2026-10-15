@@ -29,5 +29,6 @@
     LegacyNoInterfaceObject
 ] interface SpeechRecognitionResultList {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter SpeechRecognitionResult item(unsigned long index);
 };

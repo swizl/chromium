@@ -36,11 +36,17 @@
     // HTMLElement (which includes GlobalEventHandlers), but have different
     // behavior. See https://www.w3.org/Bugs/Public/show_bug.cgi?id=28166
     attribute EventHandler onblur;
+    [ImplementedAs=onblur] attribute EventHandler 失去焦点时;
     attribute OnErrorEventHandler onerror;
+    [ImplementedAs=onerror] attribute OnErrorEventHandler 出错时;
     attribute EventHandler onfocus;
+    [ImplementedAs=onfocus] attribute EventHandler 获得焦点时;
     attribute EventHandler onload;
+    [ImplementedAs=onload] attribute EventHandler 加载时;
     attribute EventHandler onresize;
+    [ImplementedAs=onresize] attribute EventHandler 调整大小时;
     attribute EventHandler onscroll;
+    [ImplementedAs=onscroll] attribute EventHandler 滚动时;
 
     // Compatibility
     // https://compat.spec.whatwg.org/#windoworientation-interface

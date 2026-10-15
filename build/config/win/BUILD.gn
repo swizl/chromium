@@ -305,6 +305,14 @@ config("runtime_library") {
 # manually override this config for their compiles.
 config("winver") {
   defines = [
+    # Chromium's pinned SDK version is 10.0.28000.0, whose sdkddkver.h defines
+    # NTDDI_WIN11_BR. We build against an older installed SDK (10.0.26100.0),
+    # which only defines up to NTDDI_WIN11_GE (= 0x0A000010). Define the
+    # identifier ourselves so NTDDI_VERSION expands to a real number (otherwise
+    # it becomes 0 in preprocessor arithmetic and API-gating #ifs evaluate to
+    # false). The numeric value only needs to be >= the SDK thresholds used by
+    # windows headers.
+    "NTDDI_WIN11_BR=0x0A000010",
     "NTDDI_VERSION=NTDDI_WIN11_BR",
 
     # We can't say `=_WIN32_WINNT_WIN10` here because some files do

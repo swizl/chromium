@@ -31,9 +31,12 @@
 ] interface XMLHttpRequestEventTarget : EventTarget {
     // event handlers
     attribute EventHandler onloadstart;
+    [ImplementedAs=onloadstart] attribute EventHandler 开始加载时;
     attribute EventHandler onprogress;
     attribute EventHandler onabort;
+    [ImplementedAs=onabort] attribute EventHandler 中止时;
     attribute EventHandler onerror;
+    [ImplementedAs=onerror] attribute EventHandler 出错时;
     attribute EventHandler onload;
     attribute EventHandler ontimeout;
     attribute EventHandler onloadend;

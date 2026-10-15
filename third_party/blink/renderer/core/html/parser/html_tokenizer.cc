@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 
 #include <array>
+#include <string_view>
 
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -40,6 +41,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
+
+// A CJK (Chinese/Japanese/Korean) character, as used to recognize Chinese
+// end tag names inside RCDATA/RAWTEXT/script content.
+static inline bool IsCJKCharacter(UChar cc) {
+  return (cc >= 0x4E00 && cc <= 0x9FFF) ||
+         (cc >= 0x3400 && cc <= 0x4DBF) ||
+         (cc >= 0xF900 && cc <= 0xFAFF);
+}
 
 // clang-format off
 #define INT_0_TO_127_LIST(V)                                                    \
@@ -137,6 +146,48 @@ static inline bool VectorEqualsString(
     return true;
 
   return Equal(string.Impl(), vector);
+}
+
+// 中文标签名（UTF-16）到英文标签的映射。凡是标签内容会被特殊分词状态
+// （script/style/title/textarea 等）吞掉的，都必须在这里登记，使中文开/闭
+// 标签能被正确识别并进入/退出对应状态。
+struct ZhRawtextTag {
+  std::u16string_view zh;      // 中文标签名
+  html_names::HTMLTag tag;     // 对应的英文标签
+  std::u16string_view en;      // 英文标签名（用于结束标签匹配）
+};
+
+constexpr ZhRawtextTag kZhRawtextTags[] = {
+    {u"脚本", html_names::HTMLTag::kScript, u"script"},
+    {u"样式", html_names::HTMLTag::kStyle, u"style"},
+    {u"标题", html_names::HTMLTag::kTitle, u"title"},
+    {u"文本域", html_names::HTMLTag::kTextarea, u"textarea"},
+};
+
+// 判断一段 UTF-16 码元缓冲是否与给定中文标签名相等。
+static inline bool ZhBufferEquals(const UCharLiteralBuffer<32>& buf,
+                                  std::u16string_view zh) {
+  if (buf.size() != zh.size())
+    return false;
+  for (wtf_size_t i = 0; i < zh.size(); ++i) {
+    if (static_cast<char16_t>(buf[i]) != zh[i])
+      return false;
+  }
+  return true;
+}
+
+// 若缓冲是中文特殊标签名，写出其英文标签名（用于结束标签匹配）。
+static bool ConvertChineseEndTag(const UCharLiteralBuffer<32>& src,
+                                 UCharLiteralBuffer<32>& out) {
+  for (const ZhRawtextTag& entry : kZhRawtextTags) {
+    if (ZhBufferEquals(src, entry.zh)) {
+      out.clear();
+      for (char16_t c : entry.en)
+        out.AddChar(static_cast<UChar>(c));
+      return true;
+    }
+  }
+  return false;
 }
 
 #define HTML_BEGIN_STATE(stateName) BEGIN_STATE(HTMLTokenizer, stateName)
@@ -362,6 +413,9 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (IsAsciiAlpha(cc)) {
         token_.BeginStartTag(ToLowerCase(cc));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
+      } else if (IsHanzi(cc)) {
+        token_.BeginStartTag(cc);
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
       } else if (cc == '!') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kMarkupDeclarationOpenState);
       } else if (cc == '/') {
@@ -387,6 +441,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     HTML_BEGIN_STATE(kEndTagOpenState) {
       if (IsAsciiAlpha(cc)) {
         token_.BeginEndTag(static_cast<LChar>(ToLowerCase(cc)));
+        appropriate_end_tag_name_.clear();
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
+      } else if (IsHanzi(cc)) {
+        token_.BeginEndTag(cc);
         appropriate_end_tag_name_.clear();
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
       } else if (cc == '>') {
@@ -441,6 +499,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         temporary_buffer_.AddChar(static_cast<LChar>(cc));
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRCDATAEndTagNameState);
+      } else if (IsCJKCharacter(cc)) {
+        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        AddToPossibleEndTag(cc);
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRCDATAEndTagNameState);
       } else {
         BufferCharacter('<');
         BufferCharacter('/');
@@ -453,6 +515,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (IsAsciiAlpha(cc)) {
         temporary_buffer_.AddChar(static_cast<LChar>(cc));
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
+        HTML_CONSUME_NON_NEWLINE(kRCDATAEndTagNameState);
+      } else if (IsCJKCharacter(cc)) {
+        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        AddToPossibleEndTag(cc);
         HTML_CONSUME_NON_NEWLINE(kRCDATAEndTagNameState);
       } else {
         if (IsTokenizerWhitespace(cc)) {
@@ -498,6 +564,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         temporary_buffer_.AddChar(static_cast<LChar>(cc));
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRAWTEXTEndTagNameState);
+      } else if (IsCJKCharacter(cc)) {
+        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        AddToPossibleEndTag(cc);
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRAWTEXTEndTagNameState);
       } else {
         BufferCharacter('<');
         BufferCharacter('/');
@@ -510,6 +580,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (IsAsciiAlpha(cc)) {
         temporary_buffer_.AddChar(static_cast<LChar>(cc));
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
+        HTML_CONSUME_NON_NEWLINE(kRAWTEXTEndTagNameState);
+      } else if (IsCJKCharacter(cc)) {
+        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        AddToPossibleEndTag(cc);
         HTML_CONSUME_NON_NEWLINE(kRAWTEXTEndTagNameState);
       } else {
         if (IsTokenizerWhitespace(cc)) {
@@ -559,6 +633,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         temporary_buffer_.AddChar(static_cast<LChar>(cc));
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kScriptDataEndTagNameState);
+      } else if (IsCJKCharacter(cc)) {
+        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        AddToPossibleEndTag(cc);
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kScriptDataEndTagNameState);
       } else {
         BufferCharacter('<');
         BufferCharacter('/');
@@ -571,6 +649,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       if (IsAsciiAlpha(cc)) {
         temporary_buffer_.AddChar(static_cast<LChar>(cc));
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
+        HTML_CONSUME_NON_NEWLINE(kScriptDataEndTagNameState);
+      } else if (IsCJKCharacter(cc)) {
+        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        AddToPossibleEndTag(cc);
         HTML_CONSUME_NON_NEWLINE(kScriptDataEndTagNameState);
       } else {
         if (IsTokenizerWhitespace(cc)) {
@@ -1252,6 +1334,21 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
                    ShouldWaitForMoreInput(source)) {
           return HaveBufferedCharacterToken();
         }
+      } else if (cc == u'文') {
+        // 中文文档类型声明：<!文档类型 ...> 等价于 <!DOCTYPE ...>
+        // 当前 cc 是「文」，LookAhead 从下一字符开始，查找并跳过「档类型」。
+        static const UChar kDangLeiXingSuffix[] = {u'档', u'类', u'型', 0};
+        SegmentedString::LookAheadResult result =
+            source.LookAhead(String(kDangLeiXingSuffix));
+        if (result == SegmentedString::kDidMatch) {
+          source.AdvanceExpecting(u'档');
+          source.AdvanceExpecting(u'类');
+          source.AdvanceExpecting(u'型');
+          HTML_SWITCH_TO(kDOCTYPEState);
+        } else if (result == SegmentedString::kNotEnoughCharacters &&
+                   ShouldWaitForMoreInput(source)) {
+          return HaveBufferedCharacterToken();
+        }
       } else if (cc == '[' && ShouldAllowCDATA()) {
         SegmentedString::LookAheadResult result =
             source.LookAhead(html_tokenizer_names::kCdata);
@@ -1887,7 +1984,29 @@ String HTMLTokenizer::BufferedCharacters() const {
 
 void HTMLTokenizer::UpdateStateFor(const HTMLToken& token) {
   if (!token.GetName().IsEmpty()) {
-    UpdateStateFor(LookupHtmlTag(token.GetName()));
+    html_names::HTMLTag tag = LookupHtmlTag(token.GetName());
+    if (tag == html_names::HTMLTag::kUnknown) {
+      const auto& n = token.GetName();
+      for (const ZhRawtextTag& entry : kZhRawtextTags) {
+        if (n.size() == entry.zh.size() &&
+            static_cast<bool>(n.size()) && IsCJKCharacter(n[0])) {
+          bool matches = true;
+          for (wtf_size_t i = 0; i < entry.zh.size(); ++i) {
+            if (static_cast<char16_t>(n[i]) != entry.zh[i]) {
+              matches = false;
+              break;
+            }
+          }
+          if (matches) {
+            tag = entry.tag;
+            break;
+          }
+        }
+      }
+    }
+    if (tag != html_names::HTMLTag::kUnknown) {
+      UpdateStateFor(tag);
+    }
   }
 }
 
@@ -1931,9 +2050,19 @@ inline void HTMLTokenizer::AddToPossibleEndTag(LChar cc) {
   buffered_end_tag_name_.AddChar(cc);
 }
 
+inline void HTMLTokenizer::AddToPossibleEndTag(UChar cc) {
+  DCHECK(IsEndTagBufferingState(state_));
+  buffered_end_tag_name_.AddChar(cc);
+}
+
 inline bool HTMLTokenizer::IsAppropriateEndTag() {
-  return base::span(buffered_end_tag_name_) ==
-         base::span(appropriate_end_tag_name_);
+  if (base::span(buffered_end_tag_name_) ==
+      base::span(appropriate_end_tag_name_))
+    return true;
+  UCharLiteralBuffer<32> converted;
+  if (ConvertChineseEndTag(buffered_end_tag_name_, converted))
+    return base::span(converted) == base::span(appropriate_end_tag_name_);
+  return false;
 }
 
 inline void HTMLTokenizer::ParseError() {

@@ -144,10 +144,10 @@ std::vector<uint8_t> PdfiumWatermarkOverlayer::OverlayPages(
       return {};
     }
 
-    if (!FPDFPage_InsertObject(base_page.get(), form_obj.release())) {
-      LOG(ERROR) << "OverlayPages: Failed to insert form object for page " << i;
-      return {};
-    }
+    // PDFium f5127969 made FPDFPage_InsertObject() return FPDF_BOOL; this
+    // offline build uses an older PDFium where it returns void and always
+    // succeeds, so call it unconditionally.
+    FPDFPage_InsertObject(base_page.get(), form_obj.release());
 
     if (!FPDFPage_GenerateContent(base_page.get())) {
       LOG(ERROR) << "OverlayPages: Failed to generate content for page " << i;

@@ -46,6 +46,7 @@
     // Fired when the window’s screen or that screen's attributes change.
     // https://w3c.github.io/window-management/
     [SecureContext, MeasureAs=WindowScreenChange] attribute EventHandler onchange;
+    [ImplementedAs=onchange] attribute EventHandler 改变时;
 
     // Whether the device’s visual output extends over multiple screens.
     // https://w3c.github.io/window-management/

@@ -28,6 +28,7 @@
 [Exposed=Window]
 interface TextTrackCueList {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter TextTrackCue (unsigned long index);
     TextTrackCue? getCueById(DOMString id);
 };

@@ -30,6 +30,7 @@
     ImplementedAs=SVGPointListTearOff
 ] interface SVGPointList {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [ImplementedAs=length] readonly attribute unsigned long numberOfItems;
 
     [RaisesException] void clear();

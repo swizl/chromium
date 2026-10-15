@@ -57,6 +57,13 @@ class MakeElementTypeEnumWriter(json5_generator.Writer):
             )
             namespace = json5_file.metadata['namespace'].strip('"')
             for tag in json5_file.name_dictionaries:
+                # Skip non-ASCII (Chinese) tags: they must not enter the
+                # ElementType enum, otherwise exhaustive switches over
+                # GetElementType() fail to compile. createElement() with a
+                # Chinese name still resolves via the names table to the
+                # generic element type.
+                if not tag['name'].original.isascii():
+                    continue
                 tag['interface'] = self._interface(namespace, tag)
                 elements.add(tag['interface'])
 

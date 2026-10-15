@@ -32,4 +32,5 @@
     [ImplementedAs=addDeprecatedListener] void addListener(EventListener? listener);
     [ImplementedAs=removeDeprecatedListener] void removeListener(EventListener? listener);
     attribute EventHandler onchange;
+    [ImplementedAs=onchange] attribute EventHandler 改变时;
 };

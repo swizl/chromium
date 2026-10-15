@@ -43,6 +43,10 @@ class TaskQueue(object):
                 # TODO(crbug.com/1190269) - we can't use more than 56
                 # cores on Windows or Python3 may hang.
                 self._pool_size = min(self._pool_size, 56)
+            # Minimal-build workaround: this machine has only ~36GB commit
+            # limit (small page file) and each worker loads the full web_idl
+            # database; a full CPU-count pool exhausts memory during spawn.
+            self._pool_size = min(self._pool_size, 6)
             self._pool = multiprocessing.Pool(
                 self._pool_size, package_initializer().init
             )

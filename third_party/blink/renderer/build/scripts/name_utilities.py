@@ -48,6 +48,11 @@ def enum_key_for_css_keyword(keyword):
     # Design doc : https://bit.ly/349gXjq
     if (not isinstance(keyword, str)) and keyword.original == '-infinity':
         return 'kNegative' + _upper_camel_case(keyword)
+    name = keyword.original if not isinstance(keyword, str) else keyword
+    # For CJK characters, generate enum key from Unicode codepoints.
+    if any(ord(c) > 0x7F for c in name):
+        hex_part = ''.join(format(ord(c), 'x') for c in name)
+        return 'kZh' + hex_part
     return 'k' + _upper_camel_case(keyword)
 
 
@@ -84,8 +89,13 @@ def tag_symbol_for_entry(json_entry):
         if json_entry.get('runtimeFlagHasOriginTrial', False)
         else ""
     )
+    name = json_entry['name'].original
+    # For CJK characters, generate enum key from Unicode codepoints.
+    if any(ord(c) > 0x7F for c in name):
+        hex_part = ''.join(format(ord(c), 'x') for c in name)
+        return 'kZh' + hex_part + suffix
     return (
         'k'
-        + NameStyleConverter(json_entry['name'].original).to_upper_camel_case()
+        + NameStyleConverter(name).to_upper_camel_case()
         + suffix
     )

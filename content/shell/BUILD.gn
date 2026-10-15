@@ -325,9 +325,6 @@ static_library("content_shell_lib") {
     ":content_browsertests_mojom",
     ":protocol_sources",
     ":resources",
-    ":rust_test_mojom",
-    ":rust_test_mojom_js",
-    ":rust_test_service_ffi",
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
@@ -382,6 +379,14 @@ static_library("content_shell_lib") {
     "//url",
     "//v8",
   ]
+
+  if (enable_rust) {
+    deps += [
+      ":rust_test_mojom",
+      ":rust_test_mojom_js",
+      ":rust_test_service_ffi",
+    ]
+  }
 
   if (is_fuchsia) {
     sources += [
@@ -1186,35 +1191,37 @@ mojom("shell_controller_mojom") {
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
-mojom("rust_test_mojom") {
-  testonly = true
-  sources = [ "common/rust_test.test-mojom" ]
-  generate_rust = true
-}
+if (enable_rust) {
+  mojom("rust_test_mojom") {
+    testonly = true
+    sources = [ "common/rust_test.test-mojom" ]
+    generate_rust = true
+  }
 
-rust_static_library("rust_test_service") {
-  testonly = true
-  crate_root = "browser/rust_test_service.rs"
-  sources = [ "browser/rust_test_service.rs" ]
-  deps = [
-    ":rust_test_mojom_rust",
-    "//base:command_line",
-    "//base:feature",
-    "//mojo/public/rust/bindings",
-  ]
-}
+  rust_static_library("rust_test_service") {
+    testonly = true
+    crate_root = "browser/rust_test_service.rs"
+    sources = [ "browser/rust_test_service.rs" ]
+    deps = [
+      ":rust_test_mojom_rust",
+      "//base:command_line",
+      "//base:feature",
+      "//mojo/public/rust/bindings",
+    ]
+  }
 
-rust_static_library("rust_test_service_ffi") {
-  testonly = true
-  allow_unsafe = true
-  crate_root = "browser/rust_test_service_ffi.rs"
-  sources = [ "browser/rust_test_service_ffi.rs" ]
-  cxx_bindings = [ "browser/rust_test_service_ffi.rs" ]
-  deps = [
-    ":rust_test_mojom_rust",
-    ":rust_test_service",
-    "//base",
-    "//mojo/public/rust/bindings",
-    "//mojo/public/rust/system",
-  ]
+  rust_static_library("rust_test_service_ffi") {
+    testonly = true
+    allow_unsafe = true
+    crate_root = "browser/rust_test_service_ffi.rs"
+    sources = [ "browser/rust_test_service_ffi.rs" ]
+    cxx_bindings = [ "browser/rust_test_service_ffi.rs" ]
+    deps = [
+      ":rust_test_mojom_rust",
+      ":rust_test_service",
+      "//base",
+      "//mojo/public/rust/bindings",
+      "//mojo/public/rust/system",
+    ]
+  }
 }

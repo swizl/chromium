@@ -785,8 +785,10 @@ class HTMLFastPathParser {
       // Early exit for the most common way to end an attribute.
       return false;
     }
+    // CJK Unified Ideographs: U+4E00-U+9FFF, Extension A: U+3400-U+4DBF
+    bool is_cjk = (c >= 0x4E00 && c <= 0x9FFF) || (c >= 0x3400 && c <= 0x4DBF);
     return ('a' <= c && c <= 'z') || c == '-' || ('A' <= c && c <= 'Z') ||
-           ('0' <= c && c <= '9');
+           ('0' <= c && c <= '9') || is_cjk;
   }
 
   bool IsCharAfterTagnameOrAttribute(Char c) {
@@ -1387,21 +1389,43 @@ class HTMLFastPathParser {
   MakeAttributeValue(std::pair<Span, USpan> value_span) {
     // `value_span.second` is only used (non-empty) if the value contained
     // character references.
+    AtomicString value;
     if (!value_span.second.empty()) {
-      return AtomicString(value_span.second);
-    }
-    // `value_span.first.data()` is only null if the attribute has no value at
-    // all (as in `<input checked>`). The null atom is used to represent
-    // absence of attributes; attributes with no value have the value set to
-    // the empty atom instead. (An empty but non-null span, as in `alt=""`,
-    // yields the empty atom as well.)
-    if (value_span.first.data()) [[likely]] {
-      if (value_span.first.empty()) {
+      value = AtomicString(value_span.second);
+    } else {
+      // `value_span.first.data()` is only null if the attribute has no value
+      // at all (as in `<input checked>`). The null atom is used to represent
+      // absence of attributes; attributes with no value have the value set to
+      // the empty atom instead. (An empty but non-null span, as in `alt=""`,
+      // yields the empty atom as well.)
+      if (value_span.first.data()) [[likely]] {
+        if (value_span.first.empty()) {
+          return g_empty_atom;
+        }
+        value = AtomicString(value_span.first);
+      } else {
         return g_empty_atom;
       }
-      return AtomicString(value_span.first);
     }
-    return g_empty_atom;
+    // Convert Chinese attribute values to English.
+    if (!value.empty() && !value.Is8Bit()) {
+      const auto* val_data = value.Span16().data();
+      unsigned val_len = value.length();
+      bool val_has_non_ascii = false;
+      for (unsigned i = 0; i < val_len; i++) {
+        if (val_data[i] >= 0x80) {
+          val_has_non_ascii = true;
+          break;
+        }
+      }
+      if (val_has_non_ascii) {
+        const char* mapped_val = ConvertChineseAttributeValue(val_data, val_len);
+        if (mapped_val) {
+          value = AtomicString(mapped_val);
+        }
+      }
+    }
+    return value;
   }
 
   // Appends the attribute `name_span`=`value_span` to `attribute_buffer_`. The
@@ -1414,6 +1438,44 @@ class HTMLFastPathParser {
                                      std::pair<Span, USpan> value_span) {
     AtomicString value = MakeAttributeValue(value_span);
     DCHECK(!value.IsNull());
+
+    // Convert Chinese attribute names to English before lookup. This only
+    // applies when the input is 16-bit (UChar), which is when Chinese
+    // characters can appear.
+    if constexpr (std::is_same_v<Char, UChar>) {
+      bool name_has_non_ascii = false;
+      for (UChar c : name_span) {
+        if (c >= 0x80) {
+          name_has_non_ascii = true;
+          break;
+        }
+      }
+      if (name_has_non_ascii) {
+        AtomicString attr_name = AtomicString(name_span);
+        const char* mapped_name = ConvertChineseAttributeName(
+            name_span.data(), static_cast<unsigned>(name_span.size()));
+        if (mapped_name) {
+          attr_name = AtomicString(mapped_name);
+        }
+        QualifiedName name = g_null_name;
+        if (attr_name.Is8Bit()) {
+          name = LookupHTMLAttributeName(
+              attr_name.Span8().data(),
+              static_cast<unsigned>(attr_name.length()));
+        } else {
+          name = LookupHTMLAttributeName(
+              attr_name.Span16().data(),
+              static_cast<unsigned>(attr_name.length()));
+        }
+        if (name == g_null_name) [[unlikely]] {
+          attribute_buffer_.emplace_back(QualifiedName(attr_name),
+                                         std::move(value));
+        } else {
+          attribute_buffer_.emplace_back(name, std::move(value));
+        }
+        return;
+      }
+    }
 
     const QualifiedName& name = LookupHTMLAttributeName(
         name_span.data(), static_cast<unsigned>(name_span.size()));

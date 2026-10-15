@@ -38,7 +38,7 @@ struct SameSizeAsQualifiedNameImpl
     : public RefCounted<SameSizeAsQualifiedNameImpl> {
   unsigned bitfield;
   uint32_t bloom_filter;
-  void* pointers[4];
+  void* pointers[5];
 };
 
 ASSERT_SIZE(QualifiedNameImpl, SameSizeAsQualifiedNameImpl);
@@ -68,6 +68,27 @@ scoped_refptr<QualifiedNameImpl> QualifiedNameImpl::Create(
   }
   return base::AdoptRef(
       new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
+}
+
+scoped_refptr<QualifiedNameImpl> QualifiedNameImpl::Create(
+    StringImpl* prefix,
+    StringImpl* local_name,
+    StringImpl* namespace_uri,
+    bool is_static,
+    StringImpl* alias_name) {
+  if (is_static) {
+    // Static QualifiedNameImpl objects are process-lifetime singletons with
+    // refcounting disabled. Disable LSan to prevent false-positive leak
+    // reports on exit when shutting down without running destructors
+    // (matching StringImpl::CreateStatic).
+    LEAK_SANITIZER_DISABLED_SCOPE;
+    return base::AdoptRef(
+        new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static,
+                              alias_name));
+  }
+  return base::AdoptRef(
+      new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static,
+                            alias_name));
 }
 
 struct QNameComponentsTranslator {
@@ -121,6 +142,19 @@ QualifiedName::QualifiedName(const AtomicString& p,
     impl_->Release();
 }
 
+QualifiedName::QualifiedName(const AtomicString& p,
+                             const AtomicString& l,
+                             const AtomicString& n,
+                             bool is_static,
+                             const AtomicString& alias) {
+  // Names with a Chinese alias (e.g. the SVG attribute "fill" aliased as
+  // "填充") must keep the alias on their QualifiedNameImpl. The alias is not
+  // part of QualifiedNameComponents (hashing/equality), so bypass the cache
+  // to retain it. This path is only used to create static global QNames.
+  impl_ = QualifiedNameImpl::Create(p.Impl(), l.Impl(), n.Impl(), is_static,
+                                    alias.Impl());
+}
+
 QualifiedName::~QualifiedName() = default;
 
 QualifiedNameImpl::~QualifiedNameImpl() {
@@ -171,6 +205,15 @@ void QualifiedName::CreateStatic(void* target_address,
       QualifiedName(g_null_atom, AtomicString(name), name_namespace, true);
 }
 
+void QualifiedName::CreateStatic(void* target_address,
+                                 StringImpl* name,
+                                 const AtomicString& name_namespace,
+                                 StringImpl* alias_name) {
+  new (target_address) QualifiedName(g_null_atom, AtomicString(name),
+                                     name_namespace, true,
+                                     AtomicString(alias_name));
+}
+
 void QualifiedName::CreateStatic(void* target_address, StringImpl* name) {
   new (target_address)
       QualifiedName(g_null_atom, AtomicString(name), g_null_atom, true);
@@ -181,6 +224,15 @@ void QualifiedNameWithHash::CreateStatic(void* target_address,
                                          const AtomicString& name_namespace) {
   new (target_address) QualifiedNameWithHash(g_null_atom, AtomicString(name),
                                              name_namespace, true);
+}
+
+void QualifiedNameWithHash::CreateStatic(void* target_address,
+                                         StringImpl* name,
+                                         const AtomicString& name_namespace,
+                                         StringImpl* alias_name) {
+  new (target_address) QualifiedNameWithHash(g_null_atom, AtomicString(name),
+                                             name_namespace, true,
+                                             AtomicString(alias_name));
 }
 
 void QualifiedNameWithHash::CreateStatic(void* target_address,
@@ -201,6 +253,15 @@ QualifiedNameWithHash::QualifiedNameWithHash(const AtomicString& prefix,
                                              const AtomicString& namespace_uri,
                                              bool is_static)
     : QualifiedName(prefix, local_name, namespace_uri, is_static),
+      bloom_filter(BloomFilter()) {}
+
+QualifiedNameWithHash::QualifiedNameWithHash(
+    const AtomicString& prefix,
+    const AtomicString& local_name,
+    const AtomicString& namespace_uri,
+    bool is_static,
+    const AtomicString& alias_name)
+    : QualifiedName(prefix, local_name, namespace_uri, is_static, alias_name),
       bloom_filter(BloomFilter()) {}
 
 }  // namespace blink

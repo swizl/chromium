@@ -1487,6 +1487,138 @@ bool CSSSelectorParser::ConsumeName(CSSParserTokenStream& stream,
   const CSSParserToken& first_token = stream.Peek();
   if (first_token.GetType() == kIdentToken) {
     name = first_token.Value().ToAtomicString();
+    // Chinese CSS selector mapping (synced with html_token.h ConvertName)
+    if (name.length() == 1) {
+      if (name[0] == 0x5757) { name = AtomicString("div"); }       // 块
+      else if (name[0] == 0x6bb5) { name = AtomicString("p"); }    // 段
+      else if (name[0] == 0x884c) { name = AtomicString("tr"); }   // 行
+      else if (name[0] == 0x5217) { name = AtomicString("col"); }  // 列
+    } else if (name.length() == 2) {
+      auto c0 = name[0], c1 = name[1];
+      if (c0 == 0x4e0a && c1 == 0x6807) { name = AtomicString("sup"); }        // 上标
+      else if (c0 == 0x4e0b && c1 == 0x6807) { name = AtomicString("sub"); }    // 下标
+      else if (c0 == 0x4e3b && c1 == 0x4f53) { name = AtomicString("body"); }   // 主体
+      else if (c0 == 0x4e3b && c1 == 0x8981) { name = AtomicString("main"); }   // 主要
+      else if (c0 == 0x4ee3 && c1 == 0x7801) { name = AtomicString("code"); }   // 代码
+      else if (c0 == 0x5185 && c1 == 0x6846) { name = AtomicString("iframe"); } // 内框
+      else if (c0 == 0x5217 && c1 == 0x7ec4) { name = AtomicString("colgroup"); }// 列组
+      else if (c0 == 0x5220 && c1 == 0x9664) { name = AtomicString("del"); }    // 删除
+      else if (c0 == 0x533a && c1 == 0x5757) { name = AtomicString("section"); }// 区块
+      else if (c0 == 0x533a && c1 == 0x57df) { name = AtomicString("area"); }   // 区域
+      else if (c0 == 0x539f && c1 == 0x6837) { name = AtomicString("pre"); }    // 原样
+      else if (c0 == 0x53c2 && c1 == 0x6570) { name = AtomicString("param"); }  // 参数
+      else if (c0 == 0x53d8 && c1 == 0x91cf) { name = AtomicString("var"); }    // 变量
+      else if (c0 == 0x56fe && c1 == 0x50cf) { name = AtomicString("img"); }    // 图像
+      else if (c0 == 0x56fe && c1 == 0x5f62) { name = AtomicString("figure"); } // 图形
+      else if (c0 == 0x56fe && c1 == 0x6807) { name = AtomicString("i"); }      // 图标
+      else if (c0 == 0x56fe && c1 == 0x7247) { name = AtomicString("picture"); }// 图片
+      else if (c0 == 0x5730 && c1 == 0x56fe) { name = AtomicString("map"); }    // 地图
+      else if (c0 == 0x5730 && c1 == 0x5740) { name = AtomicString("address"); }// 地址
+      else if (c0 == 0x57fa && c1 == 0x5740) { name = AtomicString("base"); }   // 基址
+      else if (c0 == 0x5934 && c1 == 0x90e8) { name = AtomicString("header"); } // 头部
+      else if (c0 == 0x5b9a && c1 == 0x4e49) { name = AtomicString("dfn"); }    // 定义
+      else if (c0 == 0x5bf9 && c1 == 0x8c61) { name = AtomicString("object"); } // 对象
+      else if (c0 == 0x5bfc && c1 == 0x822a) { name = AtomicString("nav"); }    // 导航
+      else if (c0 == 0x5c0f && c1 == 0x5b57) { name = AtomicString("small"); }  // 小字
+      else if (c0 == 0x5c3e && c1 == 0x90e8) { name = AtomicString("footer"); } // 尾部
+      else if (c0 == 0x5d4c && c1 == 0x5165) { name = AtomicString("embed"); }  // 嵌入
+      else if (c0 == 0x5f15 && c1 == 0x7528) { name = AtomicString("cite"); }   // 引用
+      else if (c0 == 0x5f3a && c1 == 0x8c03) { name = AtomicString("em"); }     // 强调
+      else if (c0 == 0x62ac && c1 == 0x5934) { name = AtomicString("title"); }  // 抬头
+      else if (c0 == 0x62fc && c1 == 0x97f3) { name = AtomicString("rt"); }     // 拼音
+      else if (c0 == 0x6309 && c1 == 0x94ae) { name = AtomicString("button"); } // 按钮
+      else if (c0 == 0x6362 && c1 == 0x884c) { name = AtomicString("br"); }     // 换行
+      else if (c0 == 0x63cf && c1 == 0x8ff0) { name = AtomicString("dl"); }     // 描述
+      else if (c0 == 0x63d2 && c1 == 0x5165) { name = AtomicString("ins"); }    // 插入
+      else if (c0 == 0x63d2 && c1 == 0x69fd) { name = AtomicString("slot"); }   // 插槽
+      else if (c0 == 0x6458 && c1 == 0x8981) { name = AtomicString("summary"); }// 摘要
+      else if (c0 == 0x6570 && c1 == 0x5b66) { name = AtomicString("math"); }   // 数学
+      else if (c0 == 0x6570 && c1 == 0x636e) { name = AtomicString("data"); }   // 数据
+      else if (c0 == 0x659c && c1 == 0x4f53) { name = AtomicString("i"); }      // 斜体
+      else if (c0 == 0x65e0 && c1 == 0x5e8f) { name = AtomicString("ul"); }     // 无序
+      else if (c0 == 0x65f6 && c1 == 0x95f4) { name = AtomicString("time"); }   // 时间
+      else if (c0 == 0x6709 && c1 == 0x5e8f) { name = AtomicString("ol"); }     // 有序
+      else if (c0 == 0x672f && c1 == 0x8bed) { name = AtomicString("dt"); }     // 术语
+      else if (c0 == 0x6761 && c1 == 0x76ee) { name = AtomicString("li"); }     // 条目
+      else if (c0 == 0x6765 && c1 == 0x6e90) { name = AtomicString("source"); } // 来源
+      else if (c0 == 0x6807 && c1 == 0x7b7e) { name = AtomicString("label"); }  // 标签
+      else if (c0 == 0x6807 && c1 == 0x9898) { name = AtomicString("title"); }  // 标题
+      else if (c0 == 0x6837 && c1 == 0x5f0f) { name = AtomicString("style"); }  // 样式
+      else if (c0 == 0x6837 && c1 == 0x672c) { name = AtomicString("samp"); }   // 样本
+      else if (c0 == 0x6a21 && c1 == 0x677f) { name = AtomicString("template"); }// 模板
+      else if (c0 == 0x6ce8 && c1 == 0x97f3) { name = AtomicString("ruby"); }   // 注音
+      else if (c0 == 0x753b && c1 == 0x5e03) { name = AtomicString("canvas"); } // 画布
+      else if (c0 == 0x7a81 && c1 == 0x51fa) { name = AtomicString("mark"); }   // 突出→mark
+      else if (c0 == 0x7c97 && c1 == 0x4f53) { name = AtomicString("b"); }      // 粗体
+      else if (c0 == 0x7f29 && c1 == 0x5199) { name = AtomicString("abbr"); }   // 缩写
+      else if (c0 == 0x7f51 && c1 == 0x9875) { name = AtomicString("html"); }   // 网页
+      else if (c0 == 0x811a && c1 == 0x672c) { name = AtomicString("script"); } // 脚本
+      else if (c0 == 0x8303 && c1 == 0x56f4) { name = AtomicString("span"); }   // 范围
+      else if (c0 == 0x83dc && c1 == 0x5355) { name = AtomicString("menu"); }   // 菜单
+      else if (c0 == 0x8868 && c1 == 0x4f53) { name = AtomicString("tbody"); }  // 表体
+      else if (c0 == 0x8868 && c1 == 0x5355) { name = AtomicString("form"); }   // 表单
+      else if (c0 == 0x8868 && c1 == 0x5934) { name = AtomicString("thead"); }  // 表头
+      else if (c0 == 0x8868 && c1 == 0x5c3e) { name = AtomicString("tfoot"); }  // 表尾
+      else if (c0 == 0x8868 && c1 == 0x683c) { name = AtomicString("table"); }  // 表格
+      else if (c0 == 0x89c6 && c1 == 0x9891) { name = AtomicString("video"); }  // 视频
+      else if (c0 == 0x8be6 && c1 == 0x60c5) { name = AtomicString("details"); }// 详情
+      else if (c0 == 0x8be6 && c1 == 0x89e3) { name = AtomicString("dd"); }     // 详解
+      else if (c0 == 0x8f68 && c1 == 0x9053) { name = AtomicString("track"); }  // 轨道
+      else if (c0 == 0x8f93 && c1 == 0x5165) { name = AtomicString("input"); }  // 输入
+      else if (c0 == 0x8f93 && c1 == 0x51fa) { name = AtomicString("output"); } // 输出
+      else if (c0 == 0x9009 && c1 == 0x9879) { name = AtomicString("option"); } // 选项
+      else if (c0 == 0x91cd && c1 == 0x8981) { name = AtomicString("strong"); } // 重要
+      else if (c0 == 0x952e && c1 == 0x76d8) { name = AtomicString("kbd"); }    // 键盘
+      else if (c0 == 0x97f3 && c1 == 0x9891) { name = AtomicString("audio"); }  // 音频
+      else if (c0 == 0x9875 && c1 == 0x5934) { name = AtomicString("head"); }   // 页头
+      else if (c0 == 0x9875 && c1 == 0x5c3e) { name = AtomicString("footer"); } // 页尾
+    } else if (name.length() == 3) {
+      auto c0 = name[0], c1 = name[1], c2 = name[2];
+      if (c0 == 0x4e0b && c1 == 0x5217 && c2 == 0x7ebf) { name = AtomicString("u"); }           // 下划线
+      else if (c0 == 0x4ee3 && c1 == 0x811a && c2 == 0x672c) { name = AtomicString("noscript"); }// 代脚本
+      else if (c0 == 0x4f20 && c1 == 0x9001 && c2 == 0x95e8) { name = AtomicString("portal"); }  // 传送门
+      else if (c0 == 0x5143 && c1 == 0x6570 && c2 == 0x636e) { name = AtomicString("meta"); }    // 元数据
+      else if (c0 == 0x5220 && c1 == 0x9664 && c2 == 0x7ebf) { name = AtomicString("s"); }       // 删除线
+      else if (c0 == 0x5355 && c1 == 0x5143 && c2 == 0x683c) { name = AtomicString("td"); }      // 单元格
+      else if (c0 == 0x5bf9 && c1 == 0x8bdd && c2 == 0x6846) { name = AtomicString("dialog"); }  // 对话框
+      else if (c0 == 0x63a7 && c1 == 0x4ef6 && c2 == 0x7ec4) { name = AtomicString("fieldset"); }// 控件组
+      else if (c0 == 0x6587 && c1 == 0x672c && c2 == 0x57df) { name = AtomicString("textarea"); }// 文本域
+      else if (c0 == 0x6807 && c1 == 0x9898) {
+        if (c2 == '1') { name = AtomicString("h1"); }   // 标题1
+        else if (c2 == '2') { name = AtomicString("h2"); }   // 标题2
+        else if (c2 == '3') { name = AtomicString("h3"); }   // 标题3
+        else if (c2 == '4') { name = AtomicString("h4"); }   // 标题4
+        else if (c2 == '5') { name = AtomicString("h5"); }   // 标题5
+        else if (c2 == '6') { name = AtomicString("h6"); }   // 标题6
+      }
+      else if (c0 == 0x6362 && c1 == 0x884c) { name = AtomicString("br"); }      // 换行
+      else if (c0 == 0x6c34 && c1 == 0x5e73 && c2 == 0x7ebf) { name = AtomicString("hr"); }     // 水平线
+      else if (c0 == 0x77e2 && c1 == 0x91cf && c2 == 0x56fe) { name = AtomicString("SVG"); }    // 矢量图
+      else if (c0 == 0x77ed && c1 == 0x5f15 && c2 == 0x6587) { name = AtomicString("q"); }       // 短引用
+      else if (c0 == 0x7ec4 && c1 == 0x6807 && c2 == 0x9898) { name = AtomicString("legend"); }  // 组标题
+      else if (c0 == 0x8ba1 && c1 == 0x91cf && c2 == 0x8868) { name = AtomicString("meter"); }   // 计量表
+      else if (c0 == 0x8d85 && c1 == 0x94fe && c2 == 0x63a5) { name = AtomicString("a"); }       // 超链接
+      else if (c0 == 0x8f6f && c1 == 0x6362 && c2 == 0x884c) { name = AtomicString("wbr"); }     // 软换行
+      else if (c0 == 0x8fdb && c1 == 0x5ea6 && c2 == 0x6761) { name = AtomicString("progress"); }// 进度条
+      else if (c0 == 0x9009 && c1 == 0x62e9 && c2 == 0x6846) { name = AtomicString("select"); }  // 选择框
+      else if (c0 == 0x9009 && c1 == 0x9879 && c2 == 0x7ec4) { name = AtomicString("optgroup"); }// 选项组
+      else if (c0 == 0x957f && c1 == 0x5f15 && c2 == 0x6587) { name = AtomicString("blockquote"); }// 长引用
+    } else if (name.length() == 4) {
+      auto c0 = name[0], c1 = name[1], c2 = name[2], c3 = name[3];
+      if (c0 == 0x5185 && c1 == 0x5bb9 && c2 == 0x533a && c3 == 0x57df) { name = AtomicString("article"); }    // 内容区域
+      else if (c0 == 0x53cc && c1 == 0x5411 && c2 == 0x91cd && c3 == 0x8f7d) { name = AtomicString("bdo"); }    // 双向重载
+      else if (c0 == 0x53cc && c1 == 0x5411 && c2 == 0x9694 && c3 == 0x79bb) { name = AtomicString("bdi"); }    // 双向隔离
+      else if (c0 == 0x56fe && c1 == 0x5f62 && c2 == 0x6807 && c3 == 0x9898) { name = AtomicString("figcaption"); }// 图形标题
+      else if (c0 == 0x5934 && c1 == 0x5355 && c2 == 0x5143 && c3 == 0x683c) { name = AtomicString("th"); }     // 头单元格
+      else if (c0 == 0x6570 && c1 == 0x636e && c2 == 0x5217 && c3 == 0x8868) { name = AtomicString("datalist"); }// 数据列表
+      else if (c0 == 0x6ce8 && c1 == 0x97f3) {
+        if (c2 == 0x5907 && c3 == 0x9009) { name = AtomicString("rp"); }   // 注音备选
+        else if (c2 == 0x6587 && c3 == 0x672c) { name = AtomicString("rb"); }   // 注音文本
+        else if (c2 == 0x8bed && c3 == 0x4e49) { name = AtomicString("rtc"); }  // 注音语义
+      }
+      else if (c0 == 0x8868 && c1 == 0x683c && c2 == 0x6807 && c3 == 0x9898) { name = AtomicString("caption"); }// 表格标题
+      else if (c0 == 0x9644 && c1 == 0x52a0 && c2 == 0x533a && c3 == 0x57df) { name = AtomicString("aside"); }  // 附加区域
+    }
     stream.Consume();
   } else if (first_token.GetType() == kDelimiterToken &&
              first_token.Delimiter() == '*') {

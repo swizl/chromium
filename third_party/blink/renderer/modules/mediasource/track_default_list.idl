@@ -11,5 +11,6 @@
 ] interface TrackDefaultList {
     [RaisesException] constructor(optional sequence<TrackDefault> trackDefaults = []);
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [ImplementedAs=item] getter TrackDefault (unsigned long index);
 };

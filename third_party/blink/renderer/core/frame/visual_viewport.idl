@@ -42,6 +42,8 @@
     [Measure] readonly attribute double scale;
 
     attribute EventHandler onresize;
+    [ImplementedAs=onresize] attribute EventHandler 调整大小时;
     attribute EventHandler onscroll;
+    [ImplementedAs=onscroll] attribute EventHandler 滚动时;
     attribute EventHandler onscrollend;
 };

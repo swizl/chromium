@@ -29,6 +29,7 @@
     Exposed=Window
 ] interface DOMTokenList {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [Affects=Nothing] getter DOMString? item(unsigned long index);
     [Affects=Nothing] boolean contains(DOMString token);
     [RaisesException, CEReactions] undefined add(DOMString... tokens);

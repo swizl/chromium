@@ -31,22 +31,38 @@
 
 interface mixin WindowEventHandlers {
   attribute EventHandler onafterprint;
+  [ImplementedAs=onafterprint] attribute EventHandler 打印后时;
   attribute EventHandler onbeforeprint;
+  [ImplementedAs=onbeforeprint] attribute EventHandler 打印前时;
   attribute OnBeforeUnloadEventHandler onbeforeunload;
+  [ImplementedAs=onbeforeunload] attribute OnBeforeUnloadEventHandler 卸载前时;
   attribute EventHandler onhashchange;
+  [ImplementedAs=onhashchange] attribute EventHandler 锚点变化时;
   attribute EventHandler onlanguagechange;
+  [ImplementedAs=onlanguagechange] attribute EventHandler 语言变化时;
   attribute EventHandler onmessage;
+  [ImplementedAs=onmessage] attribute EventHandler 消息时;
   attribute EventHandler onmessageerror;
+  [ImplementedAs=onmessageerror] attribute EventHandler 消息错误时;
   [RuntimeEnabled=DesktopPWAsAdditionalWindowingControlsOnMove] attribute EventHandler onmove;
   attribute EventHandler onoffline;
+  [ImplementedAs=onoffline] attribute EventHandler 离线时;
   attribute EventHandler ononline;
+  [ImplementedAs=ononline] attribute EventHandler 上线时;
   [RuntimeEnabled=PersistentWidgetAPI] attribute EventHandler onopenerchange;
   attribute EventHandler onpagehide;
+  [ImplementedAs=onpagehide] attribute EventHandler 页面隐藏时;
   attribute EventHandler onpageshow;
+  [ImplementedAs=onpageshow] attribute EventHandler 页面显示时;
   attribute EventHandler onpopstate;
+  [ImplementedAs=onpopstate] attribute EventHandler 历史弹出时;
   attribute EventHandler onrejectionhandled;
+  [ImplementedAs=onrejectionhandled] attribute EventHandler 拒绝已处理时;
   attribute EventHandler onstorage;
+  [ImplementedAs=onstorage] attribute EventHandler 存储时;
   [RuntimeEnabled=TimeZoneChangeEvent] attribute EventHandler ontimezonechange;
   attribute EventHandler onunhandledrejection;
+  [ImplementedAs=onunhandledrejection] attribute EventHandler 未处理拒绝时;
   attribute EventHandler onunload;
+  [ImplementedAs=onunload] attribute EventHandler 卸载时;
 };

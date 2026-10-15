@@ -29,5 +29,6 @@
     Exposed=Window
 ] interface TouchList {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter Touch? item(unsigned long index);
 };

@@ -388,9 +388,10 @@ bool RenderPageToDC(FPDF_PAGE page,
 #endif  // BUILDFLAG(IS_WIN)
 
 std::string GetDocumentLanguage(FPDF_DOCUMENT document) {
-  return base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-      base::BindRepeating(&FPDFCatalog_GetLanguage, document),
-      /*check_expected_size=*/true));
+  // PDFium f5127969 added FPDFCatalog_GetLanguage(); this offline build uses
+  // an older PDFium without it, so return an empty language string.
+  (void)document;
+  return std::string();
 }
 
 }  // namespace chrome_pdf

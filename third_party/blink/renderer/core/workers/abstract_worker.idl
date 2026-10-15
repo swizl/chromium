@@ -35,4 +35,5 @@
     Exposed=(Window,Worker)
 ] interface mixin AbstractWorker {
     attribute EventHandler onerror;
+    [ImplementedAs=onerror] attribute EventHandler 出错时;
 };

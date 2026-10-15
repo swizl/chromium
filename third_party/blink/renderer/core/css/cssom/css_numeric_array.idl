@@ -9,5 +9,6 @@
 ] interface CSSNumericArray {
   iterable<CSSNumericValue>;
   readonly attribute unsigned long length;
+  [ImplementedAs=length] readonly attribute unsigned long 长度;
   getter CSSNumericValue(unsigned long index);
 };

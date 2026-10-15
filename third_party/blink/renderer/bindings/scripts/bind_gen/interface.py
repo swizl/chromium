@@ -2397,9 +2397,7 @@ def make_attribute_set_nadc_callback_def(cg_context):
     body.append(
         FormatNode(
             "${blink_receiver}->{member_func}({blink_arguments});",
-            member_func=name_style.api_func(
-                "set", cg_context.attribute.identifier
-            ),
+            member_func=backward_compatible_api_func(cg_context),
             blink_arguments=", ".join(blink_arguments),
         )
     )
@@ -2451,7 +2449,7 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
 """)
         )
         code_generator_info = cg_context.attribute.code_generator_info
-        func_name = name_style.api_func("set", cg_context.attribute.identifier)
+        func_name = backward_compatible_api_func(cg_context)
         if code_generator_info.defined_in_partial:
             class_name = (
                 code_generator_info.receiver_implemented_as

@@ -26,6 +26,7 @@
     LegacyUnenumerableNamedProperties
 ] interface MimeTypeArray {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter MimeType? item(unsigned long index);
     getter MimeType? namedItem(DOMString name);
 };

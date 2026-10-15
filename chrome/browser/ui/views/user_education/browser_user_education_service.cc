@@ -174,9 +174,7 @@
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
 #include "chrome/browser/pdf/pdf_help_bubble_handler_factory.h"
-#endif
 
 namespace {
 

@@ -274,7 +274,7 @@ def main(argv):
         parser.error("Unknown argument: " + args)
 
     try:
-        all_known = json.load(open(options.all_known, "r"))
+        all_known = json.load(open(options.all_known, "r", encoding="utf-8"))
         set_cpp_mapping(all_known)
     except BaseException as err:
         error(
@@ -284,7 +284,9 @@ def main(argv):
         )
 
     try:
-        default_config = json.load(open(options.default_configuration, "r"))
+        default_config = json.load(
+            open(options.default_configuration, "r", encoding="utf-8")
+        )
     except BaseException as err:
         error(
             "Cannot load default config as JSON.",

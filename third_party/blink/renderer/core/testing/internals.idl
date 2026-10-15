@@ -353,6 +353,7 @@ interface Internals {
     [CallWith=ScriptState] Promise<undefined> observeUseCounter(Document document, unsigned long feature);
 
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter long (unsigned long index);
     iterable<long>;
 

@@ -8,6 +8,7 @@
     [RaisesException] constructor(sequence<CSSTransformComponent> transforms);
     iterable<CSSTransformComponent>;
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter CSSTransformComponent (unsigned long index);
     [RaisesException] setter CSSTransformComponent (unsigned long index, CSSTransformComponent val);
 

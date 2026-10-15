@@ -68,7 +68,7 @@ def main(argv):
     result = {"elements": [], "attributes": [], "processingInstructions": []}
     for arg in args:
         try:
-            data = json5.load(open(arg, "r"))
+            data = json5.load(open(arg, "r", encoding="utf-8"))
             if "tag_names" in arg:
                 add_tag_names(data, result)
             elif "attribute_names" in arg:
@@ -81,7 +81,9 @@ def main(argv):
             error("Cannot load json5 file", arg, err)
 
     try:
-        json.dump(result, open(options.out, "w"), indent=2)
+        json.dump(
+            result, open(options.out, "w", encoding="utf-8"), indent=2, ensure_ascii=True
+        )
     except BaseException as err:
         error("Cannot open output file for writing.", options.out, err)
     return 0

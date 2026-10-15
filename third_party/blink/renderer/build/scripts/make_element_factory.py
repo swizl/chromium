@@ -79,6 +79,15 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
 
         interface_counts = defaultdict(int)
         tags = self._template_context['tags']
+        # Non-ASCII (e.g. Chinese) tag names stay in the names tables
+        # (svg_names.h/cc) so createElement('中文') is recognized, but they
+        # must not generate C++ element classes (there is no
+        # svg_<中文>_element.h). Skipping them here makes the element factory
+        # fall back to a generic element for such names.
+        tags = [
+            tag for tag in tags if tag['name'].original.isascii()
+        ]
+        self._template_context['tags'] = tags
         for tag in tags:
             tag['has_js_interface'] = self._has_js_interface(tag)
             tag['js_interface'] = self._js_interface(tag)

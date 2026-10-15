@@ -37,12 +37,15 @@
     // the current browsing context
     // FIXME: The spec uses the WindowProxy type for this and many other attributes.
     [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy, Measure] readonly attribute Window window;
+    [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy, ImplementedAs=window] readonly attribute Window 窗口;
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy, Measure] readonly attribute Window self;
     [LegacyUnforgeable, CachedAccessor=kWindowDocument] readonly attribute Document document;
+    [LegacyUnforgeable, CachedAccessor=kWindowDocument, ImplementedAs=document] readonly attribute Document 文档;
     attribute DOMString name;
     [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter), Measure] readonly attribute Location location;
     [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
     readonly attribute History history;
+    [ImplementedAs=history] readonly attribute History 历史;
     [Replaceable] readonly attribute Navigation navigation;
     [Replaceable, MeasureAs=BarPropLocationbar] readonly attribute BarProp locationbar;
     [Replaceable, MeasureAs=BarPropMenubar] readonly attribute BarProp menubar;
@@ -61,6 +64,7 @@
     // other browsing contexts
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy, Measure] readonly attribute Window frames;
     [Replaceable, CrossOrigin, Measure] readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [LegacyUnforgeable, CrossOrigin, Measure] readonly attribute Window? top;
     // FIXME: opener should be of type any.
     [CrossOrigin, ImplementedAs=openerForBindings, CallWith=Isolate, RaisesException=Setter, Measure] attribute any opener;
@@ -87,8 +91,11 @@
     // user prompts
     [Measure, CallWith=ScriptState] void alert();
     [Measure, CallWith=ScriptState] void alert(DOMString message);
+    [CallWith=ScriptState, ImplementedAs=alert] void 提示框(DOMString message);
     [Measure, CallWith=ScriptState] boolean confirm(optional DOMString message = "");
+    [CallWith=ScriptState, ImplementedAs=confirm] boolean 确认框(optional DOMString message = "");
     [Measure, CallWith=ScriptState] DOMString? prompt(optional DOMString message = "", optional DOMString defaultValue = "");
+    [CallWith=ScriptState, ImplementedAs=prompt] DOMString? 输入框(optional DOMString message = "", optional DOMString defaultValue = "");
     [Measure, CallWith=ScriptState] void print();
 
     [CrossOrigin, CallWith=Isolate, RaisesException, Measure] void postMessage(any message, USVString targetOrigin, optional sequence<object> transfer = []);
@@ -103,7 +110,9 @@
     // AnimationFrameProvider mixin
     // https://html.spec.whatwg.org/C/#animation-frames
     [MeasureAs=UnprefixedRequestAnimationFrame] long requestAnimationFrame(FrameRequestCallback callback);
+    [MeasureAs=UnprefixedRequestAnimationFrame, ImplementedAs=requestAnimationFrame] long 请求动画帧(FrameRequestCallback callback);
     void cancelAnimationFrame(long handle);
+    [ImplementedAs=cancelAnimationFrame] void 取消动画帧(long handle);
 
     // HTML obsolete features
     // https://html.spec.whatwg.org/C/#Window-partial
@@ -115,6 +124,7 @@
     // CSS Object Model (CSSOM)
     // https://drafts.csswg.org/cssom/#extensions-to-the-window-interface
     [Affects=Nothing, NewObject] CSSStyleDeclaration getComputedStyle(Element elt, optional DOMString? pseudoElt);
+    [Affects=Nothing, NewObject, ImplementedAs=getComputedStyle] CSSStyleDeclaration 取计算样式(Element elt, optional DOMString? pseudoElt);
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-window-interface
@@ -138,10 +148,15 @@
     [MeasureAs=WindowPageYOffset, Replaceable] readonly attribute double pageYOffset;
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(optional ScrollToOptions options = {});
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(unrestricted double x, unrestricted double y);
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> 滚动(unrestricted double x, unrestricted double y);
     [CallWith=ScriptState] Promise<ScrollResult> scrollTo(optional ScrollToOptions options = {});
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> 滚动到(optional ScrollToOptions options = {});
     [CallWith=ScriptState] Promise<ScrollResult> scrollTo(unrestricted double x, unrestricted double y);
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> 滚动到(unrestricted double x, unrestricted double y);
     [CallWith=ScriptState] Promise<ScrollResult> scrollBy(optional ScrollToOptions options = {});
+    [ImplementedAs=scrollBy, CallWith=ScriptState] Promise<ScrollResult> 滚动(optional ScrollToOptions options = {});
     [CallWith=ScriptState] Promise<ScrollResult> scrollBy(unrestricted double x, unrestricted double y);
+    [ImplementedAs=scrollBy, CallWith=ScriptState] Promise<ScrollResult> 滚动偏移(unrestricted double x, unrestricted double y);
 
     // Visual Viewport API
     // https://github.com/WICG/ViewportAPI

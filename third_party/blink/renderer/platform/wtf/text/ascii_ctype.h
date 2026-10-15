@@ -59,6 +59,14 @@ constexpr inline bool IsAsciiAlpha(CharType c) {
   return (c | 0x20) >= 'a' && (c | 0x20) <= 'z';
 }
 
+// Returns true if the character is a CJK Unified Ideograph (a Chinese
+// character), or the ideographic zero (U+3007). This is used to recognize
+// Chinese tag names in the HTML tokenizer.
+template <typename CharType>
+constexpr inline bool IsHanzi(CharType c) {
+  return (c >= 0x4e00 && c <= 0x9fa5) || c == 0x3007;
+}
+
 template <typename CharType>
 constexpr inline bool IsAsciiDigit(CharType c) {
   return c >= '0' && c <= '9';

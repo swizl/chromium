@@ -22,13 +22,19 @@ def generate_gperf(gperf_path, gperf_input, gperf_args):
     # CalledProcessError like subprocess would do when shell=True is set.
     cmd = [gperf_path] + gperf_args
     try:
+        # Use bytes mode for UTF-8 support (e.g. Chinese CSS property names).
         gperf = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            universal_newlines=True,
+            stderr=subprocess.PIPE,
         )
-        gperf_output = gperf.communicate(gperf_input)[0]
+        gperf_output = gperf.communicate(gperf_input.encode('utf-8'))[0]
+        # Try UTF-8 first, fall back to latin-1 (byte-preserving).
+        try:
+            gperf_output = gperf_output.decode('utf-8')
+        except UnicodeDecodeError:
+            gperf_output = gperf_output.decode('latin-1')
         # Massage gperf output to be more palatable for modern compilers.
         # TODO(thakis): Upstream these to gperf so we don't need massaging.
         # `register` is deprecated in C++11 and removed in C++17, so remove

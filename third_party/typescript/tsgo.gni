@@ -16,7 +16,7 @@ if (host_os == "linux" || use_remoteexec) {
   _binary_name = "tsc"
 } else if (host_os == "win") {
   _platform_dir = "windows-amd64"
-  _binary_name = "tsc.exe"
+  _binary_name = "tsc.js"
 }
 
 assert(defined(_platform_dir), "Did not find binary for host_os='${host_os}'")

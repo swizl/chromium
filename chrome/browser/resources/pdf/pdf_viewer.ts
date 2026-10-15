@@ -152,6 +152,7 @@ function hasFixedCtrlModifierOnly(e: KeyboardEvent): boolean {
 }
 
 // Like hasCtrlModifierOnly(), but allow the shift modifier.
+// <if expr="enable_pdf_ink2">
 function hasCtrlModifierMaybeWithShift(e: KeyboardEvent): boolean {
   let metaModifier = e.metaKey;
   // <if expr="is_macosx">
@@ -159,6 +160,7 @@ function hasCtrlModifierMaybeWithShift(e: KeyboardEvent): boolean {
   // </if>
   return hasCtrlModifier(e) && !e.altKey && !metaModifier;
 }
+// </if>
 
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
 
@@ -1508,7 +1510,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return this.saveToDriveState_ === SaveToDriveState.UPLOADING;
   }
 
+  // <if expr="enable_pdf_ink2">
   protected async onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
+  // </if>
+  // <if expr="not enable_pdf_ink2">
+  protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
+  // </if>
     if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
       this.saveToDriveRequestType_ = e.detail;
       let pdfInk2Enabled = false;
@@ -2019,7 +2026,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     PdfViewerPrivateProxyImpl.getInstance().glicSummarize();
   }
 
+  // <if expr="enable_pdf_ink2">
   protected async onPrint_() {
+  // </if>
+  // <if expr="not enable_pdf_ink2">
+  protected onPrint_() {
+  // </if>
     record(UserAction.PRINT);
     assert(this.currentController);
     // <if expr="enable_pdf_ink2">

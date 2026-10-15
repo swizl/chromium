@@ -44,6 +44,7 @@
     [CEReactions] attribute DOMString defaultValue;
     [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding] attribute [LegacyNullToEmptyString] DOMString value;
     readonly attribute unsigned long textLength;
+    [ImplementedAs=textLength] readonly attribute unsigned long 文本长度;
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;
@@ -59,14 +60,17 @@
     attribute unsigned long selectionEnd;
     attribute DOMString selectionDirection;
     [RaisesException] void setRangeText(DOMString replacement);
+    [RaisesException, ImplementedAs=setRangeText] void 设置范围文本(DOMString replacement);
     [RaisesException] void setRangeText(DOMString replacement,
                                         unsigned long start,
                                         unsigned long end,
                                         optional SelectionMode selectionMode = "preserve");
+    [RaisesException, ImplementedAs=setRangeText] void 设置范围文本(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
     [ImplementedAs=setSelectionRangeForBinding]
     void setSelectionRange(unsigned long start,
                            unsigned long end,
                            optional DOMString direction);
+    [ImplementedAs=setSelectionRangeForBinding] void 设置选择范围(unsigned long start, unsigned long end, optional DOMString direction);
 };
 
 HTMLTextAreaElement includes OpaqueRangeCreation;

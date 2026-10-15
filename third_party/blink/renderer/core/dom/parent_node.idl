@@ -31,15 +31,24 @@
 // https://dom.spec.whatwg.org/#interface-parentnode
 interface mixin ParentNode {
   [SameObject, PerWorldBindings] readonly attribute HTMLCollection children;
+  [SameObject, PerWorldBindings, ImplementedAs=children] readonly attribute HTMLCollection 子元素;
   [PerWorldBindings] readonly attribute Element? firstElementChild;
+  [PerWorldBindings, ImplementedAs=firstElementChild] readonly attribute Element? 首个子元素;
   [PerWorldBindings] readonly attribute Element? lastElementChild;
+  [PerWorldBindings, ImplementedAs=lastElementChild] readonly attribute Element? 末个子元素;
   readonly attribute unsigned long childElementCount;
+  [ImplementedAs=childElementCount] readonly attribute unsigned long 子元素数量;
 
   [Unscopable, RaisesException, CEReactions] undefined prepend((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=prepend] undefined 前置((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] undefined append((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=append] undefined 追加((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] undefined replaceChildren((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=replaceChildren] undefined 替换子元素((Node or DOMString or TrustedScript)... nodes);
   [CEReactions, PerWorldBindings, RaisesException, MeasureAs="WebDXFeature::kMoveBefore"] undefined moveBefore(Node node, Node? child);
 
   [Affects=Nothing, RaisesException] Element? querySelector(DOMString selectors);
+  [Affects=Nothing, RaisesException, ImplementedAs=querySelector] Element? 查询选择器(DOMString selectors);
   [Affects=Nothing, NewObject, RaisesException] NodeList querySelectorAll(DOMString selectors);
+  [Affects=Nothing, NewObject, RaisesException, ImplementedAs=querySelectorAll] NodeList 查询选择器々_全部(DOMString selectors);
 };

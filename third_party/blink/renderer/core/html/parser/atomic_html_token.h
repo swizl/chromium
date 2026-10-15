@@ -270,7 +270,7 @@ class CORE_EXPORT AtomicHTMLToken {
 #endif
 
  private:
-  static HTMLTokenName HTMLTokenNameFromToken(const HTMLToken& token) {
+  static HTMLTokenName HTMLTokenNameFromToken(HTMLToken& token) {
     switch (token.GetType()) {
       case HTMLToken::DOCTYPE:
         // Doctype name may be empty, but not start/end tags.
@@ -282,7 +282,8 @@ class CORE_EXPORT AtomicHTMLToken {
         const html_names::HTMLTag html_tag = LookupHtmlTag(token.GetName());
         if (html_tag != html_names::HTMLTag::kUnknown)
           return HTMLTokenName(html_tag);
-        return HTMLTokenName(token.GetName().AsAtomicString());
+        return HTMLTokenName::FromLocalName(
+            token.EnsureConvertedName().AsAtomicString());
       }
       default:
         return HTMLTokenName(html_names::HTMLTag::kUnknown);
@@ -335,6 +336,122 @@ class CORE_EXPORT AtomicHTMLToken {
   Vector<Attribute, kAttributePrealloc> attributes_;
 };
 
+// Convert Chinese attribute value to English equivalent.
+// Returns nullptr if not a Chinese value. Empty string means boolean attribute.
+inline const char* ConvertChineseAttributeValue(const UChar* data, unsigned length) {
+  if (length == 2) {
+    auto c0 = data[0], c1 = data[1];
+    // type 值
+    if (c0 == 0x6587 && c1 == 0x672c) return "text";           // 文本
+    if (c0 == 0x5bc6 && c1 == 0x7801) return "password";       // 密码
+    if (c0 == 0x63d0 && c1 == 0x4ea4) return "submit";         // 提交
+    if (c0 == 0x91cd && c1 == 0x7f6e) return "reset";          // 重置
+    if (c0 == 0x6309 && c1 == 0x94ae) return "button";         // 按钮
+    if (c0 == 0x6587 && c1 == 0x4ef6) return "file";           // 文件
+    if (c0 == 0x9690 && c1 == 0x85cf) return "hidden";         // 隐藏
+    if (c0 == 0x65e5 && c1 == 0x671f) return "date";           // 日期
+    if (c0 == 0x90ae && c1 == 0x7bb1) return "email";          // 邮箱
+    if (c0 == 0x6570 && c1 == 0x5b57) return "number";         // 数字
+    if (c0 == 0x8303 && c1 == 0x56f4) return "range";          // 范围
+    if (c0 == 0x641c && c1 == 0x7d22) return "search";         // 搜索
+    if (c0 == 0x7535 && c1 == 0x8bdd) return "tel";            // 电话
+    if (c0 == 0x94fe && c1 == 0x63a5) return "url";            // 链接
+    if (c0 == 0x989c && c1 == 0x8272) return "color";          // 颜色
+    // target 值
+    if (c0 == 0x7a7a && c1 == 0x767d) return "_blank";         // 空白
+    if (c0 == 0x81ea && c1 == 0x8eab) return "_self";          // 自身
+    if (c0 == 0x7236 && c1 == 0x7ea7) return "_parent";        // 父级
+    if (c0 == 0x9876 && c1 == 0x7ea7) return "_top";           // 顶级
+    // rel 值
+    if (c0 == 0x56fe && c1 == 0x6807) return "icon";           // 图标
+    // loading 值
+    if (c0 == 0x6025 && c1 == 0x5207) return "eager";          // 急切
+    // 自动
+    if (c0 == 0x81ea && c1 == 0x52a8) return "autoplay";       // 自动(播放)
+  } else if (length == 3) {
+    auto c0 = data[0], c1 = data[1], c2 = data[2];
+    // type 值
+    if (c0 == 0x590d && c1 == 0x9009 && c2 == 0x6846) return "checkbox";     // 复选框
+    if (c0 == 0x5355 && c1 == 0x9009 && c2 == 0x6846) return "radio";        // 单选框
+    // rel 值
+    if (c0 == 0x6837 && c1 == 0x5f0f && c2 == 0x8868) return "stylesheet";   // 样式表
+    if (c0 == 0x9884 && c1 == 0x52a0 && c2 == 0x8f7d) return "preload";      // 预加载
+    if (c0 == 0x9884 && c1 == 0x53d6) return "prefetch";                      // 预取
+    if (c0 == 0x65e0 && c1 == 0x8ddf && c2 == 0x968f) return "nofollow";     // 无跟随
+    // loading 值
+    if (c0 == 0x61d2 && c1 == 0x52a0 && c2 == 0x8f7d) return "lazy";         // 懒加载
+    // 方向
+    if (c0 == 0x5de6 && c1 == 0x5230 && c2 == 0x53f3) return "ltr";          // 左到右
+    if (c0 == 0x53f3 && c1 == 0x5230 && c2 == 0x5de6) return "rtl";          // 右到左
+  } else if (length == 4) {
+    auto c0 = data[0], c1 = data[1], c2 = data[2], c3 = data[3];
+    if (c0 == 0x81ea && c1 == 0x52a8 && c2 == 0x64ad && c3 == 0x653e) return "autoplay";    // 自动播放
+    if (c0 == 0x81ea && c1 == 0x52a8 && c2 == 0x805a && c3 == 0x7126) return "autofocus";   // 自动聚焦
+    if (c0 == 0x533f && c1 == 0x540d) return "anonymous";                    // 匿名
+  }
+  return nullptr;
+}
+
+// Convert Chinese attribute name to English equivalent.
+// Returns empty string if not a Chinese attribute name.
+// Input is the raw UChar buffer from the HTML token.
+inline const char* ConvertChineseAttributeName(const UChar* data, unsigned length) {
+  if (length == 1) {
+    if (data[0] == 0x540d) return "name";   // 名
+    if (data[0] == 0x503c) return "value";  // 值
+    if (data[0] == 0x7c7b) return "class";  // 类
+    if (data[0] == 0x6e90) return "src";    // 源
+    if (data[0] == 0x94fe) return "href";   // 链
+    if (data[0] == 0x5bbd) return "width";  // 宽
+    if (data[0] == 0x9ad8) return "height"; // 高
+    if (data[0] == 0x5f0f) return "style";  // 式
+  } else if (length == 2) {
+    auto c0 = data[0], c1 = data[1];
+    if (c0 == 0x7c7b && c1 == 0x578b) return "type";      // 类型
+    if (c0 == 0x7c7b && c1 == 0x540d) return "class";     // 类名
+    if (c0 == 0x6807 && c1 == 0x8bc6) return "id";        // 标识
+    if (c0 == 0x6837 && c1 == 0x5f0f) return "style";     // 样式
+    if (c0 == 0x6765 && c1 == 0x6e90) return "src";       // 来源
+    if (c0 == 0x6807 && c1 == 0x9898) return "title";     // 标题
+    if (c0 == 0x540d && c1 == 0x79f0) return "name";      // 名称
+    if (c0 == 0x5bbd && c1 == 0x5ea6) return "width";     // 宽度
+    if (c0 == 0x9ad8 && c1 == 0x5ea6) return "height";    // 高度
+    if (c0 == 0x8fb9 && c1 == 0x6846) return "border";    // 边框
+    if (c0 == 0x5bf9 && c1 == 0x9f50) return "align";     // 对齐
+    if (c0 == 0x94fe && c1 == 0x63a5) return "href";      // 链接
+    if (c0 == 0x89d2 && c1 == 0x8272) return "role";      // 角色
+    if (c0 == 0x663e && c1 == 0x793a) return "hidden";    // 显示 (mapped to hidden for hidden attribute)
+    if (c0 == 0x5a92 && c1 == 0x4f53) return "media";     // 媒体
+    if (c0 == 0x76ee && c1 == 0x6807) return "target";    // 目标
+    if (c0 == 0x52a0 && c1 == 0x8f7d) return "loading";   // 加载
+    if (c0 == 0x5173 && c1 == 0x7cfb) return "rel";       // 关系
+    if (c0 == 0x66ff && c1 == 0x4ee3) return "alt";       // 替代
+    if (c0 == 0x65b9 && c1 == 0x5411) return "dir";       // 方向
+    if (c0 == 0x53ef && c1 == 0x89c1) return "hidden";    // 可见 (hidden when not visible)
+    if (c0 == 0x56fe && c1 == 0x7247) return "src";       // 图片 (for img src)
+    if (c0 == 0x53ea && c1 == 0x8bfb) return "readonly";  // 只读
+    if (c0 == 0x7981 && c1 == 0x7528) return "disabled";  // 禁用
+    if (c0 == 0x9009 && c1 == 0x4e2d) return "checked";   // 选中
+  } else if (length == 3) {
+    auto c0 = data[0], c1 = data[1], c2 = data[2];
+    if (c0 == 0x66ff && c1 == 0x4ee3 && c2 == 0x6587) return "alt";           // 替代文(本)
+    if (c0 == 0x5b57 && c1 == 0x7b26 && c2 == 0x96c6) return "charset";       // 字符集
+    if (c0 == 0x6570 && c1 == 0x636e && c2 == 0x5217) return "list";          // 数据列(表)
+    if (c0 == 0x6700 && c1 == 0x5927 && c2 == 0x503c) return "max";           // 最大值
+    if (c0 == 0x6700 && c1 == 0x5c0f && c2 == 0x503c) return "min";           // 最小值
+    if (c0 == 0x5360 && c1 == 0x4f4d && c2 == 0x7b26) return "placeholder";   // 占位符
+    if (c0 == 0x5fae && c1 == 0x8c03 && c2 == 0x5668) return "controls";      // 微调器
+  } else if (length == 4) {
+    auto c0 = data[0], c1 = data[1], c2 = data[2], c3 = data[3];
+    if (c0 == 0x81ea && c1 == 0x52a8 && c2 == 0x64ad && c3 == 0x653e) return "autoplay"; // 自动播放
+    if (c0 == 0x5fae && c1 == 0x8c03 && c2 == 0x63a7 && c3 == 0x4ef6) return "controls"; // 微调控件
+    if (c0 == 0x65e5 && c1 == 0x671f && c2 == 0x65f6 && c3 == 0x95f4) return "datetime"; // 日期时间
+    if (c0 == 0x56fe && c1 == 0x50cf && c2 == 0x63cf && c3 == 0x8ff0) return "alt";       // 图像描述
+    if (c0 == 0x6570 && c1 == 0x636e && c2 == 0x5c5e && c3 == 0x6027) return "data-*";    // 数据属性
+  }
+  return nullptr;
+}
+
 template <bool DedupWithHash>
 void AtomicHTMLToken::InitializeAttributes(
     const HTMLToken::AttributeList& attributes) {
@@ -355,10 +472,41 @@ void AtomicHTMLToken::InitializeAttributes(
     if (attribute.NameIsEmpty())
       continue;
 
-    QualifiedName name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
-                                                 attribute.NameBuffer().size());
-    if (name == g_null_name) {
-      name = QualifiedName(attribute.GetName());
+    // Convert Chinese attribute names to English before lookup. This only
+    // applies to names containing non-ASCII characters, which is when
+    // Chinese characters can appear.
+    const UChar* name_data = attribute.NameBuffer().data();
+    unsigned name_len = attribute.NameBuffer().size();
+    bool name_has_non_ascii = false;
+    for (unsigned i = 0; i < name_len; i++) {
+      if (name_data[i] >= 0x80) {
+        name_has_non_ascii = true;
+        break;
+      }
+    }
+    AtomicString attr_name;
+    QualifiedName name = g_null_name;
+    if (name_has_non_ascii) {
+      attr_name = attribute.GetName();
+      const char* mapped_name = ConvertChineseAttributeName(name_data, name_len);
+      if (mapped_name) {
+        attr_name = AtomicString(mapped_name);
+      }
+      if (attr_name.Is8Bit()) {
+        name = LookupHTMLAttributeName(attr_name.Span8().data(),
+                                       attr_name.length());
+      } else {
+        name = LookupHTMLAttributeName(attr_name.Span16().data(),
+                                       attr_name.length());
+      }
+      if (name == g_null_name) {
+        name = QualifiedName(attr_name);
+      }
+    } else {
+      name = LookupHTMLAttributeName(name_data, name_len);
+      if (name == g_null_name) {
+        name = QualifiedName(attribute.GetName());
+      }
     }
 
     if constexpr (DedupWithHash) {
@@ -380,6 +528,24 @@ void AtomicHTMLToken::InitializeAttributes(
     AtomicString value(attribute.GetValue());
     if (value.IsNull()) {
       value = g_empty_atom;
+    }
+    // Convert Chinese attribute values to English.
+    if (!value.empty() && !value.Is8Bit()) {
+      const auto* val_data = value.Span16().data();
+      unsigned val_len = value.length();
+      bool val_has_non_ascii = false;
+      for (unsigned i = 0; i < val_len; i++) {
+        if (val_data[i] >= 0x80) {
+          val_has_non_ascii = true;
+          break;
+        }
+      }
+      if (val_has_non_ascii) {
+        const char* mapped_val = ConvertChineseAttributeValue(val_data, val_len);
+        if (mapped_val) {
+          value = AtomicString(mapped_val);
+        }
+      }
     }
     attributes_.UncheckedAppend(Attribute(std::move(name), std::move(value)));
   }

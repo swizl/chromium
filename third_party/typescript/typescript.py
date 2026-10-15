@@ -19,12 +19,22 @@ def GetBinaryPath():
   return os_path.normpath(os_path.join(os_path.dirname(__file__), *{
     'Darwin': (darwin_path, 'src', 'lib', 'tsc'),
     'Linux': ('linux-amd64', 'src', 'lib', 'tsc'),
-    'Windows': ('windows-amd64', 'src', 'lib', 'tsc.exe'),
+    'Windows': ('windows-amd64', 'src', 'lib', 'tsc.js'),
   }[platform.system()]))
 
 
 def RunTypeScriptRaw(cmd_parts, stdout=None):
-  cmd = [GetBinaryPath()] + cmd_parts
+  if platform.system() == 'Windows':
+    # Chromium's CIPD-provided tsc.exe is not available offline; run the
+    # official tsc.js from node_modules via the bundled node.exe instead.
+    node = os_path.normpath(
+        os_path.join(os_path.dirname(__file__), '..', 'node', 'win', 'node.exe'))
+    tsc_js = os_path.normpath(
+        os_path.join(os_path.dirname(__file__), 'windows-amd64', 'src', 'lib',
+                     'tsc.js'))
+    cmd = [node, tsc_js] + cmd_parts
+  else:
+    cmd = [GetBinaryPath()] + cmd_parts
   process = subprocess.Popen(
       cmd, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
       universal_newlines=True, encoding='utf-8')

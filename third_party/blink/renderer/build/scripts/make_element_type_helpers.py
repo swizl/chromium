@@ -75,6 +75,11 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
         }
 
         tags = self._template_context['tags']
+        # Non-ASCII tag names (Chinese aliases) must not generate C++ element
+        # types/classes; they remain in the names table for createElement()
+        # recognition and fall back to the generic element.
+        tags = [tag for tag in tags if tag['name'].original.isascii()]
+        self._template_context['tags'] = tags
         elements = self._template_context['elements']
         interface_counts = defaultdict(int)
         for tag in tags:

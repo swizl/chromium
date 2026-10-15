@@ -33,9 +33,15 @@
 ] partial interface mixin WindowOrWorkerGlobalScope {
     // https://html.spec.whatwg.org/C/webappapis.html#windoworworkerglobalscope-mixin
     [CallWith=ScriptState, RuntimeCallStatsCounter=WindowSetTimeout] long setTimeout(Function handler, optional long timeout = 0, any... arguments);
+    [CallWith=ScriptState, ImplementedAs=setTimeout] long 定时(Function handler, optional long timeout = 0, any... arguments);
     [CallWith=ScriptState, RaisesException] long setTimeout((DOMString or TrustedScript) handler, optional long timeout = 0, any... arguments);
+    [CallWith=ScriptState, RaisesException, ImplementedAs=setTimeout] long 定时((DOMString or TrustedScript) handler, optional long timeout = 0, any... arguments);
     void clearTimeout(optional long handle = 0);
+    [ImplementedAs=clearTimeout] void 清定时(optional long handle = 0);
     [CallWith=ScriptState] long setInterval(Function handler, optional long timeout = 0, any... arguments);
+    [CallWith=ScriptState, ImplementedAs=setInterval] long 间隔(Function handler, optional long timeout = 0, any... arguments);
     [CallWith=ScriptState, RaisesException] long setInterval((DOMString or TrustedScript) handler, optional long timeout = 0, any... arguments);
+    [CallWith=ScriptState, RaisesException, ImplementedAs=setInterval] long 间隔((DOMString or TrustedScript) handler, optional long timeout = 0, any... arguments);
     void clearInterval(optional long handle = 0);
+    [ImplementedAs=clearInterval] void 清间隔(optional long handle = 0);
 };

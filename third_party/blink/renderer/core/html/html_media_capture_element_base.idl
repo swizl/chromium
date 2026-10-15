@@ -6,5 +6,7 @@
 interface mixin HTMLMediaCaptureElementBase {
   readonly attribute DOMException? error;
   attribute EventHandler oncancel;
+  [ImplementedAs=oncancel] attribute EventHandler 取消时;
   attribute EventHandler onerror;
+  [ImplementedAs=onerror] attribute EventHandler 出错时;
 };

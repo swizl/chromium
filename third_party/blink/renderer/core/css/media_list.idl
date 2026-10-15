@@ -30,6 +30,7 @@
 ] interface MediaList {
     [CallWith=ExecutionContext] stringifier attribute [LegacyNullToEmptyString] DOMString mediaText;
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [Measure] getter DOMString? item(unsigned long index);
     [CallWith=ExecutionContext] void appendMedium(DOMString medium);
     [CallWith=ExecutionContext, RaisesException] void deleteMedium(DOMString medium);

@@ -38,6 +38,9 @@ from name_utilities import tag_symbol_for_entry
 
 
 def _symbol(entry):
+    name = entry['name'].original
+    if any(ord(c) > 0x7F for c in name):
+        return 'kZh' + ''.join(format(ord(c), 'x') for c in name)
     return 'k' + entry['name'].to_upper_camel_case()
 
 

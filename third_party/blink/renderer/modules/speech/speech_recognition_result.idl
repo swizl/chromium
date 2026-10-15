@@ -29,6 +29,7 @@
     LegacyNoInterfaceObject
 ] interface SpeechRecognitionResult {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter SpeechRecognitionAlternative item(unsigned long index);
     readonly attribute boolean isFinal;
     [RuntimeEnabled=WebSpeechTimestamps] readonly attribute double speechStartTime;

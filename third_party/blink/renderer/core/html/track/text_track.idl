@@ -46,4 +46,5 @@ interface TextTrack : EventTarget {
     [RaisesException] void removeCue(TextTrackCue cue);
 
     attribute EventHandler oncuechange;
+    [ImplementedAs=oncuechange] attribute EventHandler 提示变化时;
 };

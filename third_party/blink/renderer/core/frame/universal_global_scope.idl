@@ -12,7 +12,9 @@
 
     // base64 utility methods
     [RaisesException] DOMString btoa(DOMString btoa);
+    [RaisesException, ImplementedAs=btoa] DOMString 转基64编码(DOMString btoa);
     [RaisesException] DOMString atob(DOMString atob);
+    [RaisesException, ImplementedAs=atob] DOMString 转基64解码(DOMString atob);
 
     // microtask queuing
     void queueMicrotask(VoidFunction callback);

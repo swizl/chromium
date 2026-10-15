@@ -12,4 +12,5 @@
     readonly attribute boolean matches;
     readonly attribute DOMString query;
     attribute EventHandler onchange;
+    [ImplementedAs=onchange] attribute EventHandler 改变时;
 };

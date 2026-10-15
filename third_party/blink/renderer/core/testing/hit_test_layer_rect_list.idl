@@ -30,5 +30,6 @@
 
 interface HitTestLayerRectList {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     getter HitTestLayerRect item(unsigned long index);
 };

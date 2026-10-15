@@ -9,5 +9,6 @@
 ] interface XRInputSourceArray {
   iterable<XRInputSource>;
   readonly attribute unsigned long length;
+  [ImplementedAs=length] readonly attribute unsigned long 长度;
   getter XRInputSource(unsigned long index);
 };

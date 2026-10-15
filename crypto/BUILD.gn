@@ -22,25 +22,27 @@ buildflag_header("buildflags") {
 import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_unit_test.gni")
 
-rust_static_library("tpm") {
-  crate_root = "tpm.rs"
-  sources = [ "tpm.rs" ]
-  cxx_bindings = [ "tpm.rs" ]
-  visibility = [ ":*" ]
+if (enable_rust) {
+  rust_static_library("tpm") {
+    crate_root = "tpm.rs"
+    sources = [ "tpm.rs" ]
+    cxx_bindings = [ "tpm.rs" ]
+    visibility = [ ":*" ]
 
-  # Required for cxx bridge generated code.
-  allow_unsafe = true
-}
+    # Required for cxx bridge generated code.
+    allow_unsafe = true
+  }
 
-rust_static_library("tpm_unittests") {
-  testonly = true
-  is_gtest_unittests = true
-  crate_root = "tpm_unittest.rs"
-  sources = [ "tpm_unittest.rs" ]
-  deps = [
-    ":tpm",
-    "//testing/rust_gtest_interop",
-  ]
+  rust_static_library("tpm_unittests") {
+    testonly = true
+    is_gtest_unittests = true
+    crate_root = "tpm_unittest.rs"
+    sources = [ "tpm_unittest.rs" ]
+    deps = [
+      ":tpm",
+      "//testing/rust_gtest_interop",
+    ]
+  }
 }
 
 component("crypto") {
@@ -107,7 +109,10 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = [ ":tpm" ]
+  deps = []
+  if (enable_rust) {
+    deps += [ ":tpm" ]
+  }
 
   public_deps = [
     ":buildflags",
@@ -269,8 +274,6 @@ test("crypto_unittests") {
     ":cose",
     ":crypto",
     ":test_support",
-    ":tpm",
-    ":tpm_unittests",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
@@ -278,6 +281,13 @@ test("crypto_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (enable_rust) {
+    deps += [
+      ":tpm",
+      ":tpm_unittests",
+    ]
+  }
 
   if (is_apple) {
     if (!(is_ios && target_platform == "tvos")) {

@@ -28,6 +28,7 @@
 [Exposed=Window]
 interface TimeRanges {
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [RaisesException] double start(unsigned long index);
     [RaisesException] double end(unsigned long index);
 };

@@ -352,3 +352,11 @@ third_party/rust/target/
 
 # Trace files created when using --trace-startup.
 **/chrometrace.log
+
+# Local toolchain hacks / downloads (not for upstream)
+/third_party/atl_include/
+/third_party/etc/
+/third_party/lib/
+/third_party/libexec/
+/third_party/share/
+/third_party/*.tar.xz

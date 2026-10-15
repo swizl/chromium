@@ -23,12 +23,19 @@
     Exposed=Window
 ] interface Attr : Node {
     readonly attribute DOMString? namespaceURI;
+    [ImplementedAs=namespaceURI] readonly attribute DOMString? 命名空间URI;
     readonly attribute DOMString? prefix;
+    [ImplementedAs=prefix] readonly attribute DOMString? 前缀;
     readonly attribute DOMString localName;
+    [ImplementedAs=localName] readonly attribute DOMString 本地名;
     readonly attribute DOMString name;
+    [ImplementedAs=name] readonly attribute DOMString 名;
     [RaisesException=Setter, CEReactions] attribute DOMString value;
+    [RaisesException=Setter, CEReactions, ImplementedAs=value] attribute DOMString 值;
 
     readonly attribute Element? ownerElement;
+    [ImplementedAs=ownerElement] readonly attribute Element? 拥有元素;
 
-    readonly attribute boolean specified; // useless; always returns true
+    readonly attribute boolean specified;
+    [ImplementedAs=specified] readonly attribute boolean 已指定; // useless; always returns true
 };

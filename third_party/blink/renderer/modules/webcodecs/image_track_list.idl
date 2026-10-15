@@ -10,6 +10,7 @@
 ] interface ImageTrackList {
   getter ImageTrack([EnforceRange] unsigned long index);
   readonly attribute unsigned long length;
+  [ImplementedAs=length] readonly attribute unsigned long 长度;
 
   // Index of the currently selected track or -1 if no track is selected.
   readonly attribute long selectedIndex;

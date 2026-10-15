@@ -32,4 +32,5 @@
     ] undefined throwIfAborted();
 
     attribute EventHandler onabort;
+    [ImplementedAs=onabort] attribute EventHandler 中止时;
 };

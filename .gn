@@ -11,7 +11,7 @@ import("//third_party/angle/dotfile_settings.gni")
 buildconfig = "//build/config/BUILDCONFIG.gn"
 
 # The hermetic Python interpreter to use by default.
-script_executable = "//third_party/cpython3/host/bin/python3"
+script_executable = "D:/src/depot_tools/bootstrap-2@3_11_8_chromium_35_bin/python3/bin/python3.exe"
 
 # These arguments override the default values for items in a declare_args
 # block. "gn args" in turn can override these.

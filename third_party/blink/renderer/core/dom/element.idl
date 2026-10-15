@@ -47,43 +47,68 @@ dictionary ParseHTMLUnsafeOptions {
     Exposed=Window
 ] interface Element : Node {
     readonly attribute DOMString? namespaceURI;
+    [ImplementedAs=namespaceURI] readonly attribute DOMString? 命名空间URI;
     readonly attribute DOMString? prefix;
+    [ImplementedAs=prefix] readonly attribute DOMString? 前缀;
     readonly attribute DOMString localName;
+    [ImplementedAs=localName] readonly attribute DOMString 本地名;
     readonly attribute DOMString tagName;
+    [ImplementedAs=tagName] readonly attribute DOMString 标签名;
 
     [CEReactions, Reflect] attribute DOMString id;
+    [CEReactions, Reflect=id, ImplementedAs=id] attribute DOMString 标识;
     [CEReactions, Reflect=class] attribute DOMString className;
+    [CEReactions, Reflect=class, ImplementedAs=className] attribute DOMString 类名;
     [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
+    [SameObject, PerWorldBindings, PutForwards=value, ImplementedAs=classList] readonly attribute DOMTokenList 类列表;
     [Unscopable, CEReactions, Reflect] attribute DOMString slot;
 
     [Affects=Nothing] boolean hasAttributes();
+    [Affects=Nothing, ImplementedAs=hasAttributes] boolean 有属性();
     [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
+    [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap 属性;
     [Affects=Nothing, ImplementedAs=getAttributeNamesForBindings] sequence<DOMString> getAttributeNames();
+    [Affects=Nothing, ImplementedAs=getAttributeNamesForBindings] sequence<DOMString> 获取属性名々_列表();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
+    [Affects=Nothing, ImplementedAs=getAttribute] DOMString? 获取属性(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [Affects=Nothing, ImplementedAs=getAttributeNS] DOMString? 获取属性々_命名空间(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] undefined setAttribute(DOMString name, DOMString value);
+    [RaisesException, CEReactions, ImplementedAs=setAttribute] undefined 设置属性(DOMString name, DOMString value);
     [RaisesException, CEReactions] undefined setAttribute(DOMString name, TrustedType value);
     [RaisesException, CEReactions] undefined setAttributeNS(DOMString? namespaceURI, DOMString name, DOMString value);
+    [RaisesException, CEReactions, ImplementedAs=setAttributeNS] undefined 设置属性々_命名空间(DOMString? namespaceURI, DOMString name, DOMString value);
     [RaisesException, CEReactions] undefined setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedType value);
     [CEReactions] undefined removeAttribute(DOMString name);
+    [CEReactions, ImplementedAs=removeAttribute] undefined 移除属性(DOMString name);
     [CEReactions] undefined removeAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [CEReactions, ImplementedAs=removeAttributeNS] undefined 移除属性々_命名空间(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
     [Affects=Nothing] boolean hasAttribute(DOMString name);
+    [Affects=Nothing, ImplementedAs=hasAttribute] boolean 有属性々_指定(DOMString name);
     [Affects=Nothing] boolean hasAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [Affects=Nothing, ImplementedAs=hasAttributeNS] boolean 有属性々_命名空间(DOMString? namespaceURI, DOMString localName);
 
     [RuntimeEnabled=CSSPseudoElementInterface] CSSPseudoElement? pseudo(CSSOMString type);
 
     Attr? getAttributeNode(DOMString name);
+    [Affects=Nothing, ImplementedAs=getAttributeNode] Attr? 获取属性节点(DOMString name);
     Attr? getAttributeNodeNS(DOMString? namespaceURI, DOMString localName);
+    [Affects=Nothing, ImplementedAs=getAttributeNodeNS] Attr? 获取属性节点々_命名空间(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] Attr? setAttributeNode(Attr attr);
+    [RaisesException, CEReactions, ImplementedAs=setAttributeNode] Attr? 设置属性节点(Attr attr);
     [RaisesException, CEReactions] Attr? setAttributeNodeNS(Attr attr);
+    [RaisesException, CEReactions, ImplementedAs=setAttributeNodeNS] Attr? 设置属性节点々_命名空间(Attr attr);
     [RaisesException, CEReactions] Attr removeAttributeNode(Attr attr);
+    [RaisesException, CEReactions, ImplementedAs=removeAttributeNode] Attr 移除属性节点(Attr attr);
 
     [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
     [PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
     [RaisesException] Element? closest(DOMString selectors);
+    [RaisesException, ImplementedAs=closest] Element? 最近的(DOMString selectors);
     [RaisesException] boolean matches(DOMString selectors);
+    [RaisesException, ImplementedAs=matches] boolean 匹配(DOMString selectors);
     [RaisesException, ImplementedAs=matches, MeasureAs=ElementPrefixedMatchesSelector] boolean webkitMatchesSelector(DOMString selectors); // historical alias of .matches
 
     [Affects=Nothing] HTMLCollection getElementsByTagName(DOMString localName);
@@ -100,7 +125,9 @@ dictionary ParseHTMLUnsafeOptions {
     // Pointer Events
     // https://w3c.github.io/pointerevents/#extensions-to-the-element-interface
     [RaisesException] void setPointerCapture (long pointerId);
+    [RaisesException, ImplementedAs=setPointerCapture] void 设置指针捕获 (long pointerId);
     [RaisesException] void releasePointerCapture (long pointerId);
+    [RaisesException, ImplementedAs=releasePointerCapture] void 释放指针捕获 (long pointerId);
     boolean hasPointerCapture (long pointerId);
 
     // Mixin Slotable
@@ -110,7 +137,9 @@ dictionary ParseHTMLUnsafeOptions {
     // DOM Parsing and Serialization
     // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#the-innerhtml-property
     [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) innerHTML;
+    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter, ImplementedAs=innerHTML] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) 内部HTML;
     [CEReactions, RaisesException=Setter] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) outerHTML;
+    [CEReactions, RaisesException=Setter, ImplementedAs=outerHTML] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) 外部HTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, (TrustedHTML or DOMString) text);
 
     // https://github.com/whatwg/html/pull/9538
@@ -146,6 +175,7 @@ dictionary ParseHTMLUnsafeOptions {
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
     [Measure] DOMRectList getClientRects();
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
+    [Affects=Nothing, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect 获取边界矩形();
 
 
     [RuntimeEnabled=ElementMatchContainer, NewObject] ContainerQueryList matchContainer(DOMString query);
@@ -154,6 +184,7 @@ dictionary ParseHTMLUnsafeOptions {
     [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
     [CallWith=ScriptState] Promise<ScrollResult> scrollIntoView(optional (ScrollIntoViewOptions or boolean) arg = {});
+    [ImplementedAs=scrollIntoView, CallWith=ScriptState] Promise<ScrollResult> 滚动到视图(optional (ScrollIntoViewOptions or boolean) arg = {});
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(optional ScrollToOptions options = {});
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(unrestricted double x, unrestricted double y);
     [CallWith=ScriptState] Promise<ScrollResult> scrollTo(optional ScrollToOptions options = {});
@@ -161,13 +192,21 @@ dictionary ParseHTMLUnsafeOptions {
     [CallWith=ScriptState] Promise<ScrollResult> scrollBy(optional ScrollToOptions options = {});
     [CallWith=ScriptState] Promise<ScrollResult> scrollBy(unrestricted double x, unrestricted double y);
     attribute unrestricted double scrollTop;
+    [ImplementedAs=scrollTop] attribute unrestricted double 滚动顶部;
     attribute unrestricted double scrollLeft;
+    [ImplementedAs=scrollLeft] attribute unrestricted double 滚动左侧;
     readonly attribute long scrollWidth;
+    [ImplementedAs=scrollWidth] readonly attribute long 滚动宽度;
     readonly attribute long scrollHeight;
+    [ImplementedAs=scrollHeight] readonly attribute long 滚动高度;
     readonly attribute long clientTop;
+    [ImplementedAs=clientTop] readonly attribute long 客户端顶部;
     readonly attribute long clientLeft;
+    [ImplementedAs=clientLeft] readonly attribute long 客户端左侧;
     readonly attribute long clientWidth;
+    [ImplementedAs=clientWidth] readonly attribute long 客户端宽度;
     readonly attribute long clientHeight;
+    [ImplementedAs=clientHeight] readonly attribute long 客户端高度;
     [RuntimeEnabled=StandardizedBrowserZoom] readonly attribute double currentCSSZoom;
 
     // Non-standard API

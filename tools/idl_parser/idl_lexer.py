@@ -156,8 +156,10 @@ class IDLLexer(object):
     self.AddLines(t.value.count('\n'))
 
   # A symbol or keyword.
+  # Supports ASCII letters, CJK Unified Ideographs (4E00-9FFF),
+  # CJK Extension A (3400-4DBF), and CJK iteration mark (3005).
   def t_KEYWORD_OR_SYMBOL(self, t):
-    r'[_-]?[A-Za-z][A-Za-z_0-9-]*'
+    r'[_-]?[A-Za-z\u3400-\u9fff\u3005][A-Za-z_0-9-\u3400-\u9fff\u3005]*'
 
     # All non-keywords are assumed to be symbols
     t.type = self.keywords.get(t.value, 'identifier')

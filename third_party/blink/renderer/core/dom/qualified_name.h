@@ -60,6 +60,11 @@ class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
                                                  StringImpl* local_name,
                                                  StringImpl* namespace_uri,
                                                  bool is_static);
+  static scoped_refptr<QualifiedNameImpl> Create(StringImpl* prefix,
+                                                 StringImpl* local_name,
+                                                 StringImpl* namespace_uri,
+                                                 bool is_static,
+                                                 StringImpl* alias_name);
 
   ~QualifiedNameImpl();
 
@@ -97,6 +102,7 @@ class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
   const AtomicString prefix_;
   const AtomicString local_name_;
   const AtomicString namespace_;
+  const AtomicString local_name_alias_;
   mutable AtomicString local_name_upper_;
 
  private:
@@ -110,6 +116,22 @@ class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
         prefix_(prefix),
         local_name_(local_name),
         namespace_(namespace_uri)
+
+  {
+    DCHECK(!namespace_.empty() || namespace_.IsNull());
+  }
+  QualifiedNameImpl(StringImpl* prefix,
+                    StringImpl* local_name,
+                    StringImpl* namespace_uri,
+                    bool is_static,
+                    StringImpl* alias_name)
+      : existing_hash_(0),
+        is_static_and_html_attribute_triggers_index_(
+            is_static ? kStaticWithNoIndex : kNotStatic),
+        prefix_(prefix),
+        local_name_(local_name),
+        namespace_(namespace_uri),
+        local_name_alias_(alias_name)
 
   {
     DCHECK(!namespace_.empty() || namespace_.IsNull());
@@ -160,6 +182,7 @@ class CORE_EXPORT QualifiedName {
   const AtomicString& Prefix() const { return impl_->prefix_; }
   const AtomicString& LocalName() const { return impl_->local_name_; }
   const AtomicString& NamespaceURI() const { return impl_->namespace_; }
+  const AtomicString& AliasName() const { return impl_->local_name_alias_; }
 
   // Uppercased localName, cached for efficiency
   const AtomicString& LocalNameUpper() const {
@@ -217,6 +240,10 @@ class CORE_EXPORT QualifiedName {
   static void CreateStatic(void* target_address,
                            StringImpl* name,
                            const AtomicString& name_namespace);
+  static void CreateStatic(void* target_address,
+                           StringImpl* name,
+                           const AtomicString& name_namespace,
+                           StringImpl* alias_name);
 
  protected:
   friend struct HashTraits<QualifiedName>;
@@ -227,6 +254,11 @@ class CORE_EXPORT QualifiedName {
                 const AtomicString& local_name,
                 const AtomicString& namespace_uri,
                 bool is_static);
+  QualifiedName(const AtomicString& prefix,
+                const AtomicString& local_name,
+                const AtomicString& namespace_uri,
+                bool is_static,
+                const AtomicString& alias_name);
 
   scoped_refptr<QualifiedNameImpl> impl_;
 };
@@ -237,6 +269,11 @@ class CORE_EXPORT QualifiedNameWithHash : public QualifiedName {
                         const AtomicString& local_name,
                         const AtomicString& namespace_uri,
                         bool is_static);
+  QualifiedNameWithHash(const AtomicString& prefix,
+                        const AtomicString& local_name,
+                        const AtomicString& namespace_uri,
+                        bool is_static,
+                        const AtomicString& alias_name);
 
   // Precalculated filter for use with Element::CouldHaveAttribute().
   // The type is really Element::TinyBloomFilter, but we do not want
@@ -247,6 +284,10 @@ class CORE_EXPORT QualifiedNameWithHash : public QualifiedName {
   static void CreateStatic(void* target_address,
                            StringImpl* name,
                            const AtomicString& name_namespace);
+  static void CreateStatic(void* target_address,
+                           StringImpl* name,
+                           const AtomicString& name_namespace,
+                           StringImpl* alias_name);
 
   // Mostly used for tests.
   QualifiedName ToQualifiedName() const { return QualifiedName{impl_}; }
@@ -257,10 +298,14 @@ inline const QualifiedName& AnyQName() {
 }
 
 inline bool operator==(const AtomicString& a, const QualifiedName& q) {
-  return a == q.LocalName();
+  return (g_null_atom == q.AliasName()) ? a == q.LocalName()
+                                        : (a == q.LocalName() ||
+                                           a == q.AliasName());
 }
 inline bool operator==(const QualifiedName& q, const AtomicString& a) {
-  return a == q.LocalName();
+  return (g_null_atom == q.AliasName()) ? a == q.LocalName()
+                                        : (a == q.LocalName() ||
+                                           a == q.AliasName());
 }
 
 inline uint32_t HashComponents(const QualifiedNameComponents& buf) {

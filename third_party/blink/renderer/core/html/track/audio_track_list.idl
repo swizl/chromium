@@ -9,10 +9,12 @@
     Exposed=Window
 ] interface AudioTrackList : EventTarget {
   readonly attribute unsigned long length;
+  [ImplementedAs=length] readonly attribute unsigned long 长度;
   getter AudioTrack (unsigned long index);
   AudioTrack? getTrackById(DOMString id);
 
   attribute EventHandler onchange;
+  [ImplementedAs=onchange] attribute EventHandler 改变时;
   attribute EventHandler onaddtrack;
   attribute EventHandler onremovetrack;
 };

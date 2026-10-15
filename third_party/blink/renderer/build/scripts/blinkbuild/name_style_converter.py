@@ -80,6 +80,9 @@ _TOKEN_PATTERNS = [
     # '2D' '3D', but not '2Dimension'
     '[0-9][Dd](?![a-z])',
     '[0-9]+',
+    # CJK Unified Ideographs, so that names containing Chinese characters are
+    # kept as single tokens instead of being split by the delimiters.
+    '[\u4E00-\u9FA5]+',
 ]
 
 _TOKEN_RE = re.compile(r'(' + '|'.join(SPECIAL_TOKENS + _TOKEN_PATTERNS) + r')')
@@ -151,7 +154,9 @@ class NameStyleConverter(object):
         Also known as the hacker case.
         https://en.wikipedia.org/wiki/Snake_case
         """
-        return '_'.join([token.lower() for token in self.tokens])
+        return '_'.join(
+            [token.lower() if token.isalnum() else token for token in self.tokens]
+        )
 
     def to_upper_camel_case(self):
         """Upper-camel case is the class and function name style per
@@ -171,7 +176,12 @@ class NameStyleConverter(object):
                     tokens = copy.deepcopy(tokens)
                     tokens[0] = special
                     break
-        return ''.join([token[0].upper() + token[1:] for token in tokens])
+        return ''.join(
+            [
+                token[0].upper() + token[1:] if token.isalnum() else token
+                for token in tokens
+            ]
+        )
 
     def to_lower_camel_case(self):
         """Lower camel case is the name style for attribute names and operation
@@ -181,15 +191,20 @@ class NameStyleConverter(object):
         """
         if not self.tokens:
             return ''
-        return self.tokens[0].lower() + ''.join(
-            [token[0].upper() + token[1:] for token in self.tokens[1:]]
+        return (self.tokens[0].lower() if self.tokens[0].isalnum() else self.tokens[0]) + ''.join(
+            [
+                token[0].upper() + token[1:] if token.isalnum() else token
+                for token in self.tokens[1:]
+            ]
         )
 
     def to_macro_case(self):
         """Macro case is the macro name style per Google C++ Style Guide:
         https://google.github.io/styleguide/cppguide.html#Macro_Names
         """
-        return '_'.join([token.upper() for token in self.tokens])
+        return '_'.join(
+            [token.upper() if token.isalnum() else token for token in self.tokens]
+        )
 
     def to_all_cases(self):
         return {
@@ -206,8 +221,12 @@ class NameStyleConverter(object):
 
         i.e. UpperCamelCase.
         """
-        camel_prefix = prefix[0].upper() + prefix[1:].lower() if prefix else ''
-        camel_suffix = suffix[0].upper() + suffix[1:].lower() if suffix else ''
+        camel_prefix = (
+            prefix[0].upper() + prefix[1:].lower() if prefix.isalnum() else prefix
+        ) if prefix else ''
+        camel_suffix = (
+            suffix[0].upper() + suffix[1:].lower() if suffix.isalnum() else suffix
+        ) if suffix else ''
         return camel_prefix + self.to_upper_camel_case() + camel_suffix
 
     def to_class_data_member(self, prefix=None, suffix=None):
@@ -215,8 +234,12 @@ class NameStyleConverter(object):
 
         i.e. snake_case_with_trailing_underscore_.
         """
-        lower_prefix = prefix.lower() + '_' if prefix else ''
-        lower_suffix = suffix.lower() + '_' if suffix else ''
+        lower_prefix = (
+            prefix.lower() + '_' if prefix.isalnum() else prefix + '_'
+        ) if prefix else ''
+        lower_suffix = (
+            suffix.lower() + '_' if suffix.isalnum() else suffix + '_'
+        ) if suffix else ''
         return lower_prefix + self.to_snake_case() + '_' + lower_suffix
 
     def to_function_name(self, prefix=None, suffix=None):
@@ -226,13 +249,15 @@ class NameStyleConverter(object):
         Note that this function should not be used for IDL operation names and
         C++ functions implementing IDL operations and attributes.
         """
-        camel_prefix = prefix[0].upper() + prefix[1:].lower() if prefix else ''
+        camel_prefix = (
+            prefix[0].upper() + prefix[1:].lower() if prefix.isalnum() else prefix
+        ) if prefix else ''
         camel_suffix = ''
         if type(suffix) is list:
             for item in suffix:
-                camel_suffix += item[0].upper() + item[1:].lower()
+                camel_suffix += (item[0].upper() + item[1:].lower()) if item.isalnum() else item
         elif suffix:
-            camel_suffix = suffix[0].upper() + suffix[1:].lower()
+            camel_suffix = (suffix[0].upper() + suffix[1:].lower()) if suffix.isalnum() else suffix
         return camel_prefix + self.to_upper_camel_case() + camel_suffix
 
     def to_enum_value(self):

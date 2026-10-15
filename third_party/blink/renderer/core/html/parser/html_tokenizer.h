@@ -286,6 +286,7 @@ class CORE_EXPORT HTMLTokenizer {
   // know whether they represent end tags or RCDATA, etc. These
   // functions help manage these state.
   inline void AddToPossibleEndTag(LChar cc);
+  inline void AddToPossibleEndTag(UChar cc);
 
   inline void SaveEndTagNameIfNeeded() {
     DCHECK_NE(token_.GetType(), HTMLToken::kUninitialized);
@@ -326,7 +327,7 @@ class CORE_EXPORT HTMLTokenizer {
   // We occationally want to emit both a character token and an end tag
   // token (e.g., when lexing script). We buffer the name of the end tag
   // token here so we remember it next time we re-enter the tokenizer.
-  LCharLiteralBuffer<32> buffered_end_tag_name_;
+  UCharLiteralBuffer<32> buffered_end_tag_name_;
 
   // This is only updated if `options_.track_attributes_ranges` is true.
   HTMLAttributesRanges attributes_ranges_;

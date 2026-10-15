@@ -53,7 +53,7 @@ def main(argv):
             if attribute.idl_type.is_event_handler:
                 event_handlers.add(attribute.identifier)
 
-    with open(options.event_handler_names) as f:
+    with open(options.event_handler_names, encoding="utf-8") as f:
         event_type_names = json5.load(f)
         for entry in event_type_names["data"]:
             event_handlers.add(f"on{entry.lower()}")
@@ -63,7 +63,7 @@ def main(argv):
         options.svg_attribute_names,
         options.mathml_attribute_names,
     ):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             attribute_data = json5.load(f)
             for entry in attribute_data["data"]:
                 name = (
@@ -78,7 +78,7 @@ def main(argv):
 // found in the LICENSE file.
 """
 
-    with open(options.out, "w") as out:
+    with open(options.out, "w", encoding="utf-8") as out:
         print(license_and_header, file=out)
         print(
             "// Generated from WebIDL database. Don't edit, just generate.",

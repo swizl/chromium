@@ -33,6 +33,7 @@
 ] interface SpeechGrammarList {
     [Measure] constructor();
     readonly attribute unsigned long length;
+    [ImplementedAs=length] readonly attribute unsigned long 长度;
     [Measure] getter SpeechGrammar item(unsigned long index);
     [CallWith=ScriptState, Measure] void addFromUri(DOMString src, optional float weight);
     [Measure] void addFromString(DOMString string, optional float weight);

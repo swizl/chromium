@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/platform/bindings/idl_member_installer.h"
 
+#include <string_view>
+
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -14,6 +17,27 @@ namespace blink {
 namespace bindings {
 
 namespace {
+
+// Creates an internalized V8 string for a property (attribute/operation) name.
+// V8AtomicString(isolate, const char*) is ambiguous with the StringView
+// overload, both of which treat the bytes as Latin-1.  For non-ASCII names
+// (e.g. Chinese), the UTF-8 bytes must be decoded properly, so we use
+// AtomicString::FromUTF8 and convert to a two-byte (UTF-16) V8 string.
+v8::Local<v8::String> PropertyNameToString(v8::Isolate* isolate,
+                                           const char* name) {
+  for (const char* p = name; *p; ++p) {
+    if (static_cast<unsigned char>(*p) >= 0x80) {
+      AtomicString atomic_name = AtomicString::FromUtf8(std::string_view(name));
+      return v8::String::NewFromTwoByte(
+                 isolate,
+                 reinterpret_cast<const uint16_t*>(atomic_name.Span16().data()),
+                 v8::NewStringType::kInternalized,
+                 static_cast<int>(atomic_name.length()))
+          .ToLocalChecked();
+    }
+  }
+  return V8AtomicString(isolate, StringView(name));
+}
 
 template <typename Config>
 bool DoesWorldMatch(const Config& config, const DOMWrapperWorld& world) {
@@ -221,7 +245,7 @@ void InstallAttribute(v8::Isolate* isolate,
 
   StringView property_name_as_view(config.property_name);
   v8::Local<v8::String> property_name =
-      V8AtomicString(isolate, property_name_as_view);
+      PropertyNameToString(isolate, config.property_name);
   v8::Local<v8::String> interface_name =
       V8AtomicString(isolate, interface_name_ptr);
   v8::Local<v8::String> get_name = V8AtomicString(
@@ -281,7 +305,8 @@ void InstallAttribute(v8::Isolate* isolate,
     signature = v8::Local<v8::Signature>();
 
   StringView name_as_view(config.property_name);
-  v8::Local<v8::String> property_name = V8AtomicString(isolate, name_as_view);
+  v8::Local<v8::String> property_name =
+      PropertyNameToString(isolate, config.property_name);
   v8::Local<v8::String> interface_name =
       V8AtomicString(isolate, interface_name_ptr);
   v8::Local<v8::String> get_name = V8AtomicString(
@@ -341,7 +366,7 @@ void InstallOperation(v8::Isolate* isolate,
     signature = v8::Local<v8::Signature>();
 
   v8::Local<v8::String> property_name =
-      V8AtomicString(isolate, config.property_name);
+      PropertyNameToString(isolate, config.property_name);
   v8::Local<v8::String> interface_name =
       V8AtomicString(isolate, interface_name_ptr);
   v8::Local<v8::FunctionTemplate> func =
@@ -392,7 +417,7 @@ void InstallOperation(v8::Isolate* isolate,
     signature = v8::Local<v8::Signature>();
 
   v8::Local<v8::String> property_name =
-      V8AtomicString(isolate, config.property_name);
+      PropertyNameToString(isolate, config.property_name);
   v8::Local<v8::String> interface_name =
       V8AtomicString(isolate, interface_name_ptr);
   v8::Local<v8::Function> func =

@@ -470,40 +470,7 @@ constexpr base::TimeDelta kMaxInitialProgressivePaintTime =
 
 FontMappingMode g_font_mapping_mode = FontMappingMode::kNoMapping;
 
-FPDF_TEXT_DIRECTION ToPDFiumTextDirection(base::i18n::TextDirection direction) {
-  switch (direction) {
-    case base::i18n::TextDirection::UNKNOWN_DIRECTION:
-      // `base::i18n::TextDirection::UNKNOWN_DIRECTION` indicates that the
-      // caller does not request an explicit direction and wants to fall back to
-      // the default/natural direction. This corresponds to Blink's "Natural"
-      // command, which removes explicit overrides to allow auto-detection.
-      // Map this to `FPDF_TEXTDIR_AUTO` in PDFium to let PDFium auto-detect the
-      // direction.
-      return FPDF_TEXTDIR_AUTO;
-    case base::i18n::TextDirection::RIGHT_TO_LEFT:
-      return FPDF_TEXTDIR_RTL;
-    case base::i18n::TextDirection::LEFT_TO_RIGHT:
-      return FPDF_TEXTDIR_LTR;
-  }
-  NOTREACHED();
-}
 
-base::i18n::TextDirection FromPDFiumTextDirection(
-    FPDF_TEXT_DIRECTION direction) {
-  switch (direction) {
-    case FPDF_TEXTDIR_UNKNOWN:
-      NOTREACHED();
-    case FPDF_TEXTDIR_AUTO:
-      // Map to `base::i18n::TextDirection::UNKNOWN_DIRECTION`. See the comment
-      // in ToPDFiumTextDirection() explaining this mapping.
-      return base::i18n::TextDirection::UNKNOWN_DIRECTION;
-    case FPDF_TEXTDIR_LTR:
-      return base::i18n::TextDirection::LEFT_TO_RIGHT;
-    case FPDF_TEXTDIR_RTL:
-      return base::i18n::TextDirection::RIGHT_TO_LEFT;
-  }
-  NOTREACHED();
-}
 
 template <class S>
 bool IsAboveOrDirectlyLeftOf(const S& lhs, const S& rhs) {
@@ -996,17 +963,10 @@ void InitializeSDK(bool enable_v8,
   config.m_v8EmbedderSlot = gin::kEmbedderPDFium;
   config.m_RendererType =
       use_skia ? FPDF_RENDERERTYPE_SKIA : FPDF_RENDERERTYPE_AGG;
-  config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
-  config.m_BrotliEnabled =
-      base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
-  config.m_IsolatePerDocument = enable_xfa;
-
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {
     SetUpV8();
-    if (!config.m_IsolatePerDocument) {
-      config.m_pIsolate = g_isolate_holder->isolate();
-    }
+    config.m_pIsolate = g_isolate_holder->isolate();
     // NOTE: static_cast<> prior to assigning to (void*) is safer since it
     // will manipulate the pointer value should gin::V8Platform someday have
     // multiple base classes.
@@ -3068,33 +3028,17 @@ void PDFiumEngine::Redo() {
 
 bool PDFiumEngine::SetFocusedFormTextDirection(
     base::i18n::TextDirection direction) {
-  int unused_page_index = -1;
-  FPDF_ANNOTATION raw_annot = nullptr;
-  if (!FORM_GetFocusedAnnot(form(), &unused_page_index, &raw_annot)) {
-    return false;
-  }
-
-  ScopedFPDFAnnotation annot(raw_annot);
-  return FORM_SetTextDirection(form(), annot.get(),
-                               ToPDFiumTextDirection(direction)) != 0;
+  // PDFium f5127969 added FORM_SetTextDirection(); this offline build uses an
+  // older PDFium without it, so this is a no-op.
+  (void)direction;
+  return false;
 }
 
 std::optional<base::i18n::TextDirection>
 PDFiumEngine::GetFocusedFormTextDirection() const {
-  int unused_page_index = -1;
-  FPDF_ANNOTATION raw_annot = nullptr;
-  if (!FORM_GetFocusedAnnot(form(), &unused_page_index, &raw_annot)) {
-    return std::nullopt;
-  }
-
-  ScopedFPDFAnnotation annot(raw_annot);
-  FPDF_TEXT_DIRECTION pdfium_direction =
-      FORM_GetTextDirection(form(), annot.get());
-  if (pdfium_direction == FPDF_TEXTDIR_UNKNOWN) {
-    return std::nullopt;
-  }
-
-  return FromPDFiumTextDirection(pdfium_direction);
+  // PDFium f5127969 added FORM_GetTextDirection(); this offline build uses an
+  // older PDFium without it, so this is a no-op.
+  return std::nullopt;
 }
 
 void PDFiumEngine::HandleAccessibilityAction(
