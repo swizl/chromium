@@ -26,10 +26,12 @@
 // https://dom.spec.whatwg.org/#interface-customevent
 
 [
-    Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
+    Exposed=(Window,Worker,ShadowRealm), // TODO(crbug.com/41480387): This should be Exposed=*
+    LegacyWindowAlias=自定义事件
 ] interface CustomEvent : Event {
     [CallWith=ScriptState] constructor(DOMString type, optional CustomEventInit eventInitDict = {});
     [CallWith=ScriptState] readonly attribute any detail;
+    [CallWith=ScriptState, ImplementedAs=detail] readonly attribute any 详情;
 
     [Measure, CallWith=ScriptState] undefined initCustomEvent(DOMString type, optional boolean bubbles = false, optional boolean cancelable = false, optional any detail = null);
 };

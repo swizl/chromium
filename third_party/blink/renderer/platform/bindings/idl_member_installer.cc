@@ -628,7 +628,7 @@ void IDLMemberInstaller::InstallExposedConstructs(
     v8::Local<v8::Signature> signature,
     base::span<const ExposedConstructConfig> configs) {
   for (const auto& config : configs) {
-    v8::Local<v8::String> name = V8AtomicString(isolate, config.name);
+    v8::Local<v8::String> name = PropertyNameToString(isolate, config.name);
     instance_template->SetLazyDataProperty(
         name, config.callback, v8::Local<v8::Value>(), v8::DontEnum,
         v8::SideEffectType::kHasNoSideEffect);
@@ -647,7 +647,8 @@ void IDLMemberInstaller::InstallExposedConstructs(
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   for (const auto& config : configs) {
     instance_object
-        ->SetLazyDataProperty(context, V8AtomicString(isolate, config.name),
+        ->SetLazyDataProperty(context,
+                              PropertyNameToString(isolate, config.name),
                               config.callback, v8::Local<v8::Value>(),
                               v8::DontEnum,
                               v8::SideEffectType::kHasNoSideEffect)

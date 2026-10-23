@@ -30,7 +30,10 @@ dictionary ObservableEventListenerOptions {
 ] interface EventTarget {
     [CallWith=ScriptState] constructor();
     undefined addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
+    [ImplementedAs=addEventListener] undefined 添加事件监听器(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
     undefined removeEventListener(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
+    [ImplementedAs=removeEventListener] undefined 移除事件监听器(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
     [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent] boolean dispatchEvent(Event event);
+    [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent] boolean 派发事件(Event event);
     [MeasureAs=EventTargetOnObservable] Observable when(DOMString type, optional ObservableEventListenerOptions options = {});
 };

@@ -584,17 +584,19 @@ bool EventTarget::addEventListener(
 bool EventTarget::addEventListener(const AtomicString& event_type,
                                    EventListener* listener,
                                    bool use_capture) {
+  const AtomicString normalized_type = NormalizeEventType(event_type);
   AddEventListenerOptionsResolved options;
   options.SetCapture(use_capture);
-  SetDefaultAddEventListenerOptions(event_type, listener, options);
-  return AddEventListenerInternal(event_type, listener, options);
+  SetDefaultAddEventListenerOptions(normalized_type, listener, options);
+  return AddEventListenerInternal(normalized_type, listener, options);
 }
 
 bool EventTarget::addEventListener(const AtomicString& event_type,
                                    EventListener* listener,
                                    AddEventListenerOptionsResolved& options) {
-  SetDefaultAddEventListenerOptions(event_type, listener, options);
-  return AddEventListenerInternal(event_type, listener, options);
+  const AtomicString normalized_type = NormalizeEventType(event_type);
+  SetDefaultAddEventListenerOptions(normalized_type, listener, options);
+  return AddEventListenerInternal(normalized_type, listener, options);
 }
 
 bool EventTarget::AddEventListenerInternal(
@@ -776,15 +778,17 @@ bool EventTarget::removeEventListener(
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       const EventListener* listener,
                                       bool use_capture) {
+  const AtomicString normalized_type = NormalizeEventType(event_type);
   RegisteredEventListener::OptionsForMatching options(use_capture);
-  return RemoveEventListenerInternal(event_type, listener, options);
+  return RemoveEventListenerInternal(normalized_type, listener, options);
 }
 
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       const EventListener* listener,
                                       EventListenerOptions* options) {
+  const AtomicString normalized_type = NormalizeEventType(event_type);
   RegisteredEventListener::OptionsForMatching match_options(options->capture());
-  return RemoveEventListenerInternal(event_type, listener, match_options);
+  return RemoveEventListenerInternal(normalized_type, listener, match_options);
 }
 
 bool EventTarget::RemoveEventListenerInternal(

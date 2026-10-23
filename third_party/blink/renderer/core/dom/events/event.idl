@@ -21,12 +21,16 @@
 // https://dom.spec.whatwg.org/#interface-event
 
 [
-    Exposed=(Window,Worker,AudioWorklet,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
+    Exposed=(Window,Worker,AudioWorklet,ShadowRealm), // TODO(crbug.com/41480387): This should be Exposed=*
+    LegacyWindowAlias=事件
 ] interface Event {
     constructor(DOMString type, optional EventInit eventInitDict = {});
     readonly attribute DOMString type;
+    [ImplementedAs=type] readonly attribute DOMString 类型;
     readonly attribute EventTarget? target;
+    [ImplementedAs=target] readonly attribute EventTarget? 目标;
     readonly attribute EventTarget? currentTarget;
+    [ImplementedAs=currentTarget] readonly attribute EventTarget? 当前目标;
     [MeasureAs=EventComposedPath, CallWith=ScriptState] sequence<EventTarget> composedPath();
 
     const unsigned short NONE = 0;
@@ -34,20 +38,30 @@
     const unsigned short AT_TARGET = 2;
     const unsigned short BUBBLING_PHASE = 3;
     readonly attribute unsigned short eventPhase;
+    [ImplementedAs=eventPhase] readonly attribute unsigned short 事件阶段;
 
     [Measure] undefined stopPropagation();
+    [ImplementedAs=stopPropagation] undefined 停止传播();
     [Measure] undefined stopImmediatePropagation();
+    [ImplementedAs=stopImmediatePropagation] undefined 立即停止传播();
 
     readonly attribute boolean bubbles;
+    [ImplementedAs=bubbles] readonly attribute boolean 冒泡;
     readonly attribute boolean cancelable;
+    [ImplementedAs=cancelable] readonly attribute boolean 可取消;
     undefined preventDefault();
+    [ImplementedAs=preventDefault] undefined 阻止默认();
     readonly attribute boolean defaultPrevented;
+    [ImplementedAs=defaultPrevented] readonly attribute boolean 默认已阻止;
 
     [MeasureAs=EventComposed] readonly attribute boolean composed;
+    [MeasureAs=EventComposed, ImplementedAs=composed] readonly attribute boolean 组合;
 
     [LegacyUnforgeable] readonly attribute boolean isTrusted;
+    [LegacyUnforgeable, ImplementedAs=isTrusted] readonly attribute boolean 可信;
 
     [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp timeStamp;
+    [CallWith=ScriptState, ImplementedAs=timeStamp] readonly attribute DOMHighResTimeStamp 时间戳;
 
     [Measure] undefined initEvent(DOMString type, optional boolean bubbles = false, optional boolean cancelable = false);
 

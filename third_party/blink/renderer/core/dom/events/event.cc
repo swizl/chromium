@@ -75,12 +75,56 @@ Event::Event(const AtomicString& event_type,
             composed_mode,
             base::TimeTicks::Now()) {}
 
+AtomicString NormalizeEventType(const AtomicString& event_type) {
+  // 纯 ASCII（英文/空/null）类型名直接返回，避免每次构造都做映射开销。
+  if (event_type.IsNull() || event_type.Is8Bit())
+    return event_type;
+  // 中文事件类型 → 标准英文类型名。
+  if (event_type == AtomicString::FromUtf8(std::string_view("点击")))
+    return event_type_names::kClick;
+  if (event_type == AtomicString::FromUtf8(std::string_view("双击")))
+    return event_type_names::kDblclick;
+  if (event_type == AtomicString::FromUtf8(std::string_view("鼠标移动")))
+    return event_type_names::kMousemove;
+  if (event_type == AtomicString::FromUtf8(std::string_view("鼠标按下")))
+    return event_type_names::kMousedown;
+  if (event_type == AtomicString::FromUtf8(std::string_view("鼠标抬起")))
+    return event_type_names::kMouseup;
+  if (event_type == AtomicString::FromUtf8(std::string_view("鼠标进入")))
+    return event_type_names::kMouseenter;
+  if (event_type == AtomicString::FromUtf8(std::string_view("鼠标离开")))
+    return event_type_names::kMouseleave;
+  if (event_type == AtomicString::FromUtf8(std::string_view("右击")))
+    return event_type_names::kContextmenu;
+  if (event_type == AtomicString::FromUtf8(std::string_view("加载")))
+    return event_type_names::kLoad;
+  if (event_type == AtomicString::FromUtf8(std::string_view("聚焦")))
+    return event_type_names::kFocus;
+  if (event_type == AtomicString::FromUtf8(std::string_view("失焦")))
+    return event_type_names::kBlur;
+  if (event_type == AtomicString::FromUtf8(std::string_view("变化")))
+    return event_type_names::kChange;
+  if (event_type == AtomicString::FromUtf8(std::string_view("输入")))
+    return event_type_names::kInput;
+  if (event_type == AtomicString::FromUtf8(std::string_view("提交")))
+    return event_type_names::kSubmit;
+  if (event_type == AtomicString::FromUtf8(std::string_view("滚动")))
+    return event_type_names::kScroll;
+  if (event_type == AtomicString::FromUtf8(std::string_view("调整大小")))
+    return event_type_names::kResize;
+  if (event_type == AtomicString::FromUtf8(std::string_view("按键按下")))
+    return event_type_names::kKeydown;
+  if (event_type == AtomicString::FromUtf8(std::string_view("按键抬起")))
+    return event_type_names::kKeyup;
+  return event_type;
+}
+
 Event::Event(const AtomicString& event_type,
              Bubbles bubbles,
              Cancelable cancelable,
              ComposedMode composed_mode,
              base::TimeTicks platform_time_stamp)
-    : type_(event_type),
+    : type_(NormalizeEventType(event_type)),
       bubbles_(bubbles == Bubbles::kYes),
       cancelable_(cancelable == Cancelable::kYes),
       composed_(composed_mode == ComposedMode::kComposed),
@@ -132,7 +176,7 @@ void Event::initEvent(const AtomicString& event_type_arg,
   is_trusted_ = false;
   prevent_default_called_on_uncancelable_event_ = false;
 
-  type_ = event_type_arg;
+  type_ = NormalizeEventType(event_type_arg);
   bubbles_ = bubbles_arg;
   cancelable_ = cancelable_arg;
 }

@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -304,7 +305,8 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
         names, new_vector.begin(), [isolate](std::string_view name) {
           return v8::Eternal<v8::Name>(
               isolate,
-              V8AtomicString(isolate, StringView(base::as_byte_span(name))));
+              V8AtomicString(
+                  isolate, String::FromUtf8(base::as_byte_span(name))));
         });
     vector = &eternal_name_cache_.Set(lookup_key, std::move(new_vector))
                   .stored_value->value;

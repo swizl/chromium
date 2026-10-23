@@ -38,6 +38,10 @@
 
 namespace blink {
 
+// 中文事件类型名归一化为标准英文类型（如「点击」→"click"、"鼠标移动"→"mousemove"）。
+// 英文/ASCII 类型名原样返回。不在映射表内的中文名原样返回。
+CORE_EXPORT AtomicString NormalizeEventType(const AtomicString& event_type);
+
 class DOMOrigin;
 class DOMWrapperWorld;
 class EventDispatcher;
