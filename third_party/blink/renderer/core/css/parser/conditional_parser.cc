@@ -11,25 +11,33 @@
 namespace blink {
 
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::AtUtf16Ident;
 using css_parsing_utils::ConsumeAnyValue;
 using css_parsing_utils::ConsumeIfIdent;
+using css_parsing_utils::ConsumeIfUtf16Ident;
 
 const ConditionalExpNode* ConditionalParser::ConsumeCondition(
     CSSParserTokenStream& stream,
     ParseMode parse_mode) {
-  if (ConsumeIfIdent(stream, "not")) {
+  // 中文逻辑关键字：不是=not、且=and、或=or（日月自举编译器中文支持）
+  if (ConsumeIfIdent(stream, "not") ||
+      ConsumeIfUtf16Ident(stream, u"\u4e0d\u662f")) {
     return ConditionalExpNode::Not(ConsumeInner(stream));
   }
 
   const ConditionalExpNode* result = ConsumeInner(stream);
 
-  if (AtIdent(stream.Peek(), "and")) {
-    while (result && ConsumeIfIdent(stream, "and")) {
+  if (AtIdent(stream.Peek(), "and") ||
+      AtUtf16Ident(stream.Peek(), u"\u4e14")) {
+    while (result && (ConsumeIfIdent(stream, "and") ||
+                      ConsumeIfUtf16Ident(stream, u"\u4e14"))) {
       result = ConditionalExpNode::And(result, ConsumeInner(stream));
     }
-  } else if (result && AtIdent(stream.Peek(), "or") &&
+  } else if (result && (AtIdent(stream.Peek(), "or") ||
+                        AtUtf16Ident(stream.Peek(), u"\u6216")) &&
              parse_mode != ParseMode::kWithoutOr) {
-    while (result && ConsumeIfIdent(stream, "or")) {
+    while (result && (ConsumeIfIdent(stream, "or") ||
+                      ConsumeIfUtf16Ident(stream, u"\u6216"))) {
       result = ConditionalExpNode::Or(result, ConsumeInner(stream));
     }
   }

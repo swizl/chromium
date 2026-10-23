@@ -1056,6 +1056,39 @@ inline bool ConsumeIfIdent(CSSParserTokenStream& stream, const char* ident) {
   return true;
 }
 
+// 中文 ident 比较（日月自举编译器中文支持）：token.Value()（UTF-16
+// StringView）与 UTF-16 字符串字面量（u"..."）比较。
+// 不能用 AtIdent/ConsumeIfIdent 的 const char* 版本——它们的长度检查
+// 用 StringView 的 UTF-16 码元数 vs 字面量的 UTF-8 字节数，
+// 中文（3 字节/字符）永远长度不匹配。
+template <size_t N>
+inline bool AtUtf16Ident(const CSSParserToken& token,
+                         const char16_t (&literal)[N]) {
+  if (token.GetType() != kIdentToken) {
+    return false;
+  }
+  StringView value = token.Value();
+  if (value.length() != N - 1) {
+    return false;
+  }
+  for (unsigned i = 0; i < N - 1; ++i) {
+    if (value[i] != static_cast<UChar>(literal[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <size_t N>
+inline bool ConsumeIfUtf16Ident(CSSParserTokenStream& stream,
+                                const char16_t (&literal)[N]) {
+  if (!AtUtf16Ident(stream.Peek(), literal)) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+  return true;
+}
+
 inline bool AtDelimiter(const CSSParserToken& token, UChar c) {
   return token.GetType() == kDelimiterToken && token.Delimiter() == c;
 }

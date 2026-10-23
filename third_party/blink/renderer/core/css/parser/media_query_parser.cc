@@ -23,9 +23,11 @@
 namespace blink {
 
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::AtUtf16Ident;
 using css_parsing_utils::ConsumeAnyValue;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
+using css_parsing_utils::ConsumeIfUtf16Ident;
 
 bool MediaQueryParser::MediaQueryFeatureSet::IsAllowed(
     const AtomicString& feature) const {
@@ -288,9 +290,13 @@ static AtomicString NormalizeChineseMediaFeatureName(const AtomicString& name) {
 
 bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
   // FIXME: it would be more efficient to use lower-case always for tokenValue.
+  // 中文逻辑关键字：不是/且/或（日月自举编译器中文支持）
   return EqualIgnoringAsciiCase(token.Value(), "not") ||
+         AtUtf16Ident(token, u"\u4e0d\u662f") ||
          EqualIgnoringAsciiCase(token.Value(), "and") ||
+         AtUtf16Ident(token, u"\u4e14") ||
          EqualIgnoringAsciiCase(token.Value(), "or") ||
+         AtUtf16Ident(token, u"\u6216") ||
          EqualIgnoringAsciiCase(token.Value(), "only") ||
          EqualIgnoringAsciiCase(token.Value(), "layer");
 }
@@ -373,7 +379,9 @@ std::optional<MediaQueryExpValue> ConsumeUnparsed(
 
 MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
     CSSParserTokenStream& stream) {
-  if (ConsumeIfIdent(stream, "not")) {
+  // 中文：不是=not
+  if (ConsumeIfIdent(stream, "not") ||
+      ConsumeIfUtf16Ident(stream, u"\u4e0d\u662f")) {
     return MediaQuery::RestrictorType::kNot;
   }
   if (ConsumeIfIdent(stream, "only")) {
@@ -720,7 +728,9 @@ MediaQuery* MediaQueryParser::ConsumeQuery(CSSParserTokenStream& stream) {
   AtomicString type = ConsumeType(stream);
 
   if (!type.IsNull()) {
-    if (!ConsumeIfIdent(stream, "and")) {
+    // 中文：且=and
+    if (!(ConsumeIfIdent(stream, "and") ||
+          ConsumeIfUtf16Ident(stream, u"\u4e14"))) {
       return MakeGarbageCollected<MediaQuery>(restrictor, type, nullptr);
     }
     if (const ConditionalExpNode* node =
