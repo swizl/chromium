@@ -1068,9 +1068,9 @@ String Color::SerializeAsCanvasColor() const {
 String Color::SerializeLegacyColorAsCSSColor() const {
   StringBuilder result;
   if (IsOpaque() && isfinite(alpha_)) {
-    result.Append(String::FromUtf8(base::as_byte_span("红绿蓝(")));
+    result.Append(String::FromUtf8(std::string_view("红绿蓝(")));
   } else {
-    result.Append(String::FromUtf8(base::as_byte_span("红绿蓝透明度(")));
+    result.Append(String::FromUtf8(std::string_view("红绿蓝透明度(")));
   }
 
   constexpr float kEpsilon = 1e-07;
@@ -1129,23 +1129,23 @@ String Color::SerializeInternal() const {
     result.Append(ColorSpaceToString(color_space_));
     result.Append("(");
   } else {
-    result.Append(String::FromUtf8(base::as_byte_span("颜色(")));
+    result.Append(String::FromUtf8(std::string_view("颜色(")));
     result.Append(ColorSpaceToString(color_space_));
     result.Append(" ");
   }
 
-  param0_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无")))
+  param0_is_none_ ? result.Append(String::FromUtf8(std::string_view("无")))
                   : result.Append(ColorParamToString(param0_));
   result.Append(" ");
-  param1_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无")))
+  param1_is_none_ ? result.Append(String::FromUtf8(std::string_view("无")))
                   : result.Append(ColorParamToString(param1_));
   result.Append(" ");
-  param2_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无")))
+  param2_is_none_ ? result.Append(String::FromUtf8(std::string_view("无")))
                   : result.Append(ColorParamToString(param2_));
 
   if (alpha_ != 1.0 || alpha_is_none_) {
     result.Append(" / ");
-    alpha_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无"))) : result.AppendNumber(alpha_);
+    alpha_is_none_ ? result.Append(String::FromUtf8(std::string_view("无"))) : result.AppendNumber(alpha_);
   }
   result.Append(")");
   return result.ToString();

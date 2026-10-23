@@ -854,132 +854,132 @@ String CSSPrimitiveValue::UnitTypeToString(UnitType type) {
     case UnitType::kUserUnits:
       return String();
     case UnitType::kPercentage:
-      return String::FromUtf8(base::as_byte_span("百分比"));
+      return String::FromUtf8(std::string_view("百分比"));
     case UnitType::kEms:
     case UnitType::kQuirkyEms:
-      return String::FromUtf8(base::as_byte_span("字号"));
+      return String::FromUtf8(std::string_view("字号"));
     case UnitType::kExs:
-      return String::FromUtf8(base::as_byte_span("字母高度"));
+      return String::FromUtf8(std::string_view("字母高度"));
     case UnitType::kRexs:
-      return String::FromUtf8(base::as_byte_span("相对字母高度"));
+      return String::FromUtf8(std::string_view("相对字母高度"));
     case UnitType::kRems:
-      return String::FromUtf8(base::as_byte_span("相对根"));
+      return String::FromUtf8(std::string_view("相对根"));
     case UnitType::kChs:
-      return String::FromUtf8(base::as_byte_span("零宽"));
+      return String::FromUtf8(std::string_view("零宽"));
     case UnitType::kRchs:
-      return String::FromUtf8(base::as_byte_span("相对零宽"));
+      return String::FromUtf8(std::string_view("相对零宽"));
     case UnitType::kIcs:
-      return String::FromUtf8(base::as_byte_span("表意宽"));
+      return String::FromUtf8(std::string_view("表意宽"));
     case UnitType::kRics:
-      return String::FromUtf8(base::as_byte_span("相对表意宽"));
+      return String::FromUtf8(std::string_view("相对表意宽"));
     case UnitType::kLhs:
-      return String::FromUtf8(base::as_byte_span("行高"));
+      return String::FromUtf8(std::string_view("行高"));
     case UnitType::kRlhs:
-      return String::FromUtf8(base::as_byte_span("相对行高"));
+      return String::FromUtf8(std::string_view("相对行高"));
     case UnitType::kCaps:
-      return String::FromUtf8(base::as_byte_span("大写高"));
+      return String::FromUtf8(std::string_view("大写高"));
     case UnitType::kRcaps:
-      return String::FromUtf8(base::as_byte_span("相对大写高"));
+      return String::FromUtf8(std::string_view("相对大写高"));
     case UnitType::kPixels:
-      return String::FromUtf8(base::as_byte_span("像素"));
+      return String::FromUtf8(std::string_view("像素"));
     case UnitType::kCentimeters:
-      return String::FromUtf8(base::as_byte_span("厘米"));
+      return String::FromUtf8(std::string_view("厘米"));
     case UnitType::kDotsPerPixel:
-      return String::FromUtf8(base::as_byte_span("点每像素"));
+      return String::FromUtf8(std::string_view("点每像素"));
     case UnitType::kX:
-      return String::FromUtf8(base::as_byte_span("倍"));
+      return String::FromUtf8(std::string_view("倍"));
     case UnitType::kDotsPerInch:
-      return String::FromUtf8(base::as_byte_span("点每英寸"));
+      return String::FromUtf8(std::string_view("点每英寸"));
     case UnitType::kDotsPerCentimeter:
-      return String::FromUtf8(base::as_byte_span("点每厘米"));
+      return String::FromUtf8(std::string_view("点每厘米"));
     case UnitType::kMillimeters:
-      return String::FromUtf8(base::as_byte_span("毫米"));
+      return String::FromUtf8(std::string_view("毫米"));
     case UnitType::kQuarterMillimeters:
-      return String::FromUtf8(base::as_byte_span("四分之一毫米"));
+      return String::FromUtf8(std::string_view("四分之一毫米"));
     case UnitType::kInches:
-      return String::FromUtf8(base::as_byte_span("英寸"));
+      return String::FromUtf8(std::string_view("英寸"));
     case UnitType::kPoints:
-      return String::FromUtf8(base::as_byte_span("点"));
+      return String::FromUtf8(std::string_view("点"));
     case UnitType::kPicas:
-      return String::FromUtf8(base::as_byte_span("派卡"));
+      return String::FromUtf8(std::string_view("派卡"));
     case UnitType::kDegrees:
-      return String::FromUtf8(base::as_byte_span("度"));
+      return String::FromUtf8(std::string_view("度"));
     case UnitType::kRadians:
-      return String::FromUtf8(base::as_byte_span("弧度"));
+      return String::FromUtf8(std::string_view("弧度"));
     case UnitType::kGradians:
-      return String::FromUtf8(base::as_byte_span("梯度"));
+      return String::FromUtf8(std::string_view("梯度"));
     case UnitType::kMilliseconds:
-      return String::FromUtf8(base::as_byte_span("毫秒"));
+      return String::FromUtf8(std::string_view("毫秒"));
     case UnitType::kSeconds:
-      return String::FromUtf8(base::as_byte_span("秒"));
+      return String::FromUtf8(std::string_view("秒"));
     case UnitType::kHertz:
-      return String::FromUtf8(base::as_byte_span("赫"));
+      return String::FromUtf8(std::string_view("赫"));
     case UnitType::kKilohertz:
-      return String::FromUtf8(base::as_byte_span("千赫"));
+      return String::FromUtf8(std::string_view("千赫"));
     case UnitType::kTurns:
-      return String::FromUtf8(base::as_byte_span("圈数"));
+      return String::FromUtf8(std::string_view("圈数"));
     case UnitType::kFlex:
-      return String::FromUtf8(base::as_byte_span("弹性"));
+      return String::FromUtf8(std::string_view("弹性"));
     case UnitType::kViewportWidth:
-      return String::FromUtf8(base::as_byte_span("视口宽"));
+      return String::FromUtf8(std::string_view("视口宽"));
     case UnitType::kViewportHeight:
-      return String::FromUtf8(base::as_byte_span("视口高"));
+      return String::FromUtf8(std::string_view("视口高"));
     case UnitType::kViewportInlineSize:
-      return String::FromUtf8(base::as_byte_span("视口内联"));
+      return String::FromUtf8(std::string_view("视口内联"));
     case UnitType::kViewportBlockSize:
-      return String::FromUtf8(base::as_byte_span("视口块"));
+      return String::FromUtf8(std::string_view("视口块"));
     case UnitType::kViewportMin:
-      return String::FromUtf8(base::as_byte_span("视口最"));
+      return String::FromUtf8(std::string_view("视口最"));
     case UnitType::kViewportMax:
-      return String::FromUtf8(base::as_byte_span("视口最大"));
+      return String::FromUtf8(std::string_view("视口最大"));
     case UnitType::kSmallViewportWidth:
-      return String::FromUtf8(base::as_byte_span("小视口宽"));
+      return String::FromUtf8(std::string_view("小视口宽"));
     case UnitType::kSmallViewportHeight:
-      return String::FromUtf8(base::as_byte_span("小视口高"));
+      return String::FromUtf8(std::string_view("小视口高"));
     case UnitType::kSmallViewportInlineSize:
-      return String::FromUtf8(base::as_byte_span("小视口内联"));
+      return String::FromUtf8(std::string_view("小视口内联"));
     case UnitType::kSmallViewportBlockSize:
-      return String::FromUtf8(base::as_byte_span("小视口块"));
+      return String::FromUtf8(std::string_view("小视口块"));
     case UnitType::kSmallViewportMin:
-      return String::FromUtf8(base::as_byte_span("小视口最"));
+      return String::FromUtf8(std::string_view("小视口最"));
     case UnitType::kSmallViewportMax:
-      return String::FromUtf8(base::as_byte_span("小视口最大"));
+      return String::FromUtf8(std::string_view("小视口最大"));
     case UnitType::kLargeViewportWidth:
-      return String::FromUtf8(base::as_byte_span("大视口宽"));
+      return String::FromUtf8(std::string_view("大视口宽"));
     case UnitType::kLargeViewportHeight:
-      return String::FromUtf8(base::as_byte_span("大视口高"));
+      return String::FromUtf8(std::string_view("大视口高"));
     case UnitType::kLargeViewportInlineSize:
-      return String::FromUtf8(base::as_byte_span("大视口内联"));
+      return String::FromUtf8(std::string_view("大视口内联"));
     case UnitType::kLargeViewportBlockSize:
-      return String::FromUtf8(base::as_byte_span("大视口块"));
+      return String::FromUtf8(std::string_view("大视口块"));
     case UnitType::kLargeViewportMin:
-      return String::FromUtf8(base::as_byte_span("大视口最"));
+      return String::FromUtf8(std::string_view("大视口最"));
     case UnitType::kLargeViewportMax:
-      return String::FromUtf8(base::as_byte_span("大视口最大"));
+      return String::FromUtf8(std::string_view("大视口最大"));
     case UnitType::kDynamicViewportWidth:
-      return String::FromUtf8(base::as_byte_span("动态视口宽"));
+      return String::FromUtf8(std::string_view("动态视口宽"));
     case UnitType::kDynamicViewportHeight:
-      return String::FromUtf8(base::as_byte_span("动态视口高"));
+      return String::FromUtf8(std::string_view("动态视口高"));
     case UnitType::kDynamicViewportInlineSize:
-      return String::FromUtf8(base::as_byte_span("动态视口内联"));
+      return String::FromUtf8(std::string_view("动态视口内联"));
     case UnitType::kDynamicViewportBlockSize:
-      return String::FromUtf8(base::as_byte_span("动态视口块"));
+      return String::FromUtf8(std::string_view("动态视口块"));
     case UnitType::kDynamicViewportMin:
-      return String::FromUtf8(base::as_byte_span("动态视口最"));
+      return String::FromUtf8(std::string_view("动态视口最"));
     case UnitType::kDynamicViewportMax:
-      return String::FromUtf8(base::as_byte_span("动态视口最大"));
+      return String::FromUtf8(std::string_view("动态视口最大"));
     case UnitType::kContainerWidth:
-      return String::FromUtf8(base::as_byte_span("容器宽"));
+      return String::FromUtf8(std::string_view("容器宽"));
     case UnitType::kContainerHeight:
-      return String::FromUtf8(base::as_byte_span("容器高"));
+      return String::FromUtf8(std::string_view("容器高"));
     case UnitType::kContainerInlineSize:
-      return String::FromUtf8(base::as_byte_span("容器内联"));
+      return String::FromUtf8(std::string_view("容器内联"));
     case UnitType::kContainerBlockSize:
-      return String::FromUtf8(base::as_byte_span("容器块"));
+      return String::FromUtf8(std::string_view("容器块"));
     case UnitType::kContainerMin:
-      return String::FromUtf8(base::as_byte_span("容器最"));
+      return String::FromUtf8(std::string_view("容器最"));
     case UnitType::kContainerMax:
-      return String::FromUtf8(base::as_byte_span("容器最大"));
+      return String::FromUtf8(std::string_view("容器最大"));
     default:
       break;
   }
