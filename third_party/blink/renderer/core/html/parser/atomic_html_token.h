@@ -432,6 +432,7 @@ inline const char* ConvertChineseAttributeName(const UChar* data, unsigned lengt
     if (c0 == u'只' && c1 == u'读') return "readonly";  // 只读
     if (c0 == u'禁' && c1 == u'用') return "disabled";  // 禁用
     if (c0 == u'选' && c1 == u'中') return "checked";   // 选中
+    if (c0 == u'语' && c1 == u'言') return "lang";      // 语言
   } else if (length == 3) {
     auto c0 = data[0], c1 = data[1], c2 = data[2];
     if (c0 == u'替' && c1 == u'代' && c2 == u'文') return "alt";           // 替代文(本)

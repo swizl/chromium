@@ -68,6 +68,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [CEReactions] attribute DOMString type;
     [CEReactions, Reflect=value] attribute DOMString defaultValue;
     [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding, RaisesException=Setter] attribute [LegacyNullToEmptyString] DOMString value;
+    [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding, RaisesException=Setter] attribute [LegacyNullToEmptyString] DOMString 值;
     [CEReactions, RaisesException=Setter, CallWith=ScriptState] attribute object? valueAsDate;
     [RaisesException=Setter] attribute unrestricted double valueAsNumber;
     // Note: The spec has valueLow and valueHigh for two-valued range controls.

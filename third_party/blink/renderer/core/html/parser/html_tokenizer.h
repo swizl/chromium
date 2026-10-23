@@ -322,7 +322,7 @@ class CORE_EXPORT HTMLTokenizer {
   UCharLiteralBuffer<32> appropriate_end_tag_name_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#temporary-buffer
-  LCharLiteralBuffer<32> temporary_buffer_;
+  UCharLiteralBuffer<32> temporary_buffer_;
 
   // We occationally want to emit both a character token and an end tag
   // token (e.g., when lexing script). We buffer the name of the end tag

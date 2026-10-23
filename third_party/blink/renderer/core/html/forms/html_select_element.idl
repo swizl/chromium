@@ -49,7 +49,9 @@
 
     readonly attribute HTMLCollection selectedOptions;
     attribute long selectedIndex;
+    [ImplementedAs=selectedIndex] attribute long 选中索引;
     [ImplementedAs=valueForBinding] attribute DOMString value;
+    [ImplementedAs=valueForBinding] attribute DOMString 值;
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;

@@ -39,6 +39,7 @@
 
     readonly attribute HTMLFormControlsCollection elements;
     readonly attribute long length;
+    [ImplementedAs=length] readonly attribute long 长度;
     [ImplementedAs=item] getter Element (unsigned long index);
     // FIXME: This getter should not have [NotEnumerable].
     [NotEnumerable, CallWith=ScriptState] getter (RadioNodeList or Element) (DOMString name);

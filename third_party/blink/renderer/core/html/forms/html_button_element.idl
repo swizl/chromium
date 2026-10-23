@@ -35,6 +35,7 @@
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString value;
+    [CEReactions, Reflect=value, ImplementedAs=value] attribute DOMString 值;
     // FIXME: attribute HTMLMenuElement? menu;
 
     readonly attribute boolean willValidate;

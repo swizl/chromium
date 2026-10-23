@@ -43,6 +43,7 @@
     readonly attribute DOMString type;
     [CEReactions] attribute DOMString defaultValue;
     [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding] attribute [LegacyNullToEmptyString] DOMString value;
+    [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding] attribute [LegacyNullToEmptyString] DOMString 值;
     readonly attribute unsigned long textLength;
     [ImplementedAs=textLength] readonly attribute unsigned long 文本长度;
 

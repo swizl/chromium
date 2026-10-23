@@ -500,7 +500,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRCDATAEndTagNameState);
       } else if (IsCJKCharacter(cc)) {
-        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        temporary_buffer_.AddChar(cc);
         AddToPossibleEndTag(cc);
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRCDATAEndTagNameState);
       } else {
@@ -517,7 +517,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_CONSUME_NON_NEWLINE(kRCDATAEndTagNameState);
       } else if (IsCJKCharacter(cc)) {
-        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        temporary_buffer_.AddChar(cc);
         AddToPossibleEndTag(cc);
         HTML_CONSUME_NON_NEWLINE(kRCDATAEndTagNameState);
       } else {
@@ -565,7 +565,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRAWTEXTEndTagNameState);
       } else if (IsCJKCharacter(cc)) {
-        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        temporary_buffer_.AddChar(cc);
         AddToPossibleEndTag(cc);
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRAWTEXTEndTagNameState);
       } else {
@@ -582,7 +582,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_CONSUME_NON_NEWLINE(kRAWTEXTEndTagNameState);
       } else if (IsCJKCharacter(cc)) {
-        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        temporary_buffer_.AddChar(cc);
         AddToPossibleEndTag(cc);
         HTML_CONSUME_NON_NEWLINE(kRAWTEXTEndTagNameState);
       } else {
@@ -634,7 +634,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kScriptDataEndTagNameState);
       } else if (IsCJKCharacter(cc)) {
-        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        temporary_buffer_.AddChar(cc);
         AddToPossibleEndTag(cc);
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kScriptDataEndTagNameState);
       } else {
@@ -651,7 +651,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         AddToPossibleEndTag(static_cast<LChar>(ToLowerCase(cc)));
         HTML_CONSUME_NON_NEWLINE(kScriptDataEndTagNameState);
       } else if (IsCJKCharacter(cc)) {
-        temporary_buffer_.AddChar(static_cast<LChar>(cc));
+        temporary_buffer_.AddChar(cc);
         AddToPossibleEndTag(cc);
         HTML_CONSUME_NON_NEWLINE(kScriptDataEndTagNameState);
       } else {
