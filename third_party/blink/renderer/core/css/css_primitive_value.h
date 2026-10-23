@@ -464,7 +464,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   std::optional<double> GetValueIfKnown() const;
 
-  static StringView UnitTypeToString(UnitType);
+  static String UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {
     return string.Is8Bit() ? StringToUnitType(string.Span8())
                            : StringToUnitType(string.Span16());

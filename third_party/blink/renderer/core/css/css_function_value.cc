@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_value_name_zh.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -13,7 +14,12 @@ namespace blink {
 
 String CSSFunctionValue::CustomCSSText() const {
   StringBuilder result;
-  result.Append(GetCSSValueNameAs<StringView>(value_id_));
+  StringView zh = GetCSSValueNameZh(value_id_);
+  if (!zh.IsNull()) {
+    result.Append(String::FromUtf8(zh.Span8()));
+  } else {
+    result.Append(GetCSSValueNameAs<StringView>(value_id_));
+  }
   result.Append('(');
   result.Append(CSSValueList::CustomCSSText());
   result.Append(')');

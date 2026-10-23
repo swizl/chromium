@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 
 #include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/css_value_name_zh.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -22,6 +23,10 @@ CSSIdentifierValue* CSSIdentifierValue::Create(CSSValueID value_id) {
 }
 
 String CSSIdentifierValue::CustomCSSText() const {
+  StringView zh = GetCSSValueNameZh(value_id_);
+  if (!zh.IsNull()) {
+    return String::FromUtf8(zh.Span8());
+  }
   return GetCSSValueNameAs<AtomicString>(value_id_);
 }
 

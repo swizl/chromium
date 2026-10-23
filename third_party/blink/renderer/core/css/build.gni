@@ -383,6 +383,8 @@ blink_core_sources_css = [
   "css_value_id_mappings.h",
   "css_value_list.cc",
   "css_value_list.h",
+  "css_value_name_zh.cc",
+  "css_value_name_zh.h",
   "css_value_pair.cc",
   "css_value_pair.h",
   "css_value_pool.cc",

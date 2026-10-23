@@ -189,13 +189,17 @@ bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
   return !IsRelativeUnit(GetType());
 }
 
-static String FormatNumber(double number, const char* suffix) {
+static String FormatNumber(double number, StringView suffix) {
   // https://www.w3.org/TR/cssom-1/#serialize-a-css-component-value specifies
   // rounding, but does not specify the rounding mode.
   // This function has historically used round-to-even, whereas blink::Format()
   // rounds half away from zero. We use absl::StrFormat() for round-to-even
   // to maintain compatibility.
-  return String(absl::StrFormat("%.6g%s", number, suffix));
+  String result(absl::StrFormat("%.6g", number));
+  if (suffix.empty()) {
+    return result;
+  }
+  return result + suffix.ToString();
 }
 
 static String FormatInfinityOrNaN(double number, StringView suffix) {
@@ -305,12 +309,12 @@ String CSSNumericLiteralValue::CustomCSSText() const {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
           text =
-              FormatNumber(value, UnitTypeToString(GetType()).Utf8().c_str());
+              FormatNumber(value, UnitTypeToString(GetType()));
         }
       } else {
         StringBuilder builder;
         int int_value = value;
-        StringView unit_type = UnitTypeToString(GetType());
+        String unit_type = UnitTypeToString(GetType());
         builder.AppendNumber(int_value);
         builder.Append(unit_type);
         text = builder.ReleaseString();

@@ -24,6 +24,7 @@
 #include <cmath>
 #include <numbers>
 
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -845,139 +847,139 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
   NOTREACHED();
 }
 
-StringView CSSPrimitiveValue::UnitTypeToString(UnitType type) {
+String CSSPrimitiveValue::UnitTypeToString(UnitType type) {
   switch (type) {
     case UnitType::kNumber:
     case UnitType::kInteger:
     case UnitType::kUserUnits:
-      return StringView("");
+      return String();
     case UnitType::kPercentage:
-      return StringView("%");
+      return String::FromUtf8(base::as_byte_span("百分比"));
     case UnitType::kEms:
     case UnitType::kQuirkyEms:
-      return StringView("em");
+      return String::FromUtf8(base::as_byte_span("字号"));
     case UnitType::kExs:
-      return StringView("ex");
+      return String::FromUtf8(base::as_byte_span("字母高度"));
     case UnitType::kRexs:
-      return StringView("rex");
+      return String::FromUtf8(base::as_byte_span("相对字母高度"));
     case UnitType::kRems:
-      return StringView("rem");
+      return String::FromUtf8(base::as_byte_span("相对根"));
     case UnitType::kChs:
-      return StringView("ch");
+      return String::FromUtf8(base::as_byte_span("零宽"));
     case UnitType::kRchs:
-      return StringView("rch");
+      return String::FromUtf8(base::as_byte_span("相对零宽"));
     case UnitType::kIcs:
-      return StringView("ic");
+      return String::FromUtf8(base::as_byte_span("表意宽"));
     case UnitType::kRics:
-      return StringView("ric");
+      return String::FromUtf8(base::as_byte_span("相对表意宽"));
     case UnitType::kLhs:
-      return StringView("lh");
+      return String::FromUtf8(base::as_byte_span("行高"));
     case UnitType::kRlhs:
-      return StringView("rlh");
+      return String::FromUtf8(base::as_byte_span("相对行高"));
     case UnitType::kCaps:
-      return StringView("cap");
+      return String::FromUtf8(base::as_byte_span("大写高"));
     case UnitType::kRcaps:
-      return StringView("rcap");
+      return String::FromUtf8(base::as_byte_span("相对大写高"));
     case UnitType::kPixels:
-      return StringView("px");
+      return String::FromUtf8(base::as_byte_span("像素"));
     case UnitType::kCentimeters:
-      return StringView("cm");
+      return String::FromUtf8(base::as_byte_span("厘米"));
     case UnitType::kDotsPerPixel:
-      return StringView("dppx");
+      return String::FromUtf8(base::as_byte_span("点每像素"));
     case UnitType::kX:
-      return StringView("x");
+      return String::FromUtf8(base::as_byte_span("倍"));
     case UnitType::kDotsPerInch:
-      return StringView("dpi");
+      return String::FromUtf8(base::as_byte_span("点每英寸"));
     case UnitType::kDotsPerCentimeter:
-      return StringView("dpcm");
+      return String::FromUtf8(base::as_byte_span("点每厘米"));
     case UnitType::kMillimeters:
-      return StringView("mm");
+      return String::FromUtf8(base::as_byte_span("毫米"));
     case UnitType::kQuarterMillimeters:
-      return StringView("q");
+      return String::FromUtf8(base::as_byte_span("四分之一毫米"));
     case UnitType::kInches:
-      return StringView("in");
+      return String::FromUtf8(base::as_byte_span("英寸"));
     case UnitType::kPoints:
-      return StringView("pt");
+      return String::FromUtf8(base::as_byte_span("点"));
     case UnitType::kPicas:
-      return StringView("pc");
+      return String::FromUtf8(base::as_byte_span("派卡"));
     case UnitType::kDegrees:
-      return StringView("deg");
+      return String::FromUtf8(base::as_byte_span("度"));
     case UnitType::kRadians:
-      return StringView("rad");
+      return String::FromUtf8(base::as_byte_span("弧度"));
     case UnitType::kGradians:
-      return StringView("grad");
+      return String::FromUtf8(base::as_byte_span("梯度"));
     case UnitType::kMilliseconds:
-      return StringView("ms");
+      return String::FromUtf8(base::as_byte_span("毫秒"));
     case UnitType::kSeconds:
-      return StringView("s");
+      return String::FromUtf8(base::as_byte_span("秒"));
     case UnitType::kHertz:
-      return StringView("hz");
+      return String::FromUtf8(base::as_byte_span("赫"));
     case UnitType::kKilohertz:
-      return StringView("khz");
+      return String::FromUtf8(base::as_byte_span("千赫"));
     case UnitType::kTurns:
-      return StringView("turn");
+      return String::FromUtf8(base::as_byte_span("圈数"));
     case UnitType::kFlex:
-      return StringView("fr");
+      return String::FromUtf8(base::as_byte_span("弹性"));
     case UnitType::kViewportWidth:
-      return StringView("vw");
+      return String::FromUtf8(base::as_byte_span("视口宽"));
     case UnitType::kViewportHeight:
-      return StringView("vh");
+      return String::FromUtf8(base::as_byte_span("视口高"));
     case UnitType::kViewportInlineSize:
-      return StringView("vi");
+      return String::FromUtf8(base::as_byte_span("视口内联"));
     case UnitType::kViewportBlockSize:
-      return StringView("vb");
+      return String::FromUtf8(base::as_byte_span("视口块"));
     case UnitType::kViewportMin:
-      return StringView("vmin");
+      return String::FromUtf8(base::as_byte_span("视口最"));
     case UnitType::kViewportMax:
-      return StringView("vmax");
+      return String::FromUtf8(base::as_byte_span("视口最大"));
     case UnitType::kSmallViewportWidth:
-      return StringView("svw");
+      return String::FromUtf8(base::as_byte_span("小视口宽"));
     case UnitType::kSmallViewportHeight:
-      return StringView("svh");
+      return String::FromUtf8(base::as_byte_span("小视口高"));
     case UnitType::kSmallViewportInlineSize:
-      return StringView("svi");
+      return String::FromUtf8(base::as_byte_span("小视口内联"));
     case UnitType::kSmallViewportBlockSize:
-      return StringView("svb");
+      return String::FromUtf8(base::as_byte_span("小视口块"));
     case UnitType::kSmallViewportMin:
-      return StringView("svmin");
+      return String::FromUtf8(base::as_byte_span("小视口最"));
     case UnitType::kSmallViewportMax:
-      return StringView("svmax");
+      return String::FromUtf8(base::as_byte_span("小视口最大"));
     case UnitType::kLargeViewportWidth:
-      return StringView("lvw");
+      return String::FromUtf8(base::as_byte_span("大视口宽"));
     case UnitType::kLargeViewportHeight:
-      return StringView("lvh");
+      return String::FromUtf8(base::as_byte_span("大视口高"));
     case UnitType::kLargeViewportInlineSize:
-      return StringView("lvi");
+      return String::FromUtf8(base::as_byte_span("大视口内联"));
     case UnitType::kLargeViewportBlockSize:
-      return StringView("lvb");
+      return String::FromUtf8(base::as_byte_span("大视口块"));
     case UnitType::kLargeViewportMin:
-      return StringView("lvmin");
+      return String::FromUtf8(base::as_byte_span("大视口最"));
     case UnitType::kLargeViewportMax:
-      return StringView("lvmax");
+      return String::FromUtf8(base::as_byte_span("大视口最大"));
     case UnitType::kDynamicViewportWidth:
-      return StringView("dvw");
+      return String::FromUtf8(base::as_byte_span("动态视口宽"));
     case UnitType::kDynamicViewportHeight:
-      return StringView("dvh");
+      return String::FromUtf8(base::as_byte_span("动态视口高"));
     case UnitType::kDynamicViewportInlineSize:
-      return StringView("dvi");
+      return String::FromUtf8(base::as_byte_span("动态视口内联"));
     case UnitType::kDynamicViewportBlockSize:
-      return StringView("dvb");
+      return String::FromUtf8(base::as_byte_span("动态视口块"));
     case UnitType::kDynamicViewportMin:
-      return StringView("dvmin");
+      return String::FromUtf8(base::as_byte_span("动态视口最"));
     case UnitType::kDynamicViewportMax:
-      return StringView("dvmax");
+      return String::FromUtf8(base::as_byte_span("动态视口最大"));
     case UnitType::kContainerWidth:
-      return StringView("cqw");
+      return String::FromUtf8(base::as_byte_span("容器宽"));
     case UnitType::kContainerHeight:
-      return StringView("cqh");
+      return String::FromUtf8(base::as_byte_span("容器高"));
     case UnitType::kContainerInlineSize:
-      return StringView("cqi");
+      return String::FromUtf8(base::as_byte_span("容器内联"));
     case UnitType::kContainerBlockSize:
-      return StringView("cqb");
+      return String::FromUtf8(base::as_byte_span("容器块"));
     case UnitType::kContainerMin:
-      return StringView("cqmin");
+      return String::FromUtf8(base::as_byte_span("容器最"));
     case UnitType::kContainerMax:
-      return StringView("cqmax");
+      return String::FromUtf8(base::as_byte_span("容器最大"));
     default:
       break;
   }

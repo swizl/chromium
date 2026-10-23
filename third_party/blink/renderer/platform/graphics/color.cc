@@ -34,6 +34,7 @@
 #include "base/check_op.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "skia/ext/skcms_ext.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/color_conversions.h"
@@ -1066,9 +1068,9 @@ String Color::SerializeAsCanvasColor() const {
 String Color::SerializeLegacyColorAsCSSColor() const {
   StringBuilder result;
   if (IsOpaque() && isfinite(alpha_)) {
-    result.Append("rgb(");
+    result.Append(String::FromUtf8(base::as_byte_span("红绿蓝(")));
   } else {
-    result.Append("rgba(");
+    result.Append(String::FromUtf8(base::as_byte_span("红绿蓝透明度(")));
   }
 
   constexpr float kEpsilon = 1e-07;
@@ -1127,23 +1129,23 @@ String Color::SerializeInternal() const {
     result.Append(ColorSpaceToString(color_space_));
     result.Append("(");
   } else {
-    result.Append("color(");
+    result.Append(String::FromUtf8(base::as_byte_span("颜色(")));
     result.Append(ColorSpaceToString(color_space_));
     result.Append(" ");
   }
 
-  param0_is_none_ ? result.Append("none")
+  param0_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无")))
                   : result.Append(ColorParamToString(param0_));
   result.Append(" ");
-  param1_is_none_ ? result.Append("none")
+  param1_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无")))
                   : result.Append(ColorParamToString(param1_));
   result.Append(" ");
-  param2_is_none_ ? result.Append("none")
+  param2_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无")))
                   : result.Append(ColorParamToString(param2_));
 
   if (alpha_ != 1.0 || alpha_is_none_) {
     result.Append(" / ");
-    alpha_is_none_ ? result.Append("none") : result.AppendNumber(alpha_);
+    alpha_is_none_ ? result.Append(String::FromUtf8(base::as_byte_span("无"))) : result.AppendNumber(alpha_);
   }
   result.Append(")");
   return result.ToString();
