@@ -993,7 +993,7 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
     legacy_listeners_vector = d->event_listener_map.Find(legacy_type_name);
 
   EventListenerVector* listeners_vector =
-      d->event_listener_map.Find(event.type());
+      d->event_listener_map.Find(NormalizeEventType(event.type()));
 
   bool fired_event_listeners = false;
   if (listeners_vector) {

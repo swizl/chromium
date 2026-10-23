@@ -124,7 +124,7 @@ Event::Event(const AtomicString& event_type,
              Cancelable cancelable,
              ComposedMode composed_mode,
              base::TimeTicks platform_time_stamp)
-    : type_(NormalizeEventType(event_type)),
+    : type_(event_type),
       bubbles_(bubbles == Bubbles::kYes),
       cancelable_(cancelable == Cancelable::kYes),
       composed_(composed_mode == ComposedMode::kComposed),
@@ -176,7 +176,7 @@ void Event::initEvent(const AtomicString& event_type_arg,
   is_trusted_ = false;
   prevent_default_called_on_uncancelable_event_ = false;
 
-  type_ = NormalizeEventType(event_type_arg);
+  type_ = event_type_arg;
   bubbles_ = bubbles_arg;
   cancelable_ = cancelable_arg;
 }

@@ -46,6 +46,7 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
         'noTypeHelpers': {},
         'runtimeEnabled': {},
         'runtimeFlagHasOriginTrial': {},
+        'enName': {},
     }
     default_metadata = dict(
         MakeQualifiedNamesWriter.default_metadata,
@@ -79,16 +80,27 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
 
         interface_counts = defaultdict(int)
         tags = self._template_context['tags']
-        # Non-ASCII (e.g. Chinese) tag names stay in the names tables
-        # (svg_names.h/cc) so createElement('中文') is recognized, but they
-        # must not generate C++ element classes (there is no
-        # svg_<中文>_element.h). Skipping them here makes the element factory
-        # fall back to a generic element for such names.
-        tags = [
-            tag for tag in tags if tag['name'].original.isascii()
-        ]
+        # 中文条目（json5 里带 enName 字段关联英文标签）不生成自己的 C++
+        # 元素类，而是在 factory 里注册「中文 localName → 英文 Constructor」
+        # 映射（map key=LocalName()），使 createElement('矩形') 创建
+        # SVGRectElement 且 localName 保留中文。无 enName 的中文条目跳过
+        # （回退通用元素）。
+        en_entries = {}
+        for tag in tags:
+            if tag['name'].original.isascii():
+                en_entries[tag['name'].original] = tag
+        kept = []
+        for tag in tags:
+            if tag['name'].original.isascii():
+                kept.append(tag)
+            elif tag.get('enName') and tag['enName'] in en_entries:
+                tag['zh_alias'] = True
+                kept.append(tag)
+        tags = kept
         self._template_context['tags'] = tags
         for tag in tags:
+            if tag.get('zh_alias'):
+                continue  # interface 等信息从英文条目继承（第二遍）
             tag['has_js_interface'] = self._has_js_interface(tag)
             tag['js_interface'] = self._js_interface(tag)
             tag['interface'] = self._interface(tag)
@@ -96,7 +108,20 @@ class MakeElementFactoryWriter(MakeQualifiedNamesWriter):
                 self._interface_header_dir(tag),
                 self.get_file_basename(tag['interface']),
             )
+            tag['constructor_name'] = tag['name'].to_upper_camel_case()
             interface_counts[tag['interface']] += 1
+
+        # 中文别名继承英文条目的构造信息（英文条目的 interface 等已算好）。
+        for tag in tags:
+            if not tag.get('zh_alias'):
+                continue
+            base = en_entries[tag['enName']]
+            tag['interface'] = base['interface']
+            tag['interface_header'] = base['interface_header']
+            tag['has_js_interface'] = base['has_js_interface']
+            tag['js_interface'] = base['js_interface']
+            tag['noConstructor'] = base.get('noConstructor', False)
+            tag['constructor_name'] = base['constructor_name']
 
         for tag in tags:
             tag['multipleTagNames'] = (

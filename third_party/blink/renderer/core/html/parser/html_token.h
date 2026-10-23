@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKEN_H_
 
+#include <cstring>
 #include <memory>
 #include <utility>
 
@@ -196,867 +197,153 @@ class HTMLToken {
   // guarded to kStartTag / kEndTag / DOCTYPE.
   void ConvertName() {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
-    switch (data_.size()) {
-      case 1:
-        if (data_.data()[0] == u'列') {
-          data_.clear();
-          data_.AddChar('c'); data_.AddChar('o'); data_.AddChar('l');
-          break;
-        }
-        if (data_.data()[0] == u'块') {
-          data_.clear();
-          data_.AddChar('d'); data_.AddChar('i'); data_.AddChar('v');
-          break;
-        }
-        if (data_.data()[0] == u'段') {
-          data_.clear();
-          data_.AddChar('p');
-          break;
-        }
-        if (data_.data()[0] == u'行') {
-          data_.clear();
-          data_.AddChar('t'); data_.AddChar('r');
-          break;
-        }
-        if (data_.data()[0] == u'圆') {
-          data_.clear();
-          data_.AddChar('c'); data_.AddChar('i'); data_.AddChar('r'); data_.AddChar('c'); data_.AddChar('l'); data_.AddChar('e');
-          break;
-        }
-        break;
-      case 2:
-        if (data_.data()[0] == u'上') {
-          if (data_.data()[1] == u'标') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('u'); data_.AddChar('p');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'下') {
-          if (data_.data()[1] == u'标') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('u'); data_.AddChar('b');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'主') {
-          if (data_.data()[1] == u'体') {
-            data_.clear();
-            data_.AddChar('b'); data_.AddChar('o'); data_.AddChar('d'); data_.AddChar('y');
-            break;
-          }
-          if (data_.data()[1] == u'要') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('i'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'代') {
-          if (data_.data()[1] == u'码') {
-            data_.clear();
-            data_.AddChar('c'); data_.AddChar('o'); data_.AddChar('d'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'内') {
-          if (data_.data()[1] == u'框') {
-            data_.clear();
-            data_.AddChar('i'); data_.AddChar('f'); data_.AddChar('r'); data_.AddChar('a'); data_.AddChar('m'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'列') {
-          if (data_.data()[1] == u'组') {
-            data_.clear();
-            data_.AddChar('c'); data_.AddChar('o'); data_.AddChar('l'); data_.AddChar('g'); data_.AddChar('r'); data_.AddChar('o'); data_.AddChar('u'); data_.AddChar('p');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'删') {
-          if (data_.data()[1] == u'除') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('e'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'区') {
-          if (data_.data()[1] == u'块') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('e'); data_.AddChar('c'); data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('o'); data_.AddChar('n');
-            break;
-          }
-          if (data_.data()[1] == u'域') {
-            data_.clear();
-            data_.AddChar('a'); data_.AddChar('r'); data_.AddChar('e'); data_.AddChar('a');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'原') {
-          if (data_.data()[1] == u'样') {
-            data_.clear();
-            data_.AddChar('p'); data_.AddChar('r'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'参') {
-          if (data_.data()[1] == u'数') {
-            data_.clear();
-            data_.AddChar('p'); data_.AddChar('a'); data_.AddChar('r'); data_.AddChar('a'); data_.AddChar('m');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'变') {
-          if (data_.data()[1] == u'量') {
-            data_.clear();
-            data_.AddChar('v'); data_.AddChar('a'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'图') {
-          if (data_.data()[1] == u'像') {
-            data_.clear();
-            data_.AddChar('i'); data_.AddChar('m'); data_.AddChar('g');
-            break;
-          }
-          if (data_.data()[1] == u'形') {
-            data_.clear();
-            data_.AddChar('f'); data_.AddChar('i'); data_.AddChar('g'); data_.AddChar('u'); data_.AddChar('r'); data_.AddChar('e');
-            break;
-          }
-          if (data_.data()[1] == u'标') {
-            data_.clear();
-            data_.AddChar('i');
-            break;
-          }
-          if (data_.data()[1] == u'片') {
-            data_.clear();
-            data_.AddChar('p'); data_.AddChar('i'); data_.AddChar('c'); data_.AddChar('t'); data_.AddChar('u'); data_.AddChar('r'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'地') {
-          if (data_.data()[1] == u'图') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('p');
-            break;
-          }
-          if (data_.data()[1] == u'址') {
-            data_.clear();
-            data_.AddChar('a'); data_.AddChar('d'); data_.AddChar('d'); data_.AddChar('r'); data_.AddChar('e'); data_.AddChar('s'); data_.AddChar('s');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'基') {
-          if (data_.data()[1] == u'址') {
-            data_.clear();
-            data_.AddChar('b'); data_.AddChar('a'); data_.AddChar('s'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'头') {
-          if (data_.data()[1] == u'部') {
-            data_.clear();
-            data_.AddChar('h'); data_.AddChar('e'); data_.AddChar('a'); data_.AddChar('d'); data_.AddChar('e'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'定') {
-          if (data_.data()[1] == u'义') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('f'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'对') {
-          if (data_.data()[1] == u'象') {
-            data_.clear();
-            data_.AddChar('o'); data_.AddChar('b'); data_.AddChar('j'); data_.AddChar('e'); data_.AddChar('c'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'导') {
-          if (data_.data()[1] == u'航') {
-            data_.clear();
-            data_.AddChar('n'); data_.AddChar('a'); data_.AddChar('v');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'小') {
-          if (data_.data()[1] == u'字') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('l'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'尾') {
-          if (data_.data()[1] == u'部') {
-            data_.clear();
-            data_.AddChar('f'); data_.AddChar('o'); data_.AddChar('o'); data_.AddChar('t'); data_.AddChar('e'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'嵌') {
-          if (data_.data()[1] == u'入') {
-            data_.clear();
-            data_.AddChar('e'); data_.AddChar('m'); data_.AddChar('b'); data_.AddChar('e'); data_.AddChar('d');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'引') {
-          if (data_.data()[1] == u'用') {
-            data_.clear();
-            data_.AddChar('c'); data_.AddChar('i'); data_.AddChar('t'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'强') {
-          if (data_.data()[1] == u'调') {
-            data_.clear();
-            data_.AddChar('e'); data_.AddChar('m');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'抬') {
-          if (data_.data()[1] == u'头') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('t'); data_.AddChar('l'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'拼') {
-          if (data_.data()[1] == u'音') {
-            data_.clear();
-            data_.AddChar('r'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'按') {
-          if (data_.data()[1] == u'钮') {
-            data_.clear();
-            data_.AddChar('b'); data_.AddChar('u'); data_.AddChar('t'); data_.AddChar('t'); data_.AddChar('o'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'换') {
-          if (data_.data()[1] == u'行') {
-            data_.clear();
-            data_.AddChar('b'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'描') {
-          if (data_.data()[1] == u'述') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'插') {
-          if (data_.data()[1] == u'入') {
-            data_.clear();
-            data_.AddChar('i'); data_.AddChar('n'); data_.AddChar('s');
-            break;
-          }
-          if (data_.data()[1] == u'槽') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('l'); data_.AddChar('o'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'摘') {
-          if (data_.data()[1] == u'要') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('u'); data_.AddChar('m'); data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('r'); data_.AddChar('y');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'数') {
-          if (data_.data()[1] == u'学') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('t'); data_.AddChar('h');
-            break;
-          }
-          if (data_.data()[1] == u'据') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('a'); data_.AddChar('t'); data_.AddChar('a');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'斜') {
-          if (data_.data()[1] == u'体') {
-            data_.clear();
-            data_.AddChar('i');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'无') {
-          if (data_.data()[1] == u'序') {
-            data_.clear();
-            data_.AddChar('u'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'时') {
-          if (data_.data()[1] == u'间') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('m'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'有') {
-          if (data_.data()[1] == u'序') {
-            data_.clear();
-            data_.AddChar('o'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'术') {
-          if (data_.data()[1] == u'语') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'条') {
-          if (data_.data()[1] == u'目') {
-            data_.clear();
-            data_.AddChar('l'); data_.AddChar('i');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'来') {
-          if (data_.data()[1] == u'源') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('o'); data_.AddChar('u'); data_.AddChar('r'); data_.AddChar('c'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'标') {
-          if (data_.data()[1] == u'签') {
-            data_.clear();
-            data_.AddChar('l'); data_.AddChar('a'); data_.AddChar('b'); data_.AddChar('e'); data_.AddChar('l');
-            break;
-          }
-          if (data_.data()[1] == u'题') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('t'); data_.AddChar('l'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'样') {
-          if (data_.data()[1] == u'式') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('t'); data_.AddChar('y'); data_.AddChar('l'); data_.AddChar('e');
-            break;
-          }
-          if (data_.data()[1] == u'本') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('a'); data_.AddChar('m'); data_.AddChar('p');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'模') {
-          if (data_.data()[1] == u'板') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('e'); data_.AddChar('m'); data_.AddChar('p'); data_.AddChar('l'); data_.AddChar('a'); data_.AddChar('t'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'注') {
-          if (data_.data()[1] == u'音') {
-            data_.clear();
-            data_.AddChar('r'); data_.AddChar('u'); data_.AddChar('b'); data_.AddChar('y');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'画') {
-          if (data_.data()[1] == u'布') {
-            data_.clear();
-            data_.AddChar('c'); data_.AddChar('a'); data_.AddChar('n'); data_.AddChar('v'); data_.AddChar('a'); data_.AddChar('s');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'突') {
-          if (data_.data()[1] == u'出') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('r'); data_.AddChar('k');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'粗') {
-          if (data_.data()[1] == u'体') {
-            data_.clear();
-            data_.AddChar('b');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'缩') {
-          if (data_.data()[1] == u'写') {
-            data_.clear();
-            data_.AddChar('a'); data_.AddChar('b'); data_.AddChar('b'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'网') {
-          if (data_.data()[1] == u'页') {
-            data_.clear();
-            data_.AddChar('h'); data_.AddChar('t'); data_.AddChar('m'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'脚') {
-          if (data_.data()[1] == u'本') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('c'); data_.AddChar('r'); data_.AddChar('i'); data_.AddChar('p'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'范') {
-          if (data_.data()[1] == u'围') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('p'); data_.AddChar('a'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'菜') {
-          if (data_.data()[1] == u'单') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('e'); data_.AddChar('n'); data_.AddChar('u');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'表') {
-          if (data_.data()[1] == u'体') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('b'); data_.AddChar('o'); data_.AddChar('d'); data_.AddChar('y');
-            break;
-          }
-          if (data_.data()[1] == u'单') {
-            data_.clear();
-            data_.AddChar('f'); data_.AddChar('o'); data_.AddChar('r'); data_.AddChar('m');
-            break;
-          }
-          if (data_.data()[1] == u'头') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('h'); data_.AddChar('e'); data_.AddChar('a'); data_.AddChar('d');
-            break;
-          }
-          if (data_.data()[1] == u'尾') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('f'); data_.AddChar('o'); data_.AddChar('o'); data_.AddChar('t');
-            break;
-          }
-          if (data_.data()[1] == u'格') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('a'); data_.AddChar('b'); data_.AddChar('l'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'视') {
-          if (data_.data()[1] == u'频') {
-            data_.clear();
-            data_.AddChar('v'); data_.AddChar('i'); data_.AddChar('d'); data_.AddChar('e'); data_.AddChar('o');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'详') {
-          if (data_.data()[1] == u'情') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('e'); data_.AddChar('t'); data_.AddChar('a'); data_.AddChar('i'); data_.AddChar('l'); data_.AddChar('s');
-            break;
-          }
-          if (data_.data()[1] == u'解') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('d');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'轨') {
-          if (data_.data()[1] == u'道') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('r'); data_.AddChar('a'); data_.AddChar('c'); data_.AddChar('k');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'输') {
-          if (data_.data()[1] == u'入') {
-            data_.clear();
-            data_.AddChar('i'); data_.AddChar('n'); data_.AddChar('p'); data_.AddChar('u'); data_.AddChar('t');
-            break;
-          }
-          if (data_.data()[1] == u'出') {
-            data_.clear();
-            data_.AddChar('o'); data_.AddChar('u'); data_.AddChar('t'); data_.AddChar('p'); data_.AddChar('u'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'选') {
-          if (data_.data()[1] == u'项') {
-            data_.clear();
-            data_.AddChar('o'); data_.AddChar('p'); data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('o'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'重') {
-          if (data_.data()[1] == u'要') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('t'); data_.AddChar('r'); data_.AddChar('o'); data_.AddChar('n'); data_.AddChar('g');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'键') {
-          if (data_.data()[1] == u'盘') {
-            data_.clear();
-            data_.AddChar('k'); data_.AddChar('b'); data_.AddChar('d');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'音') {
-          if (data_.data()[1] == u'频') {
-            data_.clear();
-            data_.AddChar('a'); data_.AddChar('u'); data_.AddChar('d'); data_.AddChar('i'); data_.AddChar('o');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'页') {
-          if (data_.data()[1] == u'头') {
-            data_.clear();
-            data_.AddChar('h'); data_.AddChar('e'); data_.AddChar('a'); data_.AddChar('d');
-            break;
-          }
-          if (data_.data()[1] == u'尾') {
-            data_.clear();
-            data_.AddChar('f'); data_.AddChar('o'); data_.AddChar('o'); data_.AddChar('t'); data_.AddChar('e'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'数') {
-          if (data_.data()[1] == u'学') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('a'); data_.AddChar('t'); data_.AddChar('h');
-            break;
-          }
-          if (data_.data()[1] == u'字') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'行') {
-          if (data_.data()[1] == u'组') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('r'); data_.AddChar('o'); data_.AddChar('w');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'矩') {
-          if (data_.data()[1] == u'形') {
-            data_.clear();
-            data_.AddChar('r'); data_.AddChar('e'); data_.AddChar('c'); data_.AddChar('t');
-            break;
-          }
-        }
-        break;
-      case 3:
-        if (data_.data()[0] == u'下') {
-          if (data_.data()[1] == u'划' && data_.data()[2] == u'线') {
-            data_.clear();
-            data_.AddChar('u');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'代') {
-          if (data_.data()[1] == u'脚' && data_.data()[2] == u'本') {
-            data_.clear();
-            data_.AddChar('n'); data_.AddChar('o'); data_.AddChar('s'); data_.AddChar('c'); data_.AddChar('r'); data_.AddChar('i'); data_.AddChar('p'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'传') {
-          if (data_.data()[1] == u'送' && data_.data()[2] == u'门') {
-            data_.clear();
-            data_.AddChar('p'); data_.AddChar('o'); data_.AddChar('r'); data_.AddChar('t'); data_.AddChar('a'); data_.AddChar('l');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'元') {
-          if (data_.data()[1] == u'数' && data_.data()[2] == u'据') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('e'); data_.AddChar('t'); data_.AddChar('a');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'标') {
-          if (data_.data()[1] == u'识' && data_.data()[2] == u'符') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('i');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'运') {
-          if (data_.data()[1] == u'算' && data_.data()[2] == u'符') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('o');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'矢') {
-          if (data_.data()[1] == u'量' && data_.data()[2] == u'图') {
-            data_.clear();
-            data_.AddChar('s'); data_.AddChar('v'); data_.AddChar('g');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'删') {
-          if (data_.data()[1] == u'除' && data_.data()[2] == u'线') {
-            data_.clear();
-            data_.AddChar('s');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'单') {
-          if (data_.data()[1] == u'元' && data_.data()[2] == u'格') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('d');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'对') {
-          if (data_.data()[1] == u'话' && data_.data()[2] == u'框') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('i'); data_.AddChar('a'); data_.AddChar('l'); data_.AddChar('o'); data_.AddChar('g');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'控') {
-          if (data_.data()[1] == u'件' && data_.data()[2] == u'组') {
-            data_.clear();
-            data_.AddChar('f'); data_.AddChar('i'); data_.AddChar('e'); data_.AddChar('l'); data_.AddChar('d'); data_.AddChar('s'); data_.AddChar('e'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'文') {
-          if (data_.data()[1] == u'本' && data_.data()[2] == u'域') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('e'); data_.AddChar('x'); data_.AddChar('t'); data_.AddChar('a'); data_.AddChar('r'); data_.AddChar('e'); data_.AddChar('a');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'标') {
-          if (data_.data()[1] == u'题') {
-            if (data_.data()[2] == 0x31) {
-              data_.clear();
-              data_.AddChar('h'); data_.AddChar('1');
-              break;
-            }
-            if (data_.data()[2] == 0x32) {
-              data_.clear();
-              data_.AddChar('h'); data_.AddChar('2');
-              break;
-            }
-            if (data_.data()[2] == 0x33) {
-              data_.clear();
-              data_.AddChar('h'); data_.AddChar('3');
-              break;
-            }
-            if (data_.data()[2] == 0x34) {
-              data_.clear();
-              data_.AddChar('h'); data_.AddChar('4');
-              break;
-            }
-            if (data_.data()[2] == 0x35) {
-              data_.clear();
-              data_.AddChar('h'); data_.AddChar('5');
-              break;
-            }
-            if (data_.data()[2] == 0x36) {
-              data_.clear();
-              data_.AddChar('h'); data_.AddChar('6');
-              break;
-            }
-          }
-        }
-        if (data_.data()[0] == u'水') {
-          if (data_.data()[1] == u'平' && data_.data()[2] == u'线') {
-            data_.clear();
-            data_.AddChar('h'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'矢') {
-          if (data_.data()[1] == u'量' && data_.data()[2] == u'图') {
-            data_.clear();
-            data_.AddChar('S'); data_.AddChar('V'); data_.AddChar('G');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'短') {
-          if (data_.data()[1] == u'引' && data_.data()[2] == u'文') {
-            data_.clear();
-            data_.AddChar('q');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'组') {
-          if (data_.data()[1] == u'标' && data_.data()[2] == u'题') {
-            data_.clear();
-            data_.AddChar('l'); data_.AddChar('e'); data_.AddChar('g'); data_.AddChar('e'); data_.AddChar('n'); data_.AddChar('d');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'计') {
-          if (data_.data()[1] == u'量' && data_.data()[2] == u'表') {
-            data_.clear();
-            data_.AddChar('m'); data_.AddChar('e'); data_.AddChar('t'); data_.AddChar('e'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'超') {
-          if (data_.data()[1] == u'链' && data_.data()[2] == u'接') {
-            data_.clear();
-            data_.AddChar('a');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'软') {
-          if (data_.data()[1] == u'换' && data_.data()[2] == u'行') {
-            data_.clear();
-            data_.AddChar('w'); data_.AddChar('b'); data_.AddChar('r');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'进') {
-          if (data_.data()[1] == u'度' && data_.data()[2] == u'条') {
-            data_.clear();
-            data_.AddChar('p'); data_.AddChar('r'); data_.AddChar('o'); data_.AddChar('g'); data_.AddChar('r'); data_.AddChar('e'); data_.AddChar('s'); data_.AddChar('s');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'选') {
-          if (data_.data()[1] == u'择') {
-            if (data_.data()[2] == u'框') {
-              data_.clear();
-              data_.AddChar('s'); data_.AddChar('e'); data_.AddChar('l'); data_.AddChar('e'); data_.AddChar('c'); data_.AddChar('t');
-              break;
-            }
-          }
-          if (data_.data()[1] == u'项') {
-            if (data_.data()[2] == u'组') {
-              data_.clear();
-              data_.AddChar('o'); data_.AddChar('p'); data_.AddChar('t'); data_.AddChar('g'); data_.AddChar('r'); data_.AddChar('o'); data_.AddChar('u'); data_.AddChar('p');
-              break;
-            }
-          }
-        }
-        if (data_.data()[0] == u'长') {
-          if (data_.data()[1] == u'引' && data_.data()[2] == u'文') {
-            data_.clear();
-            data_.AddChar('b'); data_.AddChar('l'); data_.AddChar('o'); data_.AddChar('c'); data_.AddChar('k'); data_.AddChar('q'); data_.AddChar('u'); data_.AddChar('o'); data_.AddChar('t'); data_.AddChar('e');
-            break;
-          }
-        }
-        break;
-      case 4:
-        if (data_.data()[0] == u'内') {
-          if (data_.data()[1] == u'容' && data_.data()[2] == u'区' && data_.data()[3] == u'域') {
-            data_.clear();
-            data_.AddChar('a'); data_.AddChar('r'); data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('c'); data_.AddChar('l'); data_.AddChar('e');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'双') {
-          if (data_.data()[1] == u'向') {
-            if (data_.data()[2] == u'重') {
-              if (data_.data()[3] == u'载') {
-                data_.clear();
-                data_.AddChar('b'); data_.AddChar('d'); data_.AddChar('o');
-                break;
-              }
-            }
-            if (data_.data()[2] == u'隔') {
-              if (data_.data()[3] == u'离') {
-                data_.clear();
-                data_.AddChar('b'); data_.AddChar('d'); data_.AddChar('i');
-                break;
-              }
-            }
-          }
-        }
-        if (data_.data()[0] == u'图') {
-          if (data_.data()[1] == u'形' && data_.data()[2] == u'标' && data_.data()[3] == u'题') {
-            data_.clear();
-            data_.AddChar('f'); data_.AddChar('i'); data_.AddChar('g'); data_.AddChar('c'); data_.AddChar('a'); data_.AddChar('p'); data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('o'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'头') {
-          if (data_.data()[1] == u'单' && data_.data()[2] == u'元' && data_.data()[3] == u'格') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('h');
-            break;
-          }
-          if (data_.data()[1] == u'单' && data_.data()[2] == 0x005f && data_.data()[3] == u'格') {
-            data_.clear();
-            data_.AddChar('t'); data_.AddChar('h');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'表' && data_.data()[1] == u'头' && data_.data()[2] == 0x005f && data_.data()[3] == u'格') {
-          data_.clear();
-          data_.AddChar('t'); data_.AddChar('h');
-          break;
-        }
-        if (data_.data()[0] == u'数') {
-          if (data_.data()[1] == u'据' && data_.data()[2] == u'列' && data_.data()[3] == u'表') {
-            data_.clear();
-            data_.AddChar('d'); data_.AddChar('a'); data_.AddChar('t'); data_.AddChar('a'); data_.AddChar('l'); data_.AddChar('i'); data_.AddChar('s'); data_.AddChar('t');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'注') {
-          if (data_.data()[1] == u'音') {
-            if (data_.data()[2] == u'备') {
-              if (data_.data()[3] == u'选') {
-                data_.clear();
-                data_.AddChar('r'); data_.AddChar('p');
-                break;
-              }
-            }
-            if (data_.data()[2] == u'文') {
-              if (data_.data()[3] == u'本') {
-                data_.clear();
-                data_.AddChar('r'); data_.AddChar('b');
-                break;
-              }
-            }
-            if (data_.data()[2] == u'语') {
-              if (data_.data()[3] == u'义') {
-                data_.clear();
-                data_.AddChar('r'); data_.AddChar('t'); data_.AddChar('c');
-                break;
-              }
-            }
-          }
-        }
-        if (data_.data()[0] == u'表') {
-          if (data_.data()[1] == u'格' && data_.data()[2] == u'标' && data_.data()[3] == u'题') {
-            data_.clear();
-            data_.AddChar('c'); data_.AddChar('a'); data_.AddChar('p'); data_.AddChar('t'); data_.AddChar('i'); data_.AddChar('o'); data_.AddChar('n');
-            break;
-          }
-        }
-        if (data_.data()[0] == u'附') {
-          if (data_.data()[1] == u'加' && data_.data()[2] == u'区' && data_.data()[3] == u'域') {
-            data_.clear();
-            data_.AddChar('a'); data_.AddChar('s'); data_.AddChar('i'); data_.AddChar('d'); data_.AddChar('e');
-            break;
-          }
-        }
-        break;
-      default:
-        break;
+    // 中文标签名 → 标准英文标签名（表驱动查表）。zh 为 UTF-16 中文名字符串，
+    // en 为标准英文标签名。SVG/MathML 内容标签不在此表（走 names 生成器
+    // kZh Tag + 元素工厂映射），此处仅保留 HTML 标签与容器名（矢量图→svg/数学→math）。
+    static constexpr struct ZhTagEntry {
+      const char16_t* zh;
+      size_t zh_len;
+      const char* en;
+    } kZhTagTable[] = {
+        {u"列", 1, "col"},
+        {u"块", 1, "div"},
+        {u"段", 1, "p"},
+        {u"行", 1, "tr"},
+        {u"上标", 2, "sup"},
+        {u"下标", 2, "sub"},
+        {u"主体", 2, "body"},
+        {u"主要", 2, "main"},
+        {u"代码", 2, "code"},
+        {u"内框", 2, "iframe"},
+        {u"列组", 2, "colgroup"},
+        {u"删除", 2, "del"},
+        {u"区块", 2, "section"},
+        {u"区域", 2, "area"},
+        {u"原样", 2, "pre"},
+        {u"参数", 2, "param"},
+        {u"变量", 2, "var"},
+        {u"图形", 2, "figure"},
+        {u"图标", 2, "i"},
+        {u"图片", 2, "picture"},
+        {u"地图", 2, "map"},
+        {u"地址", 2, "address"},
+        {u"基址", 2, "base"},
+        {u"头部", 2, "header"},
+        {u"对象", 2, "object"},
+        {u"导航", 2, "nav"},
+        {u"小字", 2, "small"},
+        {u"尾部", 2, "footer"},
+        {u"嵌入", 2, "embed"},
+        {u"引用", 2, "cite"},
+        {u"强调", 2, "em"},
+        {u"抬头", 2, "title"},
+        {u"拼音", 2, "rt"},
+        {u"按钮", 2, "button"},
+        {u"换行", 2, "br"},
+        {u"描述", 2, "dl"},
+        {u"插入", 2, "ins"},
+        {u"插槽", 2, "slot"},
+        {u"摘要", 2, "summary"},
+        {u"数学", 2, "math"},
+        {u"数据", 2, "data"},
+        {u"斜体", 2, "i"},
+        {u"无序", 2, "ul"},
+        {u"时间", 2, "time"},
+        {u"有序", 2, "ol"},
+        {u"术语", 2, "dt"},
+        {u"条目", 2, "li"},
+        {u"来源", 2, "source"},
+        {u"标签", 2, "label"},
+        {u"标题", 2, "title"},
+        {u"样式", 2, "style"},
+        {u"样本", 2, "samp"},
+        {u"模板", 2, "template"},
+        {u"注音", 2, "ruby"},
+        {u"画布", 2, "canvas"},
+        {u"突出", 2, "mark"},
+        {u"粗体", 2, "b"},
+        {u"缩写", 2, "abbr"},
+        {u"网页", 2, "html"},
+        {u"脚本", 2, "script"},
+        {u"范围", 2, "span"},
+        {u"菜单", 2, "menu"},
+        {u"表体", 2, "tbody"},
+        {u"表单", 2, "form"},
+        {u"表头", 2, "thead"},
+        {u"表尾", 2, "tfoot"},
+        {u"表格", 2, "table"},
+        {u"视频", 2, "video"},
+        {u"详情", 2, "details"},
+        {u"详解", 2, "dd"},
+        {u"轨道", 2, "track"},
+        {u"输入", 2, "input"},
+        {u"输出", 2, "output"},
+        {u"选项", 2, "option"},
+        {u"重要", 2, "strong"},
+        {u"键盘", 2, "kbd"},
+        {u"音频", 2, "audio"},
+        {u"页头", 2, "head"},
+        {u"页尾", 2, "footer"},
+        {u"下划线", 3, "u"},
+        {u"代脚本", 3, "noscript"},
+        {u"传送门", 3, "portal"},
+        {u"元数据", 3, "meta"},
+        {u"矢量图", 3, "svg"},
+        {u"删除线", 3, "s"},
+        {u"单元格", 3, "td"},
+        {u"对话框", 3, "dialog"},
+        {u"控件组", 3, "fieldset"},
+        {u"文本域", 3, "textarea"},
+        {u"标题1", 3, "h1"},
+        {u"标题2", 3, "h2"},
+        {u"标题3", 3, "h3"},
+        {u"标题4", 3, "h4"},
+        {u"标题5", 3, "h5"},
+        {u"标题6", 3, "h6"},
+        {u"水平线", 3, "hr"},
+        {u"短引文", 3, "q"},
+        {u"组标题", 3, "legend"},
+        {u"计量表", 3, "meter"},
+        {u"超链接", 3, "a"},
+        {u"软换行", 3, "wbr"},
+        {u"进度条", 3, "progress"},
+        {u"选择框", 3, "select"},
+        {u"选项组", 3, "optgroup"},
+        {u"长引文", 3, "blockquote"},
+        {u"内容区域", 4, "article"},
+        {u"双向重载", 4, "bdo"},
+        {u"双向隔离", 4, "bdi"},
+        {u"图形标题", 4, "figcaption"},
+        {u"头单元格", 4, "th"},
+        {u"头_格", 3, "th"},
+        {u"表头_格", 4, "th"},
+        {u"数据列表", 4, "datalist"},
+        {u"注音备注", 4, "rp"},
+        {u"注音文本", 4, "rb"},
+        {u"注音语义", 4, "rtc"},
+        {u"表格标题", 4, "caption"},
+        {u"附加区域", 4, "aside"},
+    };
+    const size_t len = data_.size();
+    if (len == 0 || len > 4) {
+      return;
+    }
+    const UChar* const d = data_.data();
+    for (const auto& e : kZhTagTable) {
+      if (e.zh_len != len) {
+        continue;
+      }
+      if (memcmp(d, e.zh, len * sizeof(UChar)) == 0) {
+        data_.clear();
+        for (const char* p = e.en; *p; ++p) {
+          data_.AddChar(*p);
+        }
+        return;
+      }
     }
   }
+
+
 
   // Returns the converted (English) name, converting Chinese names on first
   // call. Callers that consume the token name as an element tag name (e.g.

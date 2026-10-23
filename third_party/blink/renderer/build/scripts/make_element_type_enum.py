@@ -19,6 +19,7 @@ class MakeElementTypeEnumWriter(json5_generator.Writer):
         'constructorNeedsCreateElementFlags': {},
         'interfaceHeaderDir': {},
         'interfaceName': {},
+        'enName': {},
         'noConstructor': {},
         'noTypeHelpers': {},
         'runtimeEnabled': {},

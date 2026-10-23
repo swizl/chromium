@@ -45,7 +45,9 @@ def _symbol(entry):
 
 
 class MakeQualifiedNamesWriter(json5_generator.Writer):
-    default_parameters = {}
+    default_parameters = {
+        'enName': {},
+    }
     default_metadata = {
         'attrsNullNamespace': None,
         'export': '',
