@@ -48,23 +48,29 @@ class _DictionaryMember(object):
     of IDL dictionary.
     """
 
-    def __init__(self, dict_member):
+    def __init__(self, dict_member, master=None):
         assert isinstance(dict_member, web_idl.DictionaryMember)
 
         self._identifier = dict_member.identifier
+        self._master = master
         self._base_name = (
             dict_member.code_generator_info.property_implemented_as
             or dict_member.identifier
         )
+        # An alias member ([ImplementedAs=<same name>]) shares the C++ API and
+        # storage of its master member but keeps its own JS property name.
+        base_name = (
+            master._base_name if master is not None else self._base_name
+        )
 
-        self._api_has = name_style.api_func("has", self._base_name)
-        self._api_get = name_style.api_func(self._base_name)
-        self._api_get_or = name_style.api_func("get", self._base_name, "or")
-        self._api_set = name_style.api_func("set", self._base_name)
+        self._api_has = name_style.api_func("has", base_name)
+        self._api_get = name_style.api_func(base_name)
+        self._api_get_or = name_style.api_func("get", base_name, "or")
+        self._api_set = name_style.api_func("set", base_name)
         # C++ data member that shows the presence of the dictionary member.
-        self._presence_var = name_style.member_var("has", self._base_name)
+        self._presence_var = name_style.member_var("has", base_name)
         # C++ data member that holds the value of the dictionary member.
-        self._value_var = name_style.member_var("member", self._base_name)
+        self._value_var = name_style.member_var("member", base_name)
 
         self._idl_type = dict_member.idl_type
         self._type_info = blink_type_info(self._idl_type)
@@ -82,6 +88,10 @@ class _DictionaryMember(object):
     @property
     def identifier(self):
         return self._identifier
+
+    @property
+    def is_alias(self):
+        return self._master is not None
 
     @property
     def api_has(self):
@@ -416,7 +426,7 @@ def make_constructors(cg_context):
     member_initializer_list = [
         "{}({})".format(member.value_var, member.initializer_on_constructor)
         for member in cg_context.dictionary_own_members
-        if member.initializer_on_constructor
+        if member.initializer_on_constructor and not member.is_alias
     ]
 
     if not _constructor_needs_v8_isolate(cg_context.dictionary):
@@ -690,6 +700,8 @@ def make_accessor_functions(cg_context):
         defs.append(EmptyNode())
 
     for member in cg_context.dictionary_own_members:
+        if member.is_alias:
+            continue
         # Predicate
         add(*make_api_has(member))
 
@@ -731,6 +743,8 @@ def make_trace_function(cg_context):
     body = func_def.body
 
     for member in cg_context.dictionary_own_members:
+        if member.is_alias:
+            continue
         if not member.type_info.is_traceable:
             continue
         body.append(TextNode("visitor->Trace({});".format(member.value_var)))
@@ -1173,7 +1187,7 @@ def make_member_vars_def(cg_context):
         [
             F("bool {} = false;", member.presence_var)
             for member in cg_context.dictionary_own_members
-            if member.does_use_presence_var
+            if member.does_use_presence_var and not member.is_alias
         ]
     )
 
@@ -1190,6 +1204,7 @@ def make_member_vars_def(cg_context):
                 ),
             )
             for member in cg_context.dictionary_own_members
+            if not member.is_alias
         ]
     )
 
@@ -1225,11 +1240,22 @@ def generate_dictionary(dictionary_identifier):
     else:
         base_class_name = "bindings::DictionaryBase"
 
+    own_members = []
+    master_by_base_name = {}
+    for dict_member in dictionary.own_members:
+        base_name = (
+            dict_member.code_generator_info.property_implemented_as
+            or dict_member.identifier
+        )
+        master = master_by_base_name.get(base_name)
+        member = _DictionaryMember(dict_member, master=master)
+        own_members.append(member)
+        if master is None:
+            master_by_base_name[base_name] = member
+
     cg_context = CodeGenContext(
         dictionary=dictionary,
-        dictionary_own_members=tuple(
-            map(_DictionaryMember, dictionary.own_members)
-        ),
+        dictionary_own_members=tuple(own_members),
         class_name=class_name,
         base_class_name=base_class_name,
     )

@@ -6,6 +6,9 @@
 
 dictionary EventInit {
     boolean bubbles = false;
+    [ImplementedAs=bubbles] boolean 冒泡 = false;
     boolean cancelable = false;
+    [ImplementedAs=cancelable] boolean 可取消 = false;
     boolean composed = false;
+    [ImplementedAs=composed] boolean 组合 = false;
 };

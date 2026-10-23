@@ -6,4 +6,5 @@
 
 dictionary CustomEventInit : EventInit {
     any detail = null;
+    [ImplementedAs=detail] any 详情 = null;
 };

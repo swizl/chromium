@@ -6,5 +6,7 @@
 
 dictionary ScrollToOptions : ScrollOptions {
     unrestricted double left;
+    [ImplementedAs=left] unrestricted double 左;
     unrestricted double top;
+    [ImplementedAs=top] unrestricted double 顶;
 };
