@@ -178,6 +178,114 @@ MediaQueryParser::MediaQueryParser(ParserType parser_type,
 
 namespace {
 
+// 中文 media feature 名 → 英文 canonical 名（日月自举编译器中文 @媒体 支持）。
+// 页面用中文名（宽度/高度/颜色/方向 等），映射为英文名后走既有 MediaQueryFeatureSet
+// 校验与求值路径；未命中返回原名（英文名/未知名不受影响）。
+static AtomicString NormalizeChineseMediaFeatureName(const AtomicString& name) {
+  if (name == String(u"\u5bbd\u5ea6")) {  // 宽度 -> width
+    return media_feature_names::kWidthMediaFeature;
+  }
+  if (name == String(u"\u9ad8\u5ea6")) {  // 高度 -> height
+    return media_feature_names::kHeightMediaFeature;
+  }
+  if (name == String(u"\u989c\u8272")) {  // 颜色 -> color
+    return media_feature_names::kColorMediaFeature;
+  }
+  if (name == String(u"\u65b9\u5411")) {  // 方向 -> orientation
+    return media_feature_names::kOrientationMediaFeature;
+  }
+  if (name == String(u"\u5bbd\u9ad8\u6bd4")) {  // 宽高比 -> aspect-ratio
+    return media_feature_names::kAspectRatioMediaFeature;
+  }
+  if (name == String(u"\u5206\u8fa8\u7387")) {  // 分辨率 -> resolution
+    return media_feature_names::kResolutionMediaFeature;
+  }
+  if (name == String(u"\u60ac\u505c")) {  // 悬停 -> hover
+    return media_feature_names::kHoverMediaFeature;
+  }
+  if (name == String(u"\u6307\u9488")) {  // 指针 -> pointer
+    return media_feature_names::kPointerMediaFeature;
+  }
+  if (name == String(u"\u7f51\u683c")) {  // 网格 -> grid
+    return media_feature_names::kGridMediaFeature;
+  }
+  if (name == String(u"\u626b\u63cf")) {  // 扫描 -> scan
+    return media_feature_names::kScanMediaFeature;
+  }
+  if (name == String(u"\u504f\u597d\u914d\u8272\u65b9\u6848")) {
+    // 偏好配色方案 -> prefers-color-scheme
+    return media_feature_names::kPrefersColorSchemeMediaFeature;
+  }
+  if (name == String(u"\u504f\u597d\u51cf\u5c11\u52a8\u6548")) {
+    // 偏好减少动效 -> prefers-reduced-motion
+    return media_feature_names::kPrefersReducedMotionMediaFeature;
+  }
+  if (name == String(u"\u504f\u597d\u5bf9\u6bd4")) {
+    // 偏好对比 -> prefers-contrast
+    return media_feature_names::kPrefersContrastMediaFeature;
+  }
+  if (name == String(u"\u663e\u793a\u6a21\u5f0f")) {
+    // 显示模式 -> display-mode
+    return media_feature_names::kDisplayModeMediaFeature;
+  }
+  if (name == String(u"\u8bbe\u5907\u5bbd\u5ea6")) {
+    // 设备宽度 -> device-width
+    return media_feature_names::kDeviceWidthMediaFeature;
+  }
+  if (name == String(u"\u8bbe\u5907\u9ad8\u5ea6")) {
+    // 设备高度 -> device-height
+    return media_feature_names::kDeviceHeightMediaFeature;
+  }
+  if (name == String(u"\u5355\u8272")) {  // 单色 -> monochrome
+    return media_feature_names::kMonochromeMediaFeature;
+  }
+  if (name == String(u"\u989c\u8272\u7d22\u5f15")) {
+    // 颜色索引 -> color-index
+    return media_feature_names::kColorIndexMediaFeature;
+  }
+  if (name == String(u"\u4efb\u610f\u60ac\u505c")) {
+    // 任意悬停 -> any-hover
+    return media_feature_names::kAnyHoverMediaFeature;
+  }
+  if (name == String(u"\u4efb\u610f\u6307\u9488")) {
+    // 任意指针 -> any-pointer
+    return media_feature_names::kAnyPointerMediaFeature;
+  }
+  if (name == String(u"\u6700\u5c0f\u5bbd\u5ea6")) {
+    // 最小宽度 -> min-width
+    return media_feature_names::kMinWidthMediaFeature;
+  }
+  if (name == String(u"\u6700\u5927\u5bbd\u5ea6")) {
+    // 最大宽度 -> max-width
+    return media_feature_names::kMaxWidthMediaFeature;
+  }
+  if (name == String(u"\u6700\u5c0f\u9ad8\u5ea6")) {
+    // 最小高度 -> min-height
+    return media_feature_names::kMinHeightMediaFeature;
+  }
+  if (name == String(u"\u6700\u5927\u9ad8\u5ea6")) {
+    // 最大高度 -> max-height
+    return media_feature_names::kMaxHeightMediaFeature;
+  }
+  if (name == String(u"\u5185\u8054\u5c3a\u5bf8")) {
+    // 内联尺寸 -> inline-size
+    return media_feature_names::kInlineSizeMediaFeature;
+  }
+  if (name == String(u"\u5757\u7ea7\u5c3a\u5bf8")) {
+    // 块级尺寸 -> block-size
+    return media_feature_names::kBlockSizeMediaFeature;
+  }
+  if (name == String(u"\u8bbe\u5907\u5bbd\u9ad8\u6bd4")) {
+    // 设备宽高比 -> device-aspect-ratio
+    return media_feature_names::kDeviceAspectRatioMediaFeature;
+  }
+  if (name == String(u"\u989c\u8272\u8272\u57df")) {
+    // 颜色色域 -> color-gamut
+    return media_feature_names::kColorGamutMediaFeature;
+  }
+  return name;
+}
+
 bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
   // FIXME: it would be more efficient to use lower-case always for tokenValue.
   return EqualIgnoringAsciiCase(token.Value(), "not") ||
@@ -324,6 +432,7 @@ AtomicString MediaQueryParser::ConsumeAllowedName(
   if (!feature_set.IsCaseSensitive(name)) {
     name = name.ToAsciiLower();
   }
+  name = NormalizeChineseMediaFeatureName(name);
   if (!feature_set.IsAllowed(name)) {
     return g_null_atom;
   }
