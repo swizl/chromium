@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -3610,10 +3611,14 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
                                        token.NumericValue() / 100));
       stream.ConsumeIncludingWhitespace();
     } else if (token.GetType() == kIdentToken) {
-      if (EqualIgnoringAsciiCase(token.Value(), "from")) {
+      if (EqualIgnoringAsciiCase(token.Value(), "from") ||
+          token.Value() ==
+              String::FromUtf8(std::string_view("从"))) {  // 从 = 0%
         result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 0));
         stream.ConsumeIncludingWhitespace();
-      } else if (EqualIgnoringAsciiCase(token.Value(), "to")) {
+      } else if (EqualIgnoringAsciiCase(token.Value(), "to") ||
+                 token.Value() ==
+                     String::FromUtf8(std::string_view("到"))) {  // 到 = 100%
         result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 1));
         stream.ConsumeIncludingWhitespace();
       } else {

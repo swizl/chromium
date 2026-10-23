@@ -1441,6 +1441,7 @@ static CSSValueID ChineseCSSValueKeywordID(const char* buffer,
       if (!memcmp(buffer, u8"自适应内容", 15)) return CSSValueID::kFitContent;
       if (!memcmp(buffer, u8"表格单元格", 15)) return CSSValueID::kTableCell;
       if (!memcmp(buffer, u8"首字母大写", 15)) return CSSValueID::kCapitalize;
+      if (!memcmp(buffer, u8"红绿蓝透明度", 15)) return CSSValueID::kRgba;
     } else if (utf8_len == 18) {
       if (!memcmp(buffer, u8"侧向从右到左", 18)) return CSSValueID::kSidewaysRl;
       if (!memcmp(buffer, u8"侧向从左到右", 18)) return CSSValueID::kSidewaysLr;

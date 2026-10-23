@@ -47,6 +47,14 @@
       unit_type: "kDegrees",
     },
     {
+      name: "度",
+      unit_type: "kDegrees",
+    },
+    {
+      name: "秒",
+      unit_type: "kSeconds",
+    },
+    {
       name: "rad",
       unit_type: "kRadians",
     },
