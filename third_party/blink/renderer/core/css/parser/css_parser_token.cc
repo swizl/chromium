@@ -124,6 +124,18 @@ CSSValueID CSSParserToken::Id() const {
   return static_cast<CSSValueID>(id_);
 }
 
+CSSValueID CSSParserToken::FunctionId() const {
+  if (type_ != kFunctionToken) {
+    return CSSValueID::kInvalid;
+  }
+  // 函数名也可能为中文（如 红绿蓝透明度(…)/旋转(…)），
+  // 与 Id() 一样懒查 CssValueKeywordID（含中文值表）。
+  if (id_ < 0) {
+    id_ = static_cast<int>(CssValueKeywordID(Value()));
+  }
+  return static_cast<CSSValueID>(id_);
+}
+
 bool CSSParserToken::HasStringBacking() const {
   CSSParserTokenType token_type = GetType();
   if (value_is_inline_) {

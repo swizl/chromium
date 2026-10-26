@@ -50,5 +50,5 @@ interface mixin ParentNode {
   [Affects=Nothing, RaisesException] Element? querySelector(DOMString selectors);
   [Affects=Nothing, RaisesException, ImplementedAs=querySelector] Element? 查询选择器(DOMString selectors);
   [Affects=Nothing, NewObject, RaisesException] NodeList querySelectorAll(DOMString selectors);
-  [Affects=Nothing, NewObject, RaisesException, ImplementedAs=querySelectorAll] NodeList 查询选择器々_全部(DOMString selectors);
+  [Affects=Nothing, NewObject, RaisesException, ImplementedAs=querySelectorAll] NodeList 查询选择器全部(DOMString selectors);
 };

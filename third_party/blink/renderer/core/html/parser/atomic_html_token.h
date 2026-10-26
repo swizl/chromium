@@ -445,6 +445,8 @@ constexpr ZhAttrEntry kZhAttrNameTable[] = {
     {u"最小值", 3, "min"},          // 最小值
     {u"占位符", 3, "placeholder"},  // 占位符
     {u"微调器", 3, "controls"},     // 微调器
+    {u"横坐标", 3, "x"},            // 横坐标 (SVG)
+    {u"纵坐标", 3, "y"},            // 纵坐标 (SVG)
     // length == 4
     {u"自动播放", 4, "autoplay"},      // 自动播放
     {u"微调控件", 4, "controls"},      // 微调控件
@@ -459,6 +461,9 @@ constexpr ZhAttrEntry kZhAttrNameTable[] = {
     {u"多选", 2, "multiple"},         // 多选 (表单)
     {u"内容", 2, "content"},          // 内容 (meta)
     {u"自动补全", 4, "autocomplete"}, // 自动补全 (表单)
+    // length == 5
+    {u"中心横坐标", 5, "cx"},         // 中心横坐标 (SVG)
+    {u"中心纵坐标", 5, "cy"},         // 中心纵坐标 (SVG)
 };
 
 // 表驱动查找：data（UTF-16 码元）与条目 UTF-16 字面量内容相等 → 返回英文；否则 nullptr。

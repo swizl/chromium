@@ -161,12 +161,7 @@ class CORE_EXPORT CSSParserToken {
 
   CSSValueID Id() const;
 
-  CSSValueID FunctionId() const {
-    if (type_ != kFunctionToken) {
-      return CSSValueID::kInvalid;
-    }
-    return static_cast<CSSValueID>(id_);
-  }
+  CSSValueID FunctionId() const;
 
   bool HasStringBacking() const;
 

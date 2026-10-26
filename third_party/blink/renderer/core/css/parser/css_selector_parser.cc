@@ -1519,6 +1519,7 @@ bool CSSSelectorParser::ConsumeName(CSSParserTokenStream& stream,
       else if (c0 == 0x5b9a && c1 == 0x4e49) { name = AtomicString("dfn"); }    // 定义
       else if (c0 == 0x5bf9 && c1 == 0x8c61) { name = AtomicString("object"); } // 对象
       else if (c0 == 0x5bfc && c1 == 0x822a) { name = AtomicString("nav"); }    // 导航
+      else if (c0 == 0x7ae0 && c1 == 0x8282) { name = AtomicString("section"); } // 章节
       else if (c0 == 0x5c0f && c1 == 0x5b57) { name = AtomicString("small"); }  // 小字
       else if (c0 == 0x5c3e && c1 == 0x90e8) { name = AtomicString("footer"); } // 尾部
       else if (c0 == 0x5d4c && c1 == 0x5165) { name = AtomicString("embed"); }  // 嵌入
@@ -1605,7 +1606,9 @@ bool CSSSelectorParser::ConsumeName(CSSParserTokenStream& stream,
       else if (c0 == 0x957f && c1 == 0x5f15 && c2 == 0x6587) { name = AtomicString("blockquote"); }// 长引用
     } else if (name.length() == 4) {
       auto c0 = name[0], c1 = name[1], c2 = name[2], c3 = name[3];
-      if (c0 == 0x5185 && c1 == 0x5bb9 && c2 == 0x533a && c3 == 0x57df) { name = AtomicString("article"); }    // 内容区域
+      if (c0 == 0x9875 && c1 == 0x5934 && c2 == 0x533a && c3 == 0x5757) { name = AtomicString("header"); }  // 页头区块
+      else if (c0 == 0x9875 && c1 == 0x811a && c2 == 0x533a && c3 == 0x5757) { name = AtomicString("footer"); }  // 页脚区块
+      else if (c0 == 0x5185 && c1 == 0x5bb9 && c2 == 0x533a && c3 == 0x57df) { name = AtomicString("article"); }    // 内容区域
       else if (c0 == 0x53cc && c1 == 0x5411 && c2 == 0x91cd && c3 == 0x8f7d) { name = AtomicString("bdo"); }    // 双向重载
       else if (c0 == 0x53cc && c1 == 0x5411 && c2 == 0x9694 && c3 == 0x79bb) { name = AtomicString("bdi"); }    // 双向隔离
       else if (c0 == 0x56fe && c1 == 0x5f62 && c2 == 0x6807 && c3 == 0x9898) { name = AtomicString("figcaption"); }// 图形标题

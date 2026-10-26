@@ -1070,7 +1070,7 @@ String Color::SerializeLegacyColorAsCSSColor() const {
   if (IsOpaque() && isfinite(alpha_)) {
     result.Append(String::FromUtf8(std::string_view("红绿蓝(")));
   } else {
-    result.Append(String::FromUtf8(std::string_view("红绿蓝透明度(")));
+    result.Append(String::FromUtf8(std::string_view("红绿蓝透(")));
   }
 
   constexpr float kEpsilon = 1e-07;

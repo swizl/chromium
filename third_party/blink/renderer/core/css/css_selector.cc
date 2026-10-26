@@ -844,6 +844,16 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
   if (!name.Is8Bit()) {
+    // 中文伪类名映射（如 第一子元素→:first-child、悬停→:hover）。
+    // 原逻辑对 >0xFF 的码元（汉字）直接返回 kPseudoUnknown，
+    // 这里在 Latin-1 转码前先查中文伪类表。
+    std::u16string_view wide_name = base::as_string_view(name.Span16());
+    if (wide_name == u"第一子元素") {
+      return CSSSelector::kPseudoFirstChild;
+    }
+    if (wide_name == u"悬停") {
+      return CSSSelector::kPseudoHover;
+    }
     Vector<LChar, 50> latin1_name;
     for (UChar ch : name.Span16()) {
       if (ch > 0xFF) {

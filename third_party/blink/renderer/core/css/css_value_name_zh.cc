@@ -220,7 +220,7 @@ StringView GetCSSValueNameZh(CSSValueID value_id) {
     case CSSValueID::kRepeatX: return StringView("水平重复");
     case CSSValueID::kRepeatY: return StringView("垂直重复");
     case CSSValueID::kRevertLayer: return StringView("回退图层");
-    case CSSValueID::kRgba: return StringView("红绿蓝透明度");
+    case CSSValueID::kRgba: return StringView("红绿蓝透");
     case CSSValueID::kRidge: return StringView("脊线");
     case CSSValueID::kRight: return StringView("右侧");
     case CSSValueID::kRotate: return StringView("旋转");

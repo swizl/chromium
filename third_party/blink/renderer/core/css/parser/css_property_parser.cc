@@ -528,6 +528,8 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"单词换行", 12)) return ExposedProperty(CSSPropertyID::kAliasWordWrap, execution_context, mode);
       if (!memcmp(buffer, u8"变换原点", 12)) return ExposedProperty(CSSPropertyID::kTransformOrigin, execution_context, mode);
       if (!memcmp(buffer, u8"变换样式", 12)) return ExposedProperty(CSSPropertyID::kTransformStyle, execution_context, mode);
+      if (!memcmp(buffer, u8"边框圆角", 12)) return ExposedProperty(CSSPropertyID::kBorderRadius, execution_context, mode);
+      if (!memcmp(buffer, u8"盒子阴影", 12)) return ExposedProperty(CSSPropertyID::kBoxShadow, execution_context, mode);
       if (!memcmp(buffer, u8"右上圆角", 12)) return ExposedProperty(CSSPropertyID::kBorderTopRightRadius, execution_context, mode);
       if (!memcmp(buffer, u8"右下圆角", 12)) return ExposedProperty(CSSPropertyID::kBorderBottomRightRadius, execution_context, mode);
       if (!memcmp(buffer, u8"右内边距", 12)) return ExposedProperty(CSSPropertyID::kPaddingRight, execution_context, mode);
@@ -1161,6 +1163,7 @@ static CSSValueID ChineseCSSValueKeywordID(const char* buffer,
       if (!memcmp(buffer, u8"青", 3)) return CSSValueID::kCyan;
       if (!memcmp(buffer, u8"黄", 3)) return CSSValueID::kYellow;
       if (!memcmp(buffer, u8"黑", 3)) return CSSValueID::kBlack;
+      if (!memcmp(buffer, u8"无", 3)) return CSSValueID::kNone;
     } else if (utf8_len == 6) {
       if (!memcmp(buffer, u8"上标", 6)) return CSSValueID::kSuper;
       if (!memcmp(buffer, u8"下标", 6)) return CSSValueID::kSub;
@@ -1190,6 +1193,7 @@ static CSSValueID ChineseCSSValueKeywordID(const char* buffer,
       if (!memcmp(buffer, u8"包裹", 6)) return CSSValueID::kWrap;
       if (!memcmp(buffer, u8"十字", 6)) return CSSValueID::kCrosshair;
       if (!memcmp(buffer, u8"半径", 6)) return CSSValueID::kR;
+      if (!memcmp(buffer, u8"模糊", 6)) return CSSValueID::kBlur;
       if (!memcmp(buffer, u8"双向", 6)) return CSSValueID::kBoth;
       if (!memcmp(buffer, u8"双线", 6)) return CSSValueID::kDouble;
       if (!memcmp(buffer, u8"反面", 6)) return CSSValueID::kVerso;
@@ -1364,8 +1368,10 @@ static CSSValueID ChineseCSSValueKeywordID(const char* buffer,
       if (!memcmp(buffer, u8"边框盒", 9)) return CSSValueID::kBorderBox;
       if (!memcmp(buffer, u8"进行中", 9)) return CSSValueID::kProgress;
       if (!memcmp(buffer, u8"饱和度", 9)) return CSSValueID::kSaturation;
+      if (!memcmp(buffer, u8"红绿蓝", 9)) return CSSValueID::kRgb;
     } else if (utf8_len == 12) {
       if (!memcmp(buffer, u8"Webkit弹性", 12)) return CSSValueID::kWebkitFlex;
+      if (!memcmp(buffer, u8"红绿蓝透", 12)) return CSSValueID::kRgba;
       if (!memcmp(buffer, u8"两端对齐", 12)) return CSSValueID::kSpaceBetween;
       if (!memcmp(buffer, u8"从右到左", 12)) return CSSValueID::kRtl;
       if (!memcmp(buffer, u8"从左到右", 12)) return CSSValueID::kLtr;
@@ -1441,7 +1447,6 @@ static CSSValueID ChineseCSSValueKeywordID(const char* buffer,
       if (!memcmp(buffer, u8"自适应内容", 15)) return CSSValueID::kFitContent;
       if (!memcmp(buffer, u8"表格单元格", 15)) return CSSValueID::kTableCell;
       if (!memcmp(buffer, u8"首字母大写", 15)) return CSSValueID::kCapitalize;
-      if (!memcmp(buffer, u8"红绿蓝透明度", 15)) return CSSValueID::kRgba;
     } else if (utf8_len == 18) {
       if (!memcmp(buffer, u8"侧向从右到左", 18)) return CSSValueID::kSidewaysRl;
       if (!memcmp(buffer, u8"侧向从左到右", 18)) return CSSValueID::kSidewaysLr;
