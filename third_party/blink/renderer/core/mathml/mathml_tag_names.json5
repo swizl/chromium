@@ -145,7 +145,7 @@
       interfaceName: "MathMLRowElement",
     },
     { name: "注解", enName: "annotation" },
-    { name: "注解々_标记语言", enName: "annotation-xml" },
+    { name: "XML注解", enName: "annotation-xml" },
     { name: "锚点", enName: "a" },
     { name: "动作", enName: "maction" },
     { name: "对齐标记", enName: "malignmark" },

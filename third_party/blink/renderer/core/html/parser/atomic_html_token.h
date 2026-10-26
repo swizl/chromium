@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_ATOMIC_HTML_TOKEN_H_
 
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <optional>
 
@@ -336,122 +337,164 @@ class CORE_EXPORT AtomicHTMLToken {
   Vector<Attribute, kAttributePrealloc> attributes_;
 };
 
+namespace {
+// 中文属性值/属性名 → 英文等价映射表（表驱动，UTF-16 字面量 + memcmp 内容比较；
+// 与 html_token.h 的 kZhTagTable 同风格，不用手写 if 嵌套）。
+struct ZhAttrEntry {
+  const char16_t* zh;
+  size_t zh_len;
+  const char* en;
+};
+
+// 中文属性值映射表（type/target/rel/loading/direction 等值）。
+constexpr ZhAttrEntry kZhAttrValueTable[] = {
+    // type 值
+    {u"文本", 2, "text"},      // 文本
+    {u"密码", 2, "password"},  // 密码
+    {u"提交", 2, "submit"},    // 提交
+    {u"重置", 2, "reset"},     // 重置
+    {u"按钮", 2, "button"},    // 按钮
+    {u"文件", 2, "file"},      // 文件
+    {u"隐藏", 2, "hidden"},    // 隐藏
+    {u"日期", 2, "date"},      // 日期
+    {u"邮箱", 2, "email"},     // 邮箱
+    {u"数字", 2, "number"},    // 数字
+    {u"范围", 2, "range"},     // 范围
+    {u"搜索", 2, "search"},    // 搜索
+    {u"电话", 2, "tel"},       // 电话
+    {u"链接", 2, "url"},       // 链接
+    {u"颜色", 2, "color"},     // 颜色
+    // target 值
+    {u"空白", 2, "_blank"},    // 空白
+    {u"自身", 2, "_self"},     // 自身
+    {u"父级", 2, "_parent"},   // 父级
+    {u"顶级", 2, "_top"},      // 顶级
+    // rel 值
+    {u"图标", 2, "icon"},      // 图标
+    // loading 值
+    {u"急切", 2, "eager"},     // 急切
+    // 自动
+    {u"自动", 2, "autoplay"},  // 自动(播放)
+    // 预取（原 length==3 分支笔误，实际 2 字）
+    {u"预取", 2, "prefetch"},  // 预取
+    // 匿名（原 length==4 分支笔误，实际 2 字）
+    {u"匿名", 2, "anonymous"},  // 匿名
+    // type 值（3 字）
+    {u"复选框", 3, "checkbox"},  // 复选框
+    {u"单选框", 3, "radio"},     // 单选框
+    // rel 值（3 字）
+    {u"样式表", 3, "stylesheet"},  // 样式表
+    {u"预加载", 3, "preload"},     // 预加载
+    {u"无跟随", 3, "nofollow"},    // 无跟随
+    // loading 值（3 字）
+    {u"懒加载", 3, "lazy"},  // 懒加载
+    // 方向（3 字）
+    {u"左到右", 3, "ltr"},   // 左到右
+    {u"右到左", 3, "rtl"},   // 右到左
+    // 自动（4 字）
+    {u"自动播放", 4, "autoplay"},   // 自动播放
+    {u"自动聚焦", 4, "autofocus"},  // 自动聚焦
+};
+
+// 中文属性名映射表。
+constexpr ZhAttrEntry kZhAttrNameTable[] = {
+    // length == 1
+    {u"名", 1, "name"},    // 名
+    {u"值", 1, "value"},   // 值
+    {u"类", 1, "class"},   // 类
+    {u"源", 1, "src"},     // 源
+    {u"链", 1, "href"},    // 链
+    {u"宽", 1, "width"},   // 宽
+    {u"高", 1, "height"},  // 高
+    {u"式", 1, "style"},   // 式
+    // length == 2
+    {u"类型", 2, "type"},      // 类型
+    {u"类名", 2, "class"},     // 类名
+    {u"标识", 2, "id"},        // 标识
+    {u"样式", 2, "style"},     // 样式
+    {u"来源", 2, "src"},       // 来源
+    {u"标题", 2, "title"},     // 标题
+    {u"名称", 2, "name"},      // 名称
+    {u"宽度", 2, "width"},     // 宽度
+    {u"高度", 2, "height"},    // 高度
+    {u"边框", 2, "border"},    // 边框
+    {u"对齐", 2, "align"},     // 对齐
+    {u"链接", 2, "href"},      // 链接
+    {u"角色", 2, "role"},      // 角色
+    {u"显示", 2, "hidden"},    // 显示 (mapped to hidden for hidden attribute)
+    {u"媒体", 2, "media"},     // 媒体
+    {u"目标", 2, "target"},    // 目标
+    {u"加载", 2, "loading"},   // 加载
+    {u"关系", 2, "rel"},       // 关系
+    {u"替代", 2, "alt"},       // 替代
+    {u"方向", 2, "dir"},       // 方向
+    {u"可见", 2, "hidden"},    // 可见 (hidden when not visible)
+    {u"图片", 2, "src"},       // 图片 (for img src)
+    {u"只读", 2, "readonly"},  // 只读
+    {u"禁用", 2, "disabled"},  // 禁用
+    {u"选中", 2, "checked"},   // 选中
+    {u"语言", 2, "lang"},      // 语言
+    {u"半径", 2, "r"},         // 半径 (SVG)
+    {u"填充", 2, "fill"},      // 填充 (SVG)
+    {u"描边", 2, "stroke"},    // 描边 (SVG)
+    // length == 3
+    {u"替代文", 3, "alt"},          // 替代文(本)
+    {u"字符集", 3, "charset"},      // 字符集
+    {u"数据列", 3, "list"},         // 数据列(表)
+    {u"最大值", 3, "max"},          // 最大值
+    {u"最小值", 3, "min"},          // 最小值
+    {u"占位符", 3, "placeholder"},  // 占位符
+    {u"微调器", 3, "controls"},     // 微调器
+    // length == 4
+    {u"自动播放", 4, "autoplay"},      // 自动播放
+    {u"微调控件", 4, "controls"},      // 微调控件
+    {u"日期时间", 4, "datetime"},      // 日期时间
+    {u"图像描述", 4, "alt"},           // 图像描述
+    {u"数据属性", 4, "data-*"},        // 数据属性
+    {u"名称空间", 4, "xmlns"},         // 名称空间
+    {u"描边宽度", 4, "stroke-width"},  // 描边宽度 (SVG)
+    {u"跨列", 2, "colspan"},          // 跨列 (表格)
+    {u"跨行", 2, "rowspan"},          // 跨行 (表格)
+    {u"必填", 2, "required"},         // 必填 (表单)
+    {u"多选", 2, "multiple"},         // 多选 (表单)
+    {u"内容", 2, "content"},          // 内容 (meta)
+    {u"自动补全", 4, "autocomplete"}, // 自动补全 (表单)
+};
+
+// 表驱动查找：data（UTF-16 码元）与条目 UTF-16 字面量内容相等 → 返回英文；否则 nullptr。
+inline const char* LookupZhAttr(const ZhAttrEntry* table, size_t table_size,
+                                const UChar* data, unsigned length) {
+  if (length == 0) {
+    return nullptr;
+  }
+  for (size_t i = 0; i < table_size; ++i) {
+    const ZhAttrEntry& entry = table[i];
+    if (entry.zh_len != length) {
+      continue;
+    }
+    if (memcmp(data, entry.zh, length * sizeof(UChar)) == 0) {
+      return entry.en;
+    }
+  }
+  return nullptr;
+}
+}  // namespace
+
 // Convert Chinese attribute value to English equivalent.
 // Returns nullptr if not a Chinese value. Empty string means boolean attribute.
 inline const char* ConvertChineseAttributeValue(const UChar* data, unsigned length) {
-  if (length == 2) {
-    auto c0 = data[0], c1 = data[1];
-    // type 值
-    if (c0 == u'文' && c1 == u'本') return "text";           // 文本
-    if (c0 == u'密' && c1 == u'码') return "password";       // 密码
-    if (c0 == u'提' && c1 == u'交') return "submit";         // 提交
-    if (c0 == u'重' && c1 == u'置') return "reset";          // 重置
-    if (c0 == u'按' && c1 == u'钮') return "button";         // 按钮
-    if (c0 == u'文' && c1 == u'件') return "file";           // 文件
-    if (c0 == u'隐' && c1 == u'藏') return "hidden";         // 隐藏
-    if (c0 == u'日' && c1 == u'期') return "date";           // 日期
-    if (c0 == u'邮' && c1 == u'箱') return "email";          // 邮箱
-    if (c0 == u'数' && c1 == u'字') return "number";         // 数字
-    if (c0 == u'范' && c1 == u'围') return "range";          // 范围
-    if (c0 == u'搜' && c1 == u'索') return "search";         // 搜索
-    if (c0 == u'电' && c1 == u'话') return "tel";            // 电话
-    if (c0 == u'链' && c1 == u'接') return "url";            // 链接
-    if (c0 == u'颜' && c1 == u'色') return "color";          // 颜色
-    // target 值
-    if (c0 == u'空' && c1 == u'白') return "_blank";         // 空白
-    if (c0 == u'自' && c1 == u'身') return "_self";          // 自身
-    if (c0 == u'父' && c1 == u'级') return "_parent";        // 父级
-    if (c0 == u'顶' && c1 == u'级') return "_top";           // 顶级
-    // rel 值
-    if (c0 == u'图' && c1 == u'标') return "icon";           // 图标
-    // loading 值
-    if (c0 == u'急' && c1 == u'切') return "eager";          // 急切
-    // 自动
-    if (c0 == u'自' && c1 == u'动') return "autoplay";       // 自动(播放)
-  } else if (length == 3) {
-    auto c0 = data[0], c1 = data[1], c2 = data[2];
-    // type 值
-    if (c0 == u'复' && c1 == u'选' && c2 == u'框') return "checkbox";     // 复选框
-    if (c0 == u'单' && c1 == u'选' && c2 == u'框') return "radio";        // 单选框
-    // rel 值
-    if (c0 == u'样' && c1 == u'式' && c2 == u'表') return "stylesheet";   // 样式表
-    if (c0 == u'预' && c1 == u'加' && c2 == u'载') return "preload";      // 预加载
-    if (c0 == u'预' && c1 == u'取') return "prefetch";                      // 预取
-    if (c0 == u'无' && c1 == u'跟' && c2 == u'随') return "nofollow";     // 无跟随
-    // loading 值
-    if (c0 == u'懒' && c1 == u'加' && c2 == u'载') return "lazy";         // 懒加载
-    // 方向
-    if (c0 == u'左' && c1 == u'到' && c2 == u'右') return "ltr";          // 左到右
-    if (c0 == u'右' && c1 == u'到' && c2 == u'左') return "rtl";          // 右到左
-  } else if (length == 4) {
-    auto c0 = data[0], c1 = data[1], c2 = data[2], c3 = data[3];
-    if (c0 == u'自' && c1 == u'动' && c2 == u'播' && c3 == u'放') return "autoplay";    // 自动播放
-    if (c0 == u'自' && c1 == u'动' && c2 == u'聚' && c3 == u'焦') return "autofocus";   // 自动聚焦
-    if (c0 == u'匿' && c1 == u'名') return "anonymous";                    // 匿名
-  }
-  return nullptr;
+  return LookupZhAttr(kZhAttrValueTable,
+                      sizeof(kZhAttrValueTable) / sizeof(kZhAttrValueTable[0]),
+                      data, length);
 }
 
 // Convert Chinese attribute name to English equivalent.
 // Returns empty string if not a Chinese attribute name.
 // Input is the raw UChar buffer from the HTML token.
 inline const char* ConvertChineseAttributeName(const UChar* data, unsigned length) {
-  if (length == 1) {
-    if (data[0] == u'名') return "name";   // 名
-    if (data[0] == u'值') return "value";  // 值
-    if (data[0] == u'类') return "class";  // 类
-    if (data[0] == u'源') return "src";    // 源
-    if (data[0] == u'链') return "href";   // 链
-    if (data[0] == u'宽') return "width";  // 宽
-    if (data[0] == u'高') return "height"; // 高
-    if (data[0] == u'式') return "style";  // 式
-  } else if (length == 2) {
-    auto c0 = data[0], c1 = data[1];
-    if (c0 == u'类' && c1 == u'型') return "type";      // 类型
-    if (c0 == u'类' && c1 == u'名') return "class";     // 类名
-    if (c0 == u'标' && c1 == u'识') return "id";        // 标识
-    if (c0 == u'样' && c1 == u'式') return "style";     // 样式
-    if (c0 == u'来' && c1 == u'源') return "src";       // 来源
-    if (c0 == u'标' && c1 == u'题') return "title";     // 标题
-    if (c0 == u'名' && c1 == u'称') return "name";      // 名称
-    if (c0 == u'宽' && c1 == u'度') return "width";     // 宽度
-    if (c0 == u'高' && c1 == u'度') return "height";    // 高度
-    if (c0 == u'边' && c1 == u'框') return "border";    // 边框
-    if (c0 == u'对' && c1 == u'齐') return "align";     // 对齐
-    if (c0 == u'链' && c1 == u'接') return "href";      // 链接
-    if (c0 == u'角' && c1 == u'色') return "role";      // 角色
-    if (c0 == u'显' && c1 == u'示') return "hidden";    // 显示 (mapped to hidden for hidden attribute)
-    if (c0 == u'媒' && c1 == u'体') return "media";     // 媒体
-    if (c0 == u'目' && c1 == u'标') return "target";    // 目标
-    if (c0 == u'加' && c1 == u'载') return "loading";   // 加载
-    if (c0 == u'关' && c1 == u'系') return "rel";       // 关系
-    if (c0 == u'替' && c1 == u'代') return "alt";       // 替代
-    if (c0 == u'方' && c1 == u'向') return "dir";       // 方向
-    if (c0 == u'可' && c1 == u'见') return "hidden";    // 可见 (hidden when not visible)
-    if (c0 == u'图' && c1 == u'片') return "src";       // 图片 (for img src)
-    if (c0 == u'只' && c1 == u'读') return "readonly";  // 只读
-    if (c0 == u'禁' && c1 == u'用') return "disabled";  // 禁用
-    if (c0 == u'选' && c1 == u'中') return "checked";   // 选中
-    if (c0 == u'语' && c1 == u'言') return "lang";      // 语言
-  } else if (length == 3) {
-    auto c0 = data[0], c1 = data[1], c2 = data[2];
-    if (c0 == u'替' && c1 == u'代' && c2 == u'文') return "alt";           // 替代文(本)
-    if (c0 == u'字' && c1 == u'符' && c2 == u'集') return "charset";       // 字符集
-    if (c0 == u'数' && c1 == u'据' && c2 == u'列') return "list";          // 数据列(表)
-    if (c0 == u'最' && c1 == u'大' && c2 == u'值') return "max";           // 最大值
-    if (c0 == u'最' && c1 == u'小' && c2 == u'值') return "min";           // 最小值
-    if (c0 == u'占' && c1 == u'位' && c2 == u'符') return "placeholder";   // 占位符
-    if (c0 == u'微' && c1 == u'调' && c2 == u'器') return "controls";      // 微调器
-  } else if (length == 4) {
-    auto c0 = data[0], c1 = data[1], c2 = data[2], c3 = data[3];
-    if (c0 == u'自' && c1 == u'动' && c2 == u'播' && c3 == u'放') return "autoplay"; // 自动播放
-    if (c0 == u'微' && c1 == u'调' && c2 == u'控' && c3 == u'件') return "controls"; // 微调控件
-    if (c0 == u'日' && c1 == u'期' && c2 == u'时' && c3 == u'间') return "datetime"; // 日期时间
-    if (c0 == u'图' && c1 == u'像' && c2 == u'描' && c3 == u'述') return "alt";       // 图像描述
-    if (c0 == u'数' && c1 == u'据' && c2 == u'属' && c3 == u'性') return "data-*";    // 数据属性
-    if (c0 == u'名' && c1 == u'称' && c2 == u'空' && c3 == u'间') return "xmlns";     // 名称空间
-  }
-  return nullptr;
+  return LookupZhAttr(kZhAttrNameTable,
+                      sizeof(kZhAttrNameTable) / sizeof(kZhAttrNameTable[0]),
+                      data, length);
 }
 
 template <bool DedupWithHash>
