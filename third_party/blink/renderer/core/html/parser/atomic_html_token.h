@@ -452,7 +452,6 @@ constexpr ZhAttrEntry kZhAttrNameTable[] = {
     {u"微调控件", 4, "controls"},      // 微调控件
     {u"日期时间", 4, "datetime"},      // 日期时间
     {u"图像描述", 4, "alt"},           // 图像描述
-    {u"数据属性", 4, "data-*"},        // 数据属性
     {u"名称空间", 4, "xmlns"},         // 名称空间
     {u"描边宽度", 4, "stroke-width"},  // 描边宽度 (SVG)
     {u"跨列", 2, "colspan"},          // 跨列 (表格)

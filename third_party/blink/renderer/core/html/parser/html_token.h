@@ -59,153 +59,15 @@ struct DoctypeData {
   bool force_quirks_;
 };
 
-enum class DOMPartTokenType {
-  kChildNodePartStart,
-  kChildNodePartEnd,
+// 中文标签名 → 标准英文标签名。HTML 解析器与 CSS 类型选择器共用此单表，
+// 避免双表漂移。含 HTML 标签 + SVG/MathML 内容标签。
+struct ZhTagEntry {
+  const char16_t* zh;
+  size_t zh_len;
+  const char* en;
 };
-
-struct DOMPartData {
-  USING_FAST_MALLOC(DOMPartData);
-
- public:
-  explicit DOMPartData(DOMPartTokenType type) : type_(type) {
-  }
-  DOMPartData(const DOMPartData&) = delete;
-  DOMPartData& operator=(const DOMPartData&) = delete;
-
-  Vector<String> metadata_;
-  DOMPartTokenType type_;
-};
-
-struct DOMPartsNeeded {
- public:
-  bool needs_node_part{false};
-  Vector<AtomicString> needs_attribute_parts{};
-  explicit operator bool() const {
-    return needs_node_part || !needs_attribute_parts.empty();
-  }
-};
-
-static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
-                                               const QualifiedName& name) {
-  for (Attribute& attr : attributes) {
-    if (attr.GetName().Matches(name))
-      return &attr;
-  }
-  return nullptr;
-}
-
-class HTMLToken {
-  USING_FAST_MALLOC(HTMLToken);
-
- public:
-  enum TokenType {
-    kUninitialized,
-    DOCTYPE,
-    kStartTag,
-    kEndTag,
-    kComment,
-    kCharacter,
-    kEndOfFile,
-    kProcessingInstruction,
-  };
-
-  class Attribute {
-   public:
-    AtomicString GetName() const { return name_.AsAtomicString(); }
-    AtomicString GetValue() const { return value_.AsAtomicString(); }
-
-    const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
-
-    String NameAttemptStaticStringCreation() const {
-      return AttemptStaticStringCreation(name_);
-    }
-
-    bool NameIsEmpty() const { return name_.IsEmpty(); }
-    void AppendToName(UChar c) { name_.AddChar(c); }
-
-    String Value() const { return value_.AsString(); }
-
-    void AppendToValue(UChar c) { value_.AddChar(c); }
-    void ClearValue() { value_.clear(); }
-
-   private:
-    // TODO(chromium:1204030): Do a more rigorous study and select a
-    // better-informed inline capacity.
-    UCharLiteralBuffer<32> name_;
-    UCharLiteralBuffer<32> value_;
-  };
-
-  typedef Vector<Attribute, kAttributePrealloc> AttributeList;
-
-  // By using an inline capacity of 256, we avoid spilling over into an malloced
-  // buffer approximately 99% of the time based on a non-scientific browse
-  // around a number of popular web sites on 23 May 2013.
-  // TODO(chromium:1204030): Do a more rigorous study and select a
-  // better-informed inline capacity.
-  using DataVector = UCharLiteralBuffer<256>;
-
-  HTMLToken() = default;
-
-  HTMLToken(const HTMLToken&) = delete;
-  HTMLToken& operator=(const HTMLToken&) = delete;
-
-  std::unique_ptr<HTMLToken> Take() {
-    std::unique_ptr<HTMLToken> copy = std::make_unique<HTMLToken>();
-    copy->data_ = std::move(data_);
-    copy->attributes_ = std::move(attributes_);
-    copy->doctype_data_ = std::move(doctype_data_);
-    copy->type_ = type_;
-    copy->self_closing_ = self_closing_;
-    copy->has_entity_ = has_entity_;
-    // Reset to uninitialized.
-    Clear();
-    return copy;
-  }
-
-  ALWAYS_INLINE void Clear() {
-    if (type_ == kUninitialized)
-      return;
-
-    type_ = kUninitialized;
-    has_entity_ = false;
-    data_.clear();
-    processing_instruction_target_.reset();
-    if (current_attribute_) {
-      current_attribute_ = nullptr;
-      attributes_.clear();
-    }
-  }
-
-  bool IsUninitialized() { return type_ == kUninitialized; }
-  TokenType GetType() const { return type_; }
-
-  void MakeEndOfFile() {
-    DCHECK_EQ(type_, kUninitialized);
-    type_ = kEndOfFile;
-  }
-
-  const DataVector& Data() const {
-    DCHECK(type_ == kCharacter || type_ == kComment || type_ == kStartTag ||
-           type_ == kEndTag || type_ == kProcessingInstruction);
-    return data_;
-  }
-
-  // Converts a Chinese tag name (UTF-16 code units) to the equivalent English
-  // tag name in place. English tag names are left unchanged. This is only
-  // meaningful for tokens whose name is used as an element tag name, so it is
-  // guarded to kStartTag / kEndTag / DOCTYPE.
-  void ConvertName() {
-    DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
-    // 中文标签名 → 标准英文标签名（表驱动查表）。zh 为 UTF-16 中文名字符串，
-    // en 为标准英文标签名。SVG/MathML 内容标签不在此表（走 names 生成器
-    // kZh Tag + 元素工厂映射），此处仅保留 HTML 标签与容器名（矢量图→svg/数学→math）。
-    static constexpr struct ZhTagEntry {
-      const char16_t* zh;
-      size_t zh_len;
-      const char* en;
-    } kZhTagTable[] = {
-        {u"列", 1, "col"},
+inline constexpr ZhTagEntry kZhTagTable[] = {
+{u"列", 1, "col"},
         {u"块", 1, "div"},
         {u"段", 1, "p"},
         {u"行", 1, "tr"},
@@ -413,7 +275,148 @@ class HTMLToken {
         {u"函数红", 3, "feFuncR"},
         {u"文档元数据", 5, "metadata"},
         {u"xml注解", 5, "annotation-xml"},
-    };
+};
+
+enum class DOMPartTokenType {
+  kChildNodePartStart,
+  kChildNodePartEnd,
+};
+
+struct DOMPartData {
+  USING_FAST_MALLOC(DOMPartData);
+
+ public:
+  explicit DOMPartData(DOMPartTokenType type) : type_(type) {
+  }
+  DOMPartData(const DOMPartData&) = delete;
+  DOMPartData& operator=(const DOMPartData&) = delete;
+
+  Vector<String> metadata_;
+  DOMPartTokenType type_;
+};
+
+struct DOMPartsNeeded {
+ public:
+  bool needs_node_part{false};
+  Vector<AtomicString> needs_attribute_parts{};
+  explicit operator bool() const {
+    return needs_node_part || !needs_attribute_parts.empty();
+  }
+};
+
+static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
+                                               const QualifiedName& name) {
+  for (Attribute& attr : attributes) {
+    if (attr.GetName().Matches(name))
+      return &attr;
+  }
+  return nullptr;
+}
+
+class HTMLToken {
+  USING_FAST_MALLOC(HTMLToken);
+
+ public:
+  enum TokenType {
+    kUninitialized,
+    DOCTYPE,
+    kStartTag,
+    kEndTag,
+    kComment,
+    kCharacter,
+    kEndOfFile,
+    kProcessingInstruction,
+  };
+
+  class Attribute {
+   public:
+    AtomicString GetName() const { return name_.AsAtomicString(); }
+    AtomicString GetValue() const { return value_.AsAtomicString(); }
+
+    const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
+
+    String NameAttemptStaticStringCreation() const {
+      return AttemptStaticStringCreation(name_);
+    }
+
+    bool NameIsEmpty() const { return name_.IsEmpty(); }
+    void AppendToName(UChar c) { name_.AddChar(c); }
+
+    String Value() const { return value_.AsString(); }
+
+    void AppendToValue(UChar c) { value_.AddChar(c); }
+    void ClearValue() { value_.clear(); }
+
+   private:
+    // TODO(chromium:1204030): Do a more rigorous study and select a
+    // better-informed inline capacity.
+    UCharLiteralBuffer<32> name_;
+    UCharLiteralBuffer<32> value_;
+  };
+
+  typedef Vector<Attribute, kAttributePrealloc> AttributeList;
+
+  // By using an inline capacity of 256, we avoid spilling over into an malloced
+  // buffer approximately 99% of the time based on a non-scientific browse
+  // around a number of popular web sites on 23 May 2013.
+  // TODO(chromium:1204030): Do a more rigorous study and select a
+  // better-informed inline capacity.
+  using DataVector = UCharLiteralBuffer<256>;
+
+  HTMLToken() = default;
+
+  HTMLToken(const HTMLToken&) = delete;
+  HTMLToken& operator=(const HTMLToken&) = delete;
+
+  std::unique_ptr<HTMLToken> Take() {
+    std::unique_ptr<HTMLToken> copy = std::make_unique<HTMLToken>();
+    copy->data_ = std::move(data_);
+    copy->attributes_ = std::move(attributes_);
+    copy->doctype_data_ = std::move(doctype_data_);
+    copy->type_ = type_;
+    copy->self_closing_ = self_closing_;
+    copy->has_entity_ = has_entity_;
+    // Reset to uninitialized.
+    Clear();
+    return copy;
+  }
+
+  ALWAYS_INLINE void Clear() {
+    if (type_ == kUninitialized)
+      return;
+
+    type_ = kUninitialized;
+    has_entity_ = false;
+    data_.clear();
+    processing_instruction_target_.reset();
+    if (current_attribute_) {
+      current_attribute_ = nullptr;
+      attributes_.clear();
+    }
+  }
+
+  bool IsUninitialized() { return type_ == kUninitialized; }
+  TokenType GetType() const { return type_; }
+
+  void MakeEndOfFile() {
+    DCHECK_EQ(type_, kUninitialized);
+    type_ = kEndOfFile;
+  }
+
+  const DataVector& Data() const {
+    DCHECK(type_ == kCharacter || type_ == kComment || type_ == kStartTag ||
+           type_ == kEndTag || type_ == kProcessingInstruction);
+    return data_;
+  }
+
+  // Converts a Chinese tag name (UTF-16 code units) to the equivalent English
+  // tag name in place. English tag names are left unchanged. This is only
+  // meaningful for tokens whose name is used as an element tag name, so it is
+  // guarded to kStartTag / kEndTag / DOCTYPE.
+  void ConvertName() {
+    DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
+    // 中文标签名 → 标准英文标签名（查全局 kZhTagTable，与 CSS 类型选择器共用单表）。
+
     const size_t len = data_.size();
     if (len == 0) {
       return;
