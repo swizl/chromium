@@ -31,11 +31,17 @@ enum ScrollRestoration {"auto", "manual"};
     Exposed=Window
 ] interface History {
     [MeasureAs=HistoryLength, RaisesException] readonly attribute unsigned long length;
+    [MeasureAs=HistoryLength, RaisesException, ImplementedAs=length] readonly attribute unsigned long 长度;
     [Measure, RaisesException] attribute ScrollRestoration scrollRestoration;
+    [RaisesException, ImplementedAs=scrollRestoration] attribute ScrollRestoration 滚动恢复;
     [CallWith=ScriptState, RaisesException] readonly attribute any state;
+    [CallWith=ScriptState, RaisesException, ImplementedAs=state] readonly attribute any 状态;
     [CallWith=ScriptState, RaisesException] void go(optional long delta = 0);
+    [CallWith=ScriptState, RaisesException, ImplementedAs=go] void 跳转(optional long delta = 0);
     [CallWith=ScriptState, RaisesException] void back();
+    [CallWith=ScriptState, RaisesException, ImplementedAs=back] void 后退();
     [CallWith=ScriptState, RaisesException] void forward();
+    [CallWith=ScriptState, RaisesException, ImplementedAs=forward] void 前进();
     [CallWith=ScriptState, MeasureAs=HistoryPushState, RaisesException] void pushState(any data, DOMString title, optional DOMString? url = null);
     [CallWith=ScriptState, MeasureAs=HistoryReplaceState, RaisesException] void replaceState(any data, DOMString title, optional DOMString? url = null);
 };

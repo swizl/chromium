@@ -5,6 +5,7 @@
 
 interface mixin ElementCSSInlineStyle {
     [SameObject, PerWorldBindings, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
+    [SameObject, PerWorldBindings, PutForwards=cssText, ImplementedAs=style] readonly attribute CSSStyleDeclaration 样式;
 
     // Typed OM
     // https://drafts.css-houdini.org/css-typed-om/#inline-stylepropertymap-objects

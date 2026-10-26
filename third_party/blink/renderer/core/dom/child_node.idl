@@ -23,7 +23,11 @@
 // https://dom.spec.whatwg.org/#interface-childnode
 interface mixin ChildNode {
   [Unscopable, RaisesException, CEReactions] undefined before((Node or DOMString or TrustedScript) ... nodes);
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=before] undefined 之前((Node or DOMString or TrustedScript) ... nodes);
   [Unscopable, RaisesException, CEReactions] undefined after((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=after] undefined 之后((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] undefined replaceWith((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=replaceWith] undefined 替换为((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] undefined remove();
+  [Unscopable, RaisesException, CEReactions, ImplementedAs=remove] undefined 移除();
 };
