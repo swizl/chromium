@@ -417,7 +417,6 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"透视", 6)) return ExposedProperty(CSSPropertyID::kPerspective, execution_context, mode);
       if (!memcmp(buffer, u8"遮罩", 6)) return ExposedProperty(CSSPropertyID::kMask, execution_context, mode);
       if (!memcmp(buffer, u8"间距", 6)) return ExposedProperty(CSSPropertyID::kGap, execution_context, mode);
-      if (!memcmp(buffer, u8"阴影", 6)) return ExposedProperty(CSSPropertyID::kBoxShadow, execution_context, mode);
       if (!memcmp(buffer, u8"隔离", 6)) return ExposedProperty(CSSPropertyID::kIsolation, execution_context, mode);
       if (!memcmp(buffer, u8"页面", 6)) return ExposedProperty(CSSPropertyID::kPage, execution_context, mode);
       if (!memcmp(buffer, u8"顶部", 6)) return ExposedProperty(CSSPropertyID::kTop, execution_context, mode);
@@ -509,7 +508,6 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"光标动画", 12)) return ExposedProperty(CSSPropertyID::kCaretAnimation, execution_context, mode);
       if (!memcmp(buffer, u8"光标颜色", 12)) return ExposedProperty(CSSPropertyID::kCaretColor, execution_context, mode);
       if (!memcmp(buffer, u8"光照颜色", 12)) return ExposedProperty(CSSPropertyID::kLightingColor, execution_context, mode);
-      if (!memcmp(buffer, u8"背景颜色", 12)) return ExposedProperty(CSSPropertyID::kBackgroundColor, execution_context, mode);
       if (!memcmp(buffer, u8"内容对齐", 12)) return ExposedProperty(CSSPropertyID::kAlignContent, execution_context, mode);
       if (!memcmp(buffer, u8"内联尺寸", 12)) return ExposedProperty(CSSPropertyID::kInlineSize, execution_context, mode);
       if (!memcmp(buffer, u8"内联嵌入", 12)) return ExposedProperty(CSSPropertyID::kInsetInline, execution_context, mode);
@@ -528,7 +526,6 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"单词换行", 12)) return ExposedProperty(CSSPropertyID::kAliasWordWrap, execution_context, mode);
       if (!memcmp(buffer, u8"变换原点", 12)) return ExposedProperty(CSSPropertyID::kTransformOrigin, execution_context, mode);
       if (!memcmp(buffer, u8"变换样式", 12)) return ExposedProperty(CSSPropertyID::kTransformStyle, execution_context, mode);
-      if (!memcmp(buffer, u8"边框圆角", 12)) return ExposedProperty(CSSPropertyID::kBorderRadius, execution_context, mode);
       if (!memcmp(buffer, u8"盒子阴影", 12)) return ExposedProperty(CSSPropertyID::kBoxShadow, execution_context, mode);
       if (!memcmp(buffer, u8"右上圆角", 12)) return ExposedProperty(CSSPropertyID::kBorderTopRightRadius, execution_context, mode);
       if (!memcmp(buffer, u8"右下圆角", 12)) return ExposedProperty(CSSPropertyID::kBorderBottomRightRadius, execution_context, mode);
@@ -825,7 +822,6 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"Webkit遮罩裁剪", 18)) return ExposedProperty(CSSPropertyID::kAliasWebkitMaskClip, execution_context, mode);
       if (!memcmp(buffer, u8"Webkit遮罩重复", 18)) return ExposedProperty(CSSPropertyID::kAliasWebkitMaskRepeat, execution_context, mode);
       if (!memcmp(buffer, u8"主轴自身对齐", 18)) return ExposedProperty(CSSPropertyID::kJustifySelf, execution_context, mode);
-      if (!memcmp(buffer, u8"内联滚动起点", 18)) return ExposedProperty(CSSPropertyID::kScrollInitialTarget, execution_context, mode);
       if (!memcmp(buffer, u8"内联结束嵌入", 18)) return ExposedProperty(CSSPropertyID::kInsetInlineEnd, execution_context, mode);
       if (!memcmp(buffer, u8"内联结束边框", 18)) return ExposedProperty(CSSPropertyID::kBorderInlineEnd, execution_context, mode);
       if (!memcmp(buffer, u8"内联结束边距", 18)) return ExposedProperty(CSSPropertyID::kMarginInlineEnd, execution_context, mode);
@@ -849,7 +845,6 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"固有包含宽度", 18)) return ExposedProperty(CSSPropertyID::kContainIntrinsicWidth, execution_context, mode);
       if (!memcmp(buffer, u8"固有包含尺寸", 18)) return ExposedProperty(CSSPropertyID::kContainIntrinsicSize, execution_context, mode);
       if (!memcmp(buffer, u8"固有包含高度", 18)) return ExposedProperty(CSSPropertyID::kContainIntrinsicHeight, execution_context, mode);
-      if (!memcmp(buffer, u8"块级滚动起点", 18)) return ExposedProperty(CSSPropertyID::kScrollInitialTarget, execution_context, mode);
       if (!memcmp(buffer, u8"块级结束嵌入", 18)) return ExposedProperty(CSSPropertyID::kInsetBlockEnd, execution_context, mode);
       if (!memcmp(buffer, u8"块级结束边框", 18)) return ExposedProperty(CSSPropertyID::kBorderBlockEnd, execution_context, mode);
       if (!memcmp(buffer, u8"块级结束边距", 18)) return ExposedProperty(CSSPropertyID::kMarginBlockEnd, execution_context, mode);
@@ -859,7 +854,6 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"块级边框宽度", 18)) return ExposedProperty(CSSPropertyID::kBorderBlockWidth, execution_context, mode);
       if (!memcmp(buffer, u8"块级边框样式", 18)) return ExposedProperty(CSSPropertyID::kBorderBlockStyle, execution_context, mode);
       if (!memcmp(buffer, u8"块级边框颜色", 18)) return ExposedProperty(CSSPropertyID::kBorderBlockColor, execution_context, mode);
-      if (!memcmp(buffer, u8"垂直滚动起点", 18)) return ExposedProperty(CSSPropertyID::kScrollInitialTarget, execution_context, mode);
       if (!memcmp(buffer, u8"字体东亚变体", 18)) return ExposedProperty(CSSPropertyID::kFontVariantEastAsian, execution_context, mode);
       if (!memcmp(buffer, u8"字体位置变体", 18)) return ExposedProperty(CSSPropertyID::kFontVariantPosition, execution_context, mode);
       if (!memcmp(buffer, u8"字体光学大小", 18)) return ExposedProperty(CSSPropertyID::kFontOpticalSizing, execution_context, mode);
@@ -898,12 +892,10 @@ static CSSPropertyID ChineseCSSPropertyID(
       if (!memcmp(buffer, u8"最大块级尺寸", 18)) return ExposedProperty(CSSPropertyID::kMaxBlockSize, execution_context, mode);
       if (!memcmp(buffer, u8"最小内联尺寸", 18)) return ExposedProperty(CSSPropertyID::kMinInlineSize, execution_context, mode);
       if (!memcmp(buffer, u8"最小块级尺寸", 18)) return ExposedProperty(CSSPropertyID::kMinBlockSize, execution_context, mode);
-      if (!memcmp(buffer, u8"水平滚动起点", 18)) return ExposedProperty(CSSPropertyID::kScrollInitialTarget, execution_context, mode);
       if (!memcmp(buffer, u8"溢出裁剪边距", 18)) return ExposedProperty(CSSPropertyID::kOverflowClipMargin, execution_context, mode);
       if (!memcmp(buffer, u8"滚动上内边距", 18)) return ExposedProperty(CSSPropertyID::kScrollPaddingTop, execution_context, mode);
       if (!memcmp(buffer, u8"滚动下内边距", 18)) return ExposedProperty(CSSPropertyID::kScrollPaddingBottom, execution_context, mode);
       if (!memcmp(buffer, u8"滚动内联边距", 18)) return ExposedProperty(CSSPropertyID::kScrollMarginInline, execution_context, mode);
-      if (!memcmp(buffer, u8"滚动初始目标", 18)) return ExposedProperty(CSSPropertyID::kScrollInitialTarget, execution_context, mode);
       if (!memcmp(buffer, u8"滚动右内边距", 18)) return ExposedProperty(CSSPropertyID::kScrollPaddingRight, execution_context, mode);
       if (!memcmp(buffer, u8"滚动吸附停止", 18)) return ExposedProperty(CSSPropertyID::kScrollSnapStop, execution_context, mode);
       if (!memcmp(buffer, u8"滚动吸附对齐", 18)) return ExposedProperty(CSSPropertyID::kScrollSnapAlign, execution_context, mode);
@@ -1253,10 +1245,8 @@ static CSSValueID ChineseCSSValueKeywordID(const char* buffer,
       if (!memcmp(buffer, u8"断词", 6)) return CSSValueID::kBreakWord;
       if (!memcmp(buffer, u8"方形", 6)) return CSSValueID::kSquare;
       if (!memcmp(buffer, u8"旋转", 6)) return CSSValueID::kRotate;
-      if (!memcmp(buffer, u8"无关", 6)) return CSSValueID::kNone;
       if (!memcmp(buffer, u8"无限", 6)) return CSSValueID::kInfinite;
       if (!memcmp(buffer, u8"明度", 6)) return CSSValueID::kLuminosity;
-      if (!memcmp(buffer, u8"显示", 6)) return CSSValueID::kVisible;
       if (!memcmp(buffer, u8"更大", 6)) return CSSValueID::kXLarge;
       if (!memcmp(buffer, u8"更小", 6)) return CSSValueID::kXSmall;
       if (!memcmp(buffer, u8"更粗", 6)) return CSSValueID::kBolder;

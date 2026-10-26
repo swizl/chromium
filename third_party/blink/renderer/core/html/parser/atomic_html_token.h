@@ -374,7 +374,6 @@ constexpr ZhAttrEntry kZhAttrValueTable[] = {
     // loading 值
     {u"急切", 2, "eager"},     // 急切
     // 自动
-    {u"自动", 2, "autoplay"},  // 自动(播放)
     // 预取（原 length==3 分支笔误，实际 2 字）
     {u"预取", 2, "prefetch"},  // 预取
     // 匿名（原 length==4 分支笔误，实际 2 字）
@@ -401,12 +400,7 @@ constexpr ZhAttrEntry kZhAttrNameTable[] = {
     // length == 1
     {u"名", 1, "name"},    // 名
     {u"值", 1, "value"},   // 值
-    {u"类", 1, "class"},   // 类
-    {u"源", 1, "src"},     // 源
     {u"链", 1, "href"},    // 链
-    {u"宽", 1, "width"},   // 宽
-    {u"高", 1, "height"},  // 高
-    {u"式", 1, "style"},   // 式
     // length == 2
     {u"类型", 2, "type"},      // 类型
     {u"类名", 2, "class"},     // 类名
@@ -414,22 +408,16 @@ constexpr ZhAttrEntry kZhAttrNameTable[] = {
     {u"样式", 2, "style"},     // 样式
     {u"来源", 2, "src"},       // 来源
     {u"标题", 2, "title"},     // 标题
-    {u"名称", 2, "name"},      // 名称
     {u"宽度", 2, "width"},     // 宽度
     {u"高度", 2, "height"},    // 高度
     {u"边框", 2, "border"},    // 边框
     {u"对齐", 2, "align"},     // 对齐
-    {u"链接", 2, "href"},      // 链接
     {u"角色", 2, "role"},      // 角色
-    {u"显示", 2, "hidden"},    // 显示 (mapped to hidden for hidden attribute)
     {u"媒体", 2, "media"},     // 媒体
     {u"目标", 2, "target"},    // 目标
     {u"加载", 2, "loading"},   // 加载
     {u"关系", 2, "rel"},       // 关系
-    {u"替代", 2, "alt"},       // 替代
     {u"方向", 2, "dir"},       // 方向
-    {u"可见", 2, "hidden"},    // 可见 (hidden when not visible)
-    {u"图片", 2, "src"},       // 图片 (for img src)
     {u"只读", 2, "readonly"},  // 只读
     {u"禁用", 2, "disabled"},  // 禁用
     {u"选中", 2, "checked"},   // 选中
@@ -444,14 +432,12 @@ constexpr ZhAttrEntry kZhAttrNameTable[] = {
     {u"最大值", 3, "max"},          // 最大值
     {u"最小值", 3, "min"},          // 最小值
     {u"占位符", 3, "placeholder"},  // 占位符
-    {u"微调器", 3, "controls"},     // 微调器
     {u"横坐标", 3, "x"},            // 横坐标 (SVG)
     {u"纵坐标", 3, "y"},            // 纵坐标 (SVG)
     // length == 4
     {u"自动播放", 4, "autoplay"},      // 自动播放
     {u"微调控件", 4, "controls"},      // 微调控件
     {u"日期时间", 4, "datetime"},      // 日期时间
-    {u"图像描述", 4, "alt"},           // 图像描述
     {u"名称空间", 4, "xmlns"},         // 名称空间
     {u"描边宽度", 4, "stroke-width"},  // 描边宽度 (SVG)
     {u"跨列", 2, "colspan"},          // 跨列 (表格)
